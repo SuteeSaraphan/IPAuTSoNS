@@ -1,0 +1,5 @@
+import pymongo
+from pymongo import MongoClient
+
+cluster = MongoClient
+mongodb+srv://peach:<password>@cluster0.j9edmy6.mongodb.net/?retryWrites=true&w=majority
