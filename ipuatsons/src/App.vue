@@ -1,10 +1,14 @@
 <template>
   <div>
-    <h1>v-model</h1>
-    <input v-model="email" type="email" placeholder="enter your fucking email">
-    <div>{{email}}</div>
-    <button @click="email=''">Reset</button>
+    
 
+    <ul>
+      <li><router-link to="/">Home</router-link> </li>
+      <li><router-link to="/drive">Drive</router-link> </li>
+    </ul>
+
+    <router-view></router-view>
+    
   </div>
 </template>
 
