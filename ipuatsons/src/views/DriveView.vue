@@ -12,6 +12,14 @@
 
 <script>
 export default {
-    name:"DriveView"
+    name:"DriveView",
+    data() {
+        return {
+        email:""
+        }
+    },
+    methods: {
+    
+    },
 };
 </script>
