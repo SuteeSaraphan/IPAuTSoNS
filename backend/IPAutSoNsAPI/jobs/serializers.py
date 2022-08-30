@@ -4,6 +4,10 @@ class JobSerializer(serializers.ModelSerializer):
     class Meta:
         fields = (
             'job_id',
-            'description',
+            'user_id',
+            'path',
+            'num_img',
+            'persent',
+            'job_status'
         )
         model = Job

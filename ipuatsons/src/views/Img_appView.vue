@@ -3,24 +3,63 @@
     <h1>Image Application page</h1>
 
     <div v-for="job in jobs" v-bind:key="job.job_id">
-      <h2>{{ job.job_id }}</h2>
-      {{ job.description }}
+      <h2>job_id : {{ job.job_id }}</h2>
+      <P>user_id : {{ job.user_id }}</P>
+      <p>path : {{job.path}}</p>
+      <p>num_img : {{job.num_img}}</p>
+      <p>persent : {{job.persent}}</p>
+      <p>status : {{job.job_status}}</p>
+      <hr>
     </div>
 
     <form @submit="handleSubmit()">
       <div>
-        <label>Job_id : </label>
+        <label>job_id : </label>
         <input type="text"
         @change="(e) => setNewJob({ ...newJob, job_id: e.target.value })"
         />
       </div>
       
       <div>
-        <label>Description : </label>            
-        <textarea rows="4"
-        @change="(e) => setNewJob({ ...newJob, description: e.target.value })"
+        <label>user_id : </label>            
+        <input type="text"
+        @change="(e) => setNewJob({ ...newJob, user_id: e.target.value })"
         />
       </div>
+
+
+      <div>
+        <label>path : </label>            
+        <input type="text"
+        @change="(e) => setNewJob({ ...newJob, path: e.target.value })"
+        />
+      </div>
+
+      <div>
+        <label>num_img : </label>            
+        <input type="text"
+        @change="(e) => setNewJob({ ...newJob, num_img: e.target.value })"
+        />
+      </div>
+
+
+      <div>
+        <label>persent : </label>            
+        <input type="text"
+        @change="(e) => setNewJob({ ...newJob, persent: e.target.value })"
+        />
+      </div>
+
+
+      <div>
+        <label>job_status : </label>            
+        <input type="text"
+        @change="(e) => setNewJob({ ...newJob, job_status: e.target.value })"
+        />
+      </div>
+
+
+
         <input id="submit" type="submit" value="Add Job"/>
       </form>
 
@@ -40,7 +79,11 @@ export default {
   data() {
     const [newJob, setNewJob] = useState({
       job_id : "",
-      description : "",
+      user_id: "",
+      path: "",
+      num_img: 0,
+      persent: 0,
+      job_status: 0
     });
     return {
       jobs : [],
