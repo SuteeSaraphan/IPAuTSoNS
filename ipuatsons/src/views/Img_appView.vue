@@ -4,7 +4,7 @@
 
     <div v-for="job in jobs" v-bind:key="job.job_id">
       <h2>job_id : {{ job.job_id }}</h2>
-      <P>user_id : {{ job.user_id }}</P>
+      <p>user_id : {{ job.user_id }}</p>
       <p>path : {{job.path}}</p>
       <p>num_img : {{job.num_img}}</p>
       <p>persent : {{job.persent}}</p>
@@ -14,7 +14,7 @@
 
     <form @submit="handleSubmit()">
       <div>
-        <label>job_id : </label>
+        <label>job_id :</label>
         <input type="text"
         @change="(e) => setNewJob({ ...newJob, job_id: e.target.value })"
         />
@@ -60,6 +60,7 @@
 
 
 
+
         <input id="submit" type="submit" value="Add Job"/>
       </form>
 
@@ -83,7 +84,8 @@ export default {
       path: "",
       num_img: 0,
       persent: 0,
-      job_status: 0
+      job_status: 0,
+      create_time : null
     });
     return {
       jobs : [],

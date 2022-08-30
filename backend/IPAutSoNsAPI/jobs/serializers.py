@@ -8,6 +8,7 @@ class JobSerializer(serializers.ModelSerializer):
             'path',
             'num_img',
             'persent',
-            'job_status'
+            'job_status',
+            'create_time'
         )
         model = Job
