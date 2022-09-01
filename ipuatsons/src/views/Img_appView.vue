@@ -2,17 +2,7 @@
   <div>
     <h1>Image Application page</h1>
 
-    <div v-for="job in jobs" v-bind:key="job.job_id">
-      <h2>job_id : {{ job.job_id }}</h2>
-      <p>user_id : {{ job.user_id }}</p>
-      <p>path : {{job.path}}</p>
-      <p>num_img : {{job.num_img}}</p>
-      <p>persent : {{job.persent}}</p>
-      <p>status : {{job.job_status}}</p>
-      <hr>
-    </div>
-
-    <form @submit="handleSubmit()">
+    <form @submit="add_job(),do_job()">
       <div>
         <label>job_id :</label>
         <input type="text"
@@ -62,12 +52,25 @@
 
 
         <input id="submit" type="submit" value="Add Job"/>
-      </form>
+    </form>
+    <div>
+      <button @click="do_job()">do job now !</button>
+    </div>
 
-      {{newJob.job_id}}
-      {{newJob.description}}
-      {{newJob}}
-      {{setNewJob}}
+    <div v-for="job in jobs" v-bind:key="job.job_id">
+      <h2>job_id : {{ job.job_id }}</h2>
+      <p>user_id : {{ job.user_id }}</p>
+      <p>path : {{job.path}}</p>
+      <p>num_img : {{job.num_img}}</p>
+      <p>persent : {{job.persent}}</p>
+      <p>status : {{job.job_status}}</p>
+      <button @click="do_job(job.job_id)">{{ job.job_id }}</button>
+
+      <hr>
+    </div>
+
+    
+
   </div>
 </template>
 
@@ -91,10 +94,11 @@ export default {
       jobs : [],
       newJob,
       setNewJob,
+      job_id :""
     }
   },
   methods: {
-    handleSubmit() {
+    add_job() {
       fetch('http://127.0.0.1:8000/api/', {
         method: 'POST',
         headers: {
@@ -113,6 +117,18 @@ export default {
         }
       }.bind(this));
     },
+
+    do_job(job_id) {
+      console.log(job_id)
+      fetch('http://127.0.0.1:8000/api/do_job')
+        .then(async response => await response.json())
+        .then(async response => {    
+        this.jobs = response
+        console.log(response)
+      })
+    },
+
+
 },
   created(){
     fetch('http://127.0.0.1:8000/api/')     
