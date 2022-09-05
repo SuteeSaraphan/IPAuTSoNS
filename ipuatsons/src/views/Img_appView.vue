@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="main-home">
     <h1>Image Application page</h1>
 
     <form @submit="add_job(), do_job()" style="padding:15px">
