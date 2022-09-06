@@ -90,11 +90,11 @@
           Setting
         </a>
 
-        <a href="#">
+        <a @click="email=''" href="#">
           <span class="icon">
             <i class="ri-logout-box-line"></i>
           </span>
-          Logout
+          <router-link to="/login">Logout</router-link>
         </a>
 
       </div>
@@ -112,7 +112,7 @@ export default {
 
   data() {
     return {
-      email: "",
+      email: "sdfsdfsdf",
     }
   },
   methods: {

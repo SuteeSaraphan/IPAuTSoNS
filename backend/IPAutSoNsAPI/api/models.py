@@ -15,3 +15,13 @@ class Job(models.Model):
 
     def __str__(self):
         return self.job_id
+
+
+class User(models.Model):
+    user_id = models.CharField(max_length=100)
+    password = models.CharField(max_length=50, null=False)
+    email = models.EmailField(max_length=254, primary_key=True)
+    is_vip = models.BooleanField
+
+    def __str__(self):
+        return self.user_id

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Job
+from .models import Job, User
 
 
 class JobSerializer(serializers.ModelSerializer):
@@ -16,3 +16,14 @@ class JobSerializer(serializers.ModelSerializer):
             'create_time'
         )
         model = Job
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = (
+            'user_id',
+            'password',
+            'email',
+            'is_vip'
+        )
+        model = User

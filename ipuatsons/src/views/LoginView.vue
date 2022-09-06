@@ -46,7 +46,7 @@ export default {
         login() {
             console.log(this.user.email)
             console.log(this.user.password)
-            this.api_url = 'http://127.0.0.1:8000/api/login/'+this.user.email+'/'+this.user.password
+            this.api_url = 'http://127.0.0.1:8000/api/login/'+this.user.email+'/'+this.user.password+'/'
             fetch(this.api_url)
                  .then(async response => await response.json())
                  .then(async response => {

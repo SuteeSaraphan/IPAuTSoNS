@@ -1,20 +1,31 @@
 import yaml
+import base64
 from time import sleep
 from django.shortcuts import render
 from rest_framework import generics
-from .models import Job
-from .serializers import JobSerializer
+from .models import Job, User
+from .serializers import JobSerializer, UserSerializer
 from django.http import HttpResponse
 
 
 class ListJob(generics.ListCreateAPIView):
-    queryset = Job.objects.all().order_by('-create_time')
+    queryset = Job.objects.all()
     serializer_class = JobSerializer
+
+
+class ListUser(generics.ListCreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
 
 class DetailJob(generics.RetrieveUpdateDestroyAPIView):
     queryset = Job.objects.all()
     serializer_class = JobSerializer
+
+
+class DetailUser(generics.RetrieveUpdateDestroyAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
 
 class LastestJob(generics.ListCreateAPIView):
@@ -55,22 +66,28 @@ def writeConfig(job_id_name, **kwargs):
 
 def make_yaml(request):
     sleep(1)
-    try:
-        print("going to make file")
-        lastest_job = Job.objects.all().filter(
-            job_status=0).order_by('create_time')[:1]
-        print(lastest_job[0].job_id)
 
-        writeConfig(lastest_job[0].job_id, job_id=lastest_job[0].job_id,
-                    path=lastest_job[0].job_id,
-                    user_id=lastest_job[0].user_id,
-                    app_id=lastest_job[0].app_id,
-                    img_selected=lastest_job[0].img_selected
-                    )
+    print("going to make file")
+    lastest_job = Job.objects.all().filter(
+        job_status = 0).order_by('create_time')[:1]
+    print(lastest_job[0].job_id)
 
-        lastest_job = Job.objects.get(job_id=lastest_job[0].job_id)
-        lastest_job.job_status = 1
-        lastest_job.save()
-    except:
-        print("can't make yaml file")
+    writeConfig(lastest_job[0].job_id, job_id=lastest_job[0].job_id,
+                path=lastest_job[0].job_id,
+                user_id=lastest_job[0].user_id,
+                app_id=lastest_job[0].app_id,
+                img_selected=lastest_job[0].img_selected
+                )
+
+    lastest_job = Job.objects.get(job_id=lastest_job[0].job_id)
+    lastest_job.job_status = 1
+    lastest_job.save()
+
+    return HttpResponse("""<html><script>    windwow.location.replace('/');   </script></html>""")
+
+def login_page(request, email,password):
+    # base64
+    #email = str(base64.b64decode(email))
+    #password = str(base64.b64decode(password))
+    print(email,password)
     return HttpResponse("""<html><script>    windwow.location.replace('/');   </script></html>""")
