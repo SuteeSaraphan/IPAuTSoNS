@@ -1,12 +1,14 @@
 <template>
   <div>
-     <!-- Sidebar -->
-     <div class="sidebar">
+    <!-- Sidebar -->
+    <div class="sidebar" v-if="this.email!=''">
       <a href="#" class="logo" style="text-align-last: center;">
-        <h1><router-link to="/" >IPAUTSONS</router-link></h1>
+        <h1>
+          <router-link to="/">IPAUTSONS</router-link>
+        </h1>
       </a>
 
-    <!-- Profile -->
+      <!-- Profile -->
       <div class="profile">
         <div class="profile-img">
           <img src="../src/img/profile.jpg" alt="">
@@ -16,9 +18,9 @@
           <img src="../src/img/name.png" alt="">
         </div>
         <span>Credit : 227</span>
-        
+
         <span class="text-muted" style="font-size: 1rem;">Usage Total : <span id="total-value">32</span>GB</span>
-            <!-- Info Bar -->
+        <!-- Info Bar -->
         <div class="bg-white rounded-xl shadow-sm overflow-hidden p-1">
           <div class="relative h-6 flex items-center justify-center">
             <div class="absolute top-0 bottom-0 left-0 rounded-lg w-[60%] bg-blue-200"></div>
@@ -26,38 +28,38 @@
           </div>
         </div>
       </div>
-    <!-- END Info Bar -->
+      <!-- END Info Bar -->
 
-    
-    
 
-    <!-- About -->
-    <div class="about">
-      <div class="box">
-        <h3>54</h3>
-        <span>Models</span>
+
+
+      <!-- About -->
+      <div class="about">
+        <div class="box">
+          <h3>54</h3>
+          <span>Models</span>
+        </div>
+
+        <div class="box">
+          <h3>22/7</h3>
+          <span>Followers</span>
+        </div>
+
+        <div class="box">
+          <h3>27</h3>
+          <span>Following</span>
+        </div>
       </div>
 
-      <div class="box">
-        <h3>22/7</h3>
-        <span>Followers</span>
-      </div>
+      <!-- Menu -->
+      <div class="menu">
 
-      <div class="box">
-        <h3>27</h3>
-        <span>Following</span>
-      </div>
-    </div>
-
-    <!-- Menu -->
-    <div class="menu">
-      
-      <a href="#">
-        <span class="icon">
-          <i class="ri-function-line"></i>
-        </span>
-        <router-link to="/">Feed</router-link>
-      </a>
+        <a href="#">
+          <span class="icon">
+            <i class="ri-function-line"></i>
+          </span>
+          <router-link to="/">Feed</router-link>
+        </a>
 
         <a href="#">
           <span class="icon">
@@ -66,8 +68,8 @@
           <router-link to="/drive">Drive</router-link>
         </a>
 
-          
-          <a href="#">
+
+        <a href="#">
           <span class="icon">
             <i class="ri-camera-lens-fill"></i>
           </span>
@@ -97,10 +99,10 @@
 
       </div>
     </div>
-  <!----------------------------------------------------- end of side bar ----------------------------------------------------->
-  
+    <!----------------------------------------------------- end of side bar ----------------------------------------------------->
+
     <router-view></router-view>
-  
+
   </div>
 </template>
 
@@ -116,9 +118,15 @@ export default {
   methods: {
 
   },
-
-
+  created() {
+    //console.log("created is work");
+    if (this.email == "") {
+      //console.log("email check is work");
+      this.$router.push('/login');
+    }
+  },
 }
+
 </script>
 
 <style>
