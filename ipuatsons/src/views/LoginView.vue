@@ -36,7 +36,7 @@ export default {
             password: ""
         });
         return {
-            users : [],
+            users: [],
             user,
             setUser,
             api_url: ''
@@ -44,14 +44,23 @@ export default {
     },
     methods: {
         login() {
-            console.log(this.user.email)
-            console.log(this.user.password)
-            this.api_url = 'http://127.0.0.1:8000/api/login/'+this.user.email+'/'+this.user.password+'/'
+            this.api_url = 'http://127.0.0.1:8000/api/login/' + this.user.email + '/'
             fetch(this.api_url)
-                 .then(async response => await response.json())
-                 .then(async response => {
-                     this.users = response
-             })
+                .then(async response => await response.json())
+                .then(async response => {
+                    console.log(response)
+                    this.users = response
+                    if (this.users.password == this.user.password){
+                        console.log('True')
+                    }else{
+                        console.log('False')
+                    }
+                })
+               
+            
+            
+
+
         }
     }
 }

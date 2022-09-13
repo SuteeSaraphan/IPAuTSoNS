@@ -19,7 +19,7 @@ apiVersion: batch/v1
             command:
                 - python3
                 - -u
-                - ./test.py "123" "123" "appID" "123" "Fileseleted"
+                - ./test.py "123" "123" "123" "123" "123"
             args:
                 - "Kubernetes"
         restartPolicy: Never

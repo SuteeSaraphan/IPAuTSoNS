@@ -6,21 +6,21 @@
       <div>
         <label>job_id :</label>
         <p>
-          <input type="text" @change="(e) => setNewJob({ ...newJob, job_id: e.target.value })" />
+          <input type="text" @change="(e) => setNewJob({ ...newJob, job_id: e.target.value })" style="color:black"/>
         </p>
       </div>
 
       <div>
         <label>user_id :</label>
         <p>
-          <input type="text" @change="(e) => setNewJob({ ...newJob, user_id: e.target.value })" />
+          <input type="text" @change="(e) => setNewJob({ ...newJob, user_id: e.target.value })" style="color:black" />
         </p>
       </div>
 
       <div>
         <label>app_id :</label>
         <p>
-          <input type="text" @change="(e) => setNewJob({ ...newJob, app_id: e.target.value })" />
+          <input type="text" @change="(e) => setNewJob({ ...newJob, app_id: e.target.value })" style="color:black" />
         </p>
       </div>
 
@@ -28,21 +28,21 @@
       <div>
         <label>path :</label>
         <p>
-          <input type="text" @change="(e) => setNewJob({ ...newJob, path: e.target.value })" />
+          <input type="text" @change="(e) => setNewJob({ ...newJob, path: e.target.value })" style="color:black"/>
         </p>
       </div>
 
       <div>
         <label>num_img :</label>
         <p>
-          <input type="text" @change="(e) => setNewJob({ ...newJob, num_img: e.target.value })" />
+          <input type="text" @change="(e) => setNewJob({ ...newJob, num_img: e.target.value })" style="color:black"/>
         </p>
       </div>
 
       <div>
         <label>img_selected :</label>
         <p>
-          <input type="text" @change="(e) => setNewJob({ ...newJob, img_selected: e.target.value })" />
+          <input type="text" @change="(e) => setNewJob({ ...newJob, img_selected: e.target.value })" style="color:black"/>
         </p>
       </div>
 
@@ -50,7 +50,7 @@
       <div>
         <label>persent :</label>
         <p>
-          <input type="text" @change="(e) => setNewJob({ ...newJob, persent: e.target.value })" />
+          <input type="text" @change="(e) => setNewJob({ ...newJob, persent: e.target.value })" style="color:black"/>
         </p>
       </div>
 
@@ -58,7 +58,7 @@
       <div>
         <label>job_status :</label>
         <p>
-          <input type="text" @change="(e) => setNewJob({ ...newJob, job_status: e.target.value })" />
+          <input type="text" @change="(e) => setNewJob({ ...newJob, job_status: e.target.value })" style="color:black"/>
         </p>
       </div>
 
@@ -116,7 +116,7 @@ export default {
   methods: {
     add_job() {
       console.log(this.newJob)
-      fetch('http://127.0.0.1:8000/api/', {
+      fetch('http://127.0.0.1:8000/api/jobs', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -148,7 +148,7 @@ export default {
 
   },
   created() {
-    fetch('http://127.0.0.1:8000/api/')
+    fetch('http://127.0.0.1:8000/api/jobs')
       .then(async response => await response.json())
       .then(async response => {
         this.jobs = response

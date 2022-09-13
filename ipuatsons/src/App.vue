@@ -112,7 +112,7 @@ export default {
 
   data() {
     return {
-      email: "sdfsdfsdf",
+      email: "sdfsdsdf",
     }
   },
   methods: {

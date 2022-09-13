@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'rest_framework', #new
     'corsheaders', #new
     'api', #new
+    'rest_framework_simplejwt',#new
 ]
 
 MIDDLEWARE = [ 
@@ -56,6 +57,7 @@ MIDDLEWARE = [
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ]
 }
 

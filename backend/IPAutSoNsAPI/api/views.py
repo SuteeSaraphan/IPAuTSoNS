@@ -1,3 +1,4 @@
+import email
 import yaml
 import base64
 from time import sleep
@@ -17,6 +18,9 @@ class ListUser(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+class ListUserLogin(generics.ListCreateAPIView):
+    queryset = User.objects.all().filter()
+    serializer_class = UserSerializer
 
 class DetailJob(generics.RetrieveUpdateDestroyAPIView):
     queryset = Job.objects.all()
