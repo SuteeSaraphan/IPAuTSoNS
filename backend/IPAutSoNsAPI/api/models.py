@@ -1,5 +1,6 @@
 from pyexpat import model
 from django.db import models
+from django.contrib.auth.models import AbstractBaseUser
 
 
 class Job(models.Model):
@@ -19,11 +20,18 @@ class Job(models.Model):
         return self.job_id
 
 
-class User(models.Model):
+class User(AbstractBaseUser):
     user_id = models.CharField(max_length=100, null=False ,unique=True)
     password = models.CharField(max_length=50, null=False)
     email = models.EmailField(max_length=254, primary_key=True, null=False ,unique=True)
     is_vip = models.BooleanField(default=False, null=False)
+    first_name = models.CharField(max_length=50, null=False)
+    last_name = models.CharField(max_length=50, null=False)
+
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELD = []
+
 
     def __str__(self):
         return self.user_id

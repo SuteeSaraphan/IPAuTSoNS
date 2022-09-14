@@ -39,28 +39,27 @@ export default {
             users: [],
             user,
             setUser,
-            api_url: ''
+            api_url: '',
+            jkw : '',
         }
     },
     methods: {
         login() {
-            this.api_url = 'http://127.0.0.1:8000/api/login/' + this.user.email + '/'
-            fetch(this.api_url)
+            this.token_url = 'http://127.0.0.1:8000/api/login'
+            fetch(this.token_url, {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json;charset=utf-8',
+                },
+                body: JSON.stringify(this.user)
+            })
                 .then(async response => await response.json())
                 .then(async response => {
-                    console.log(response)
-                    this.users = response
-                    if (this.users.password == this.user.password){
-                        console.log('True')
-                    }else{
-                        console.log('False')
-                    }
+                    // console.log(response.jwt)
+                    this.jwt = response.jwt
                 })
-               
-            
-            
-
-
+                
         }
     }
 }

@@ -6,7 +6,8 @@
         <div>
             <h1>{{ email }}</h1>
         </div>
-        <button @click="email = ''">Reset</button>
+        <button @click="email = ''" style="color:black">Reset</button>
+        <button @click="get_token" style="color:black">get_token</button>
 
     </div>
 
@@ -17,11 +18,12 @@ export default {
     name: "DriveView",
     data() {
         return {
-            email: ""
+            email: "",
+            token_url: "",
         }
     },
     methods: {
-
+        
     },
 };
 </script>
