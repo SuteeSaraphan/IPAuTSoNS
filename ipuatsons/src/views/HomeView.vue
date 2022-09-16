@@ -1,4 +1,6 @@
 <template>
+  <div>
+  <SlideBar></SlideBar>
   <div class="main-home">
 
     <h1>
@@ -49,14 +51,27 @@
     <!--  End Feed  -->
 
   </div>
+  </div>
 </template>
 
 <script>
 // @ is an alias to /src
-//import HelloWorld from '@/components/HelloWorld.vue'
-
+import SlideBar from '@/components/SlideBar'
+import { useCookies } from "vue3-cookies";
+import router from '@/router';
 export default {
   name: 'HomeView',
-  
+  setup() {
+        const { cookies } = useCookies();
+        return { cookies };
+  },
+  components:{
+    SlideBar
+  },
+  created(){
+    if (this.cookies.get('jwt')==null){
+      router.push('login')
+    }
+  }
 }
 </script>

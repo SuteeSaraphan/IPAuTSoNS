@@ -1,94 +1,98 @@
 <template>
-  <div class="main-home">
-    <h1>Image Application page</h1>
+  <div>
+    <SlideBar></SlideBar>
+    <div class="main-home">
+      <h1>Image Application page</h1>
 
-    <form @submit="add_job(), do_job()" style="padding:15px">
-      <div>
-        <label>job_id :</label>
-        <p>
-          <input type="text" @change="(e) => setNewJob({ ...newJob, job_id: e.target.value })" style="color:black"/>
-        </p>
+      <form @submit="add_job(), do_job()" style="padding:15px">
+        <div>
+          <label>job_id :</label>
+          <p>
+            <input type="text" @change="(e) => setNewJob({ ...newJob, job_id: e.target.value })" style="color:black" />
+          </p>
+        </div>
+
+        <div>
+          <label>user_id :</label>
+          <p>
+            <input type="text" @change="(e) => setNewJob({ ...newJob, user_id: e.target.value })" style="color:black" />
+          </p>
+        </div>
+
+        <div>
+          <label>app_id :</label>
+          <p>
+            <input type="text" @change="(e) => setNewJob({ ...newJob, app_id: e.target.value })" style="color:black" />
+          </p>
+        </div>
+
+
+        <div>
+          <label>path :</label>
+          <p>
+            <input type="text" @change="(e) => setNewJob({ ...newJob, path: e.target.value })" style="color:black" />
+          </p>
+        </div>
+
+        <div>
+          <label>num_img :</label>
+          <p>
+            <input type="text" @change="(e) => setNewJob({ ...newJob, num_img: e.target.value })" style="color:black" />
+          </p>
+        </div>
+
+        <div>
+          <label>img_selected :</label>
+          <p>
+            <input type="text" @change="(e) => setNewJob({ ...newJob, img_selected: e.target.value })"
+              style="color:black" />
+          </p>
+        </div>
+
+
+        <div>
+          <label>persent :</label>
+          <p>
+            <input type="text" @change="(e) => setNewJob({ ...newJob, persent: e.target.value })" style="color:black" />
+          </p>
+        </div>
+
+
+        <div>
+          <label>job_status :</label>
+          <p>
+            <input type="text" @change="(e) => setNewJob({ ...newJob, job_status: e.target.value })"
+              style="color:black" />
+          </p>
+        </div>
+
+
+
+
+        <input id="submit" type="submit" value="Add Job" />
+      </form>
+
+      <div v-for="job in jobs" v-bind:key="job.job_id">
+        <h2>job_id : {{ job.job_id }}</h2>
+        <p>user_id : {{ job.user_id }}</p>
+        <p>path : {{ job.path }}</p>
+        <p>num_img : {{ job.num_img }}</p>
+        <p>persent : {{ job.persent }}</p>
+        <p>status : {{ job.job_status }}</p>
+        <button @click="do_job(job.job_id)">{{ job.job_id }}</button>
+        <hr>
+
       </div>
 
-      <div>
-        <label>user_id :</label>
-        <p>
-          <input type="text" @change="(e) => setNewJob({ ...newJob, user_id: e.target.value })" style="color:black" />
-        </p>
-      </div>
-
-      <div>
-        <label>app_id :</label>
-        <p>
-          <input type="text" @change="(e) => setNewJob({ ...newJob, app_id: e.target.value })" style="color:black" />
-        </p>
-      </div>
-
-
-      <div>
-        <label>path :</label>
-        <p>
-          <input type="text" @change="(e) => setNewJob({ ...newJob, path: e.target.value })" style="color:black"/>
-        </p>
-      </div>
-
-      <div>
-        <label>num_img :</label>
-        <p>
-          <input type="text" @change="(e) => setNewJob({ ...newJob, num_img: e.target.value })" style="color:black"/>
-        </p>
-      </div>
-
-      <div>
-        <label>img_selected :</label>
-        <p>
-          <input type="text" @change="(e) => setNewJob({ ...newJob, img_selected: e.target.value })" style="color:black"/>
-        </p>
-      </div>
-
-
-      <div>
-        <label>persent :</label>
-        <p>
-          <input type="text" @change="(e) => setNewJob({ ...newJob, persent: e.target.value })" style="color:black"/>
-        </p>
-      </div>
-
-
-      <div>
-        <label>job_status :</label>
-        <p>
-          <input type="text" @change="(e) => setNewJob({ ...newJob, job_status: e.target.value })" style="color:black"/>
-        </p>
-      </div>
-
-
-
-
-      <input id="submit" type="submit" value="Add Job" />
-    </form>
-
-    <div v-for="job in jobs" v-bind:key="job.job_id">
-      <h2>job_id : {{ job.job_id }}</h2>
-      <p>user_id : {{ job.user_id }}</p>
-      <p>path : {{ job.path }}</p>
-      <p>num_img : {{ job.num_img }}</p>
-      <p>persent : {{ job.persent }}</p>
-      <p>status : {{ job.job_status }}</p>
-      <button @click="do_job(job.job_id)">{{ job.job_id }}</button>
-      <hr>
-
+    
     </div>
-
-
-
   </div>
 </template>
 
 
 <script>
 import { useState } from '../composables/state';
-
+import SlideBar from '@/components/SlideBar'
 export default {
   name: 'Img_appView',
   mounted() {
@@ -154,5 +158,8 @@ export default {
         this.jobs = response
       })
   },
+  components: {
+    SlideBar
+}
 }
 </script>

@@ -1,29 +1,39 @@
 import { createRouter, createWebHistory } from "vue-router";
-import HomeView from "../views/HomeView.vue";
-import DriveView from "../views/DriveView.vue";
-import Img_appView from "../views/Img_appView.vue";
-import LoginView from "../views/LoginView.vue";
+import HomeView from "@/views/HomeView.vue";
+import DriveView from "@/views/DriveView.vue";
+import Img_appView from "@/views/Img_appView.vue";
+import LoginView from "@/views/LoginView.vue";
+import RegisView from "@/views/RegisView.vue";
 
 const routes = [
   {
-    path: "/",
+    path: "/home",
     name: "home",
     component: HomeView,
   },
+  
   {
     path: "/drive",
     name: "drive",
     component: DriveView,
   },
+
   {
     path: "/img_app",
     name: "img_app",
     component: Img_appView,
   },
+
   {
     path: "/login",
     name: "login",
     component: LoginView,
+  },
+
+  {
+    path: "/register",
+    name: "register",
+    component: RegisView,
   },
 ];
 

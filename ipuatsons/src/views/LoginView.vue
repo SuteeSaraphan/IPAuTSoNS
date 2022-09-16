@@ -21,6 +21,7 @@
 
 
             <input type="button" value="Login" style="color:black" @click="login()" />
+            <router-link to="register"><input type="button" value="Register" style="color:black"/></router-link>
         </form>
 
     </div>
@@ -28,8 +29,15 @@
 
 <script>
 import { useState } from '../composables/state';
+import { useCookies } from "vue3-cookies";
+import router from '@/router';
+const axios = require('axios').default;
 export default {
     name: "LoginView",
+    setup() {
+        const { cookies } = useCookies();
+        return { cookies };
+    },
     data() {
         const [user, setUser] = useState({
             email: "",
@@ -38,32 +46,35 @@ export default {
         return {
             users: [],
             user,
-            setUser,
-            api_url: '',
-            jkw : '',
+            setUser
         }
     },
     methods: {
         login() {
-            this.token_url = 'http://127.0.0.1:8000/api/login'
-            fetch(this.token_url, {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json;charset=utf-8',
-                },
-                body: JSON.stringify(this.user)
-            })
-                .then(async response => await response.json())
+            axios.post('http://127.0.0.1:8000/api/login',
+                {
+                    'email': this.user.email,
+                    'password': this.user.password
+                }
+            )
                 .then(async response => {
-                    // console.log(response.jwt)
-                    this.jwt = response.jwt
+                    this.cookies.set('jwt', response.data.jwt, '1h')
+                    axios.post('http://127.0.0.1:8000/api/user',
+                        {
+                            'jwt': this.cookies.get('jwt')
+                        }
+                    ).then(async res => {
+                        res
+                        router.push('home')
+                    }).catch(error => {
+                        alert(error);
+                    })
                 })
-                
         }
     }
 }
 </script>
 
 <style>
+
 </style>
