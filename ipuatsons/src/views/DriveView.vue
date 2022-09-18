@@ -17,10 +17,14 @@
 
 <script>
 import SlideBar from '@/components/SlideBar'
-// import { useCookies } from "vue3-cookies";
-// import router from '@/router';
+import { useCookies } from "vue3-cookies";
+import router from '@/router';
 export default {
     name: "DriveView",
+    setup() {
+        const { cookies } = useCookies();
+        return { cookies };
+  },
     data() {
         return {
             email: "",
@@ -33,5 +37,11 @@ export default {
     components:{
         SlideBar
     },
+    created(){
+    if (this.cookies.get('jwt')==null){
+      alert("You are not login yet , please login fisrt")
+      router.push('login')
+    }
+  }
 };
 </script>

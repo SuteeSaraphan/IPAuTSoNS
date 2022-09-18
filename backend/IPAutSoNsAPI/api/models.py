@@ -21,9 +21,9 @@ class Job(models.Model):
 
 
 class User(AbstractBaseUser):
-    user_id = models.CharField(max_length=100, null=False ,unique=True)
+    user_id = models.CharField(primary_key=True,unique=True,max_length=20)
     password = models.CharField(max_length=50, null=False)
-    email = models.EmailField(max_length=254, primary_key=True, null=False ,unique=True)
+    email = models.EmailField(max_length=254, null=False ,unique=True)
     is_vip = models.BooleanField(default=False, null=False)
     first_name = models.CharField(max_length=50, null=False)
     last_name = models.CharField(max_length=50, null=False)

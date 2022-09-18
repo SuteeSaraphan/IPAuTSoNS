@@ -70,6 +70,7 @@ export default {
   },
   created(){
     if (this.cookies.get('jwt')==null){
+      alert("You are not login yet , please login fisrt")
       router.push('login')
     }
   }

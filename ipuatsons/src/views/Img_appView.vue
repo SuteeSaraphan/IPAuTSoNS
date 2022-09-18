@@ -84,7 +84,7 @@
 
       </div>
 
-    
+
     </div>
   </div>
 </template>
@@ -92,13 +92,15 @@
 
 <script>
 import { useState } from '../composables/state';
-import SlideBar from '@/components/SlideBar'
+import SlideBar from '@/components/SlideBar';
+import { useCookies } from "vue3-cookies";
+import router from '@/router';
 export default {
   name: 'Img_appView',
-  mounted() {
-
+  setup() {
+        const { cookies } = useCookies();
+        return { cookies };
   },
-
 
   data() {
     const [newJob, setNewJob] = useState({
@@ -152,6 +154,10 @@ export default {
 
   },
   created() {
+    if (this.cookies.get('jwt')==null){
+      alert("You are not login yet , please login fisrt")
+      router.push('login')
+    }
     fetch('http://127.0.0.1:8000/api/jobs')
       .then(async response => await response.json())
       .then(async response => {
@@ -160,6 +166,7 @@ export default {
   },
   components: {
     SlideBar
-}
+  },
+  
 }
 </script>

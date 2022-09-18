@@ -31,6 +31,12 @@ const routes = [
   },
 
   {
+    path: "/",
+    name: "defult",
+    component: LoginView,
+  },
+
+  {
     path: "/register",
     name: "register",
     component: RegisView,

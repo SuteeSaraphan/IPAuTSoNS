@@ -1,29 +1,31 @@
 <template>
-    <div class="main-home">
-        <h1>Login Page</h1>
-        <form style="padding:15px">
+    <div class="login-regis">
+        <div class="menu">
+            <h1>Login Page</h1>
+            <form style="padding:15px">
 
-            <div>
-                <label>Email :</label>
-                <p>
-                    <input type="text" @change="(e) => setUser({ ...user, email: e.target.value })"
-                        style="color:black" />
-                </p>
-            </div>
+                <div style="text-align: left">
+                    <label style="font-size: 15px">Email :</label>
+                    <p>
+                        <input type="text" @change="(e) => setUser({ ...user, email: e.target.value })"
+                            style="color:black" />
+                    </p>
+                </div>
 
-            <div>
-                <label>Password :</label>
-                <p>
-                    <input type="password" @change="(e) => setUser({ ...user, password: e.target.value })"
-                        style="color:black" />
-                </p>
-            </div>
+                <div style="text-align: left">
+                    <label style="font-size: 15px">Password :</label>
+                    <p>
+                        <input type="password" @change="(e) => setUser({ ...user, password: e.target.value })"
+                            style="color:black" />
+                    </p>
+                </div>
 
-
-            <input type="button" value="Login" style="color:black" @click="login()" />
-            <router-link to="register"><input type="button" value="Register" style="color:black"/></router-link>
-        </form>
-
+                <div style="padding: 7px">
+                <input type="button" value="Login" style="color:black" @click="login()" />
+                <input type="button" value="Register" style="color:black" @click="go_register()" />
+                </div>
+            </form>
+        </div>
     </div>
 </template>
 
@@ -70,6 +72,9 @@ export default {
                         alert(error);
                     })
                 })
+        },
+        go_register() {
+            router.push('register')
         }
     }
 }
