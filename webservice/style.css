@@ -1,0 +1,154 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200&display=swap');
+
+:root{
+	--color-main: #4b5162;
+}
+
+*{
+	font-family: "Poppins", sans-serif;
+	box-sizing: border-box;
+	list-style-type: none;
+	text-decoration: none;
+	margin: 0;
+	padding: 0;
+
+}
+
+.about{
+	display: flex;
+	justify-content: space-between;
+	margin-top: 1rem;
+}
+
+.sidebar{
+	width: 280px;
+	position: fixed;
+	left: 0;
+	top: 0;
+	height: 100%;
+	padding: 1rem 1.5rem;
+	background: var(--color-main);
+	color: #fff;
+}
+
+.sidebar-brand{
+	height: 100px;
+}
+
+.brand-flex	{
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.brand-icons span{
+	font-size: 1.5rem;
+	margin-left: .5rem;
+}
+
+.sidebar-user {
+	margin-left: 0rem 0rem 1rem 0rem;
+	text-align: center;
+}
+
+.sidebar-user img{
+	width: 110px;
+	height: 110px;
+	object-fit:  cover;
+	border-radius: 37%;
+	object-position: center;
+}
+
+.sidebar-user h3 {
+	font-size: 1rem;
+}
+
+.sidebar-user span{
+	font-size: .8rem;
+}
+
+.sidebar-menu{
+	margin-top: 1rem;
+}
+
+.sidebar-menu ul{
+	margin-bottom: 1.5rem;
+}
+
+.sidebar-menu li{
+	margin-bottom: .9rem;
+}
+
+.sidebar-menu a:hover,
+.sidebar-menu .active {
+  color: #5294e2;
+}
+.sidebar-menu a:hover::before,
+.sidebar-menu .active::before {
+  content: "";
+  position: absolute;
+  right: 0;
+  width: 2px;
+  height: 17px;
+  background: #5294e2;
+}
+
+.sidebar-menu li a{
+	color: #efefef;
+	font-size: .9rem;
+	display: flex;
+	align-items: center;
+}
+
+.sidebar-menu li a span {
+	font-size: 1.5rem;
+	display: inline-block;
+	margin-right: .8rem;
+}
+
+.menu-head{
+	text-transform: uppercase;
+	color: #8da2fb;
+	font-size: .9rem;
+	font-weight: 500;
+	margin-bottom: .8rem;
+}
+
+.main-content	{
+	margin-left: 280px;
+}
+
+header{
+	height: 70px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center	;
+
+	padding: 1rem 1.5rem;
+}
+
+.menu-toggle label{
+	height: 60px;
+	width: 60px;
+	display: grid;
+	place-items: center;
+	font-size: 1.5rem;
+	border-radius: 50%;
+}
+
+.header-icons span{
+	display: inline-block;
+	margin-left: .7rem;
+	font-size: 1.4rem;
+}
+
+.menu-toggle label:hover{
+	background: #efefef;
+}
+
+main{
+	padding: 1.5rem;
+	color: #fff;
+	background: #383c4a;
+	min-height:calc(100vh - 70px);
+}
