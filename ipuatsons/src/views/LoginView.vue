@@ -1,9 +1,8 @@
 <template>
     <div class="login-regis">
         <div class="menu">
-            <h1>Login Page</h1>
-            <form style="padding:15px">
-
+            <form style="width:25%">
+                <img src="@/img/logo.png" style="width:250px" alt="">
                 <div style="text-align: left">
                     <label style="font-size: 15px">Email :</label>
                     <p>
@@ -21,8 +20,8 @@
                 </div>
 
                 <div style="padding: 7px">
-                <input type="button" value="Login" style="color:black" @click="login()" />
-                <input type="button" value="Register" style="color:black" @click="go_register()" />
+                    <input type="button" value="Login" style="color:black" @click="login()" />
+                    <input type="button" value="Register" style="color:black" @click="go_register()" />
                 </div>
             </form>
         </div>
@@ -46,7 +45,6 @@ export default {
             password: ""
         });
         return {
-            users: [],
             user,
             setUser
         }

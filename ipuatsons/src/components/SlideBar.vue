@@ -1,6 +1,6 @@
 <template>
   <!-- Sidebar -->
-  <div class="sidebar" v-if="this.email!=''">
+  <div class="sidebar">
       <a href="#" class="logo" style="text-align-last: center;">
         <h1>
           <router-link to="/">IPAUTSONS</router-link>
@@ -86,7 +86,7 @@
           <span class="icon">
             <i class="ri-settings-line"></i>
           </span>
-          Setting
+          <router-link to="/setting">Setting</router-link>
         </a>
 
         <a @click="logout()" href="#">

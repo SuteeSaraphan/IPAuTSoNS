@@ -85,9 +85,9 @@ class LoginView(APIView):
         return respond 
 
 class UserView(APIView):
-    def post(self,reqest):
+    def post(self,request):
         #print(reqest.data['jwt'])
-        token = reqest.data['jwt']
+        token = request.data['jwt']
 
         if not token:
             raise AuthenticationFailed('Unauthenticated')
@@ -102,6 +102,49 @@ class UserView(APIView):
         serializer = UserSerializer(user)
 
         return Response(serializer.data)
+    
+
+    def put(self,request):
+        token = request.data['jwt']
+        first_name = request.data['first_name']
+        last_name = request.data['last_name']
+
+        if not token:
+            raise AuthenticationFailed('Unauthenticated')
+        
+        try:
+            payload = jwt.decode(token,'secret', algorithms=['HS256'])
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed('Unauthenticated')
+
+        user = User.objects.get(user_id=payload['id'])
+        user.first_name = first_name
+        user.last_name = last_name
+        user.save()
+
+        return Response({"status" : "Changing complete !!!"})
+
+class PasswordView(APIView):
+    def put(self,request):
+        print(request.data)
+        token = request.data['jwt']
+        first_name = request.data['first_name']
+        last_name = request.data['last_name']
+
+        if not token:
+            raise AuthenticationFailed('Unauthenticated')
+        
+        try:
+            payload = jwt.decode(token,'secret', algorithms=['HS256'])
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed('Unauthenticated')
+
+        user = User.objects.get(user_id=payload['id'])
+        user.first_name = first_name
+        user.last_name = last_name
+        user.save()
+
+        return Response({"status" : "Changing complete !!!"})     
 
 class LogoutView(APIView):
     def post(self, requst):

@@ -4,6 +4,8 @@ import DriveView from "@/views/DriveView.vue";
 import Img_appView from "@/views/Img_appView.vue";
 import LoginView from "@/views/LoginView.vue";
 import RegisView from "@/views/RegisView.vue";
+import SettingView from "@/views/SettingView";
+import ChangePassView from "@/views/ChangePassView";
 
 const routes = [
   {
@@ -41,6 +43,20 @@ const routes = [
     name: "register",
     component: RegisView,
   },
+  
+  {
+    path: "/setting",
+    name: "setting",
+    component: SettingView,
+  },
+
+  {
+    path: "/changepass",
+    name: "changepass",
+    component: ChangePassView,
+  },
+
+
 ];
 
 const router = createRouter({

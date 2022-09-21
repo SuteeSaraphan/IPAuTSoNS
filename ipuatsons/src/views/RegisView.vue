@@ -1,9 +1,10 @@
 <template>
     <div class="login-regis">
         <div class="menu">
-            <h1>Register Page</h1>
-            <form style="padding:15px">
-
+            
+            <form style="width: 35%;">
+            <img src="@/img/logo.png" style="width:250px" alt="">
+            <h1>Register</h1>
                 <div style="text-align: left">
                     <label style="font-size: 15px">Email :</label>
                     <p>
@@ -45,7 +46,7 @@
 
                 <div style="padding: 15px">
                     <input type="button" value="Regis" style="color:black" @click="register()" />
-                    <input type="button" value="Clear" style="color:black" @click="clear_register()" />
+                    <input type="button" value="Clear" style="color:black" @click="clear()" />
                 </div>
             </form>
         </div>
@@ -112,7 +113,7 @@ export default {
                 }
             }
         },
-        clear_register() {
+        clear() {
             document.getElementById("email").value=""
             document.getElementById("password").value=""
             document.getElementById("password_confirm").value=""
