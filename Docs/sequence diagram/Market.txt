@@ -1,0 +1,69 @@
+title การใช้งานแอพพลิเคชันบน Market Place
+
+participant ผู้ใช้
+participant Front-End
+participant Back-End
+participant Database
+participant Server
+
+
+
+activate ผู้ใช้
+ผู้ใช้->Front-End: เข้าใช้งานหน้าแอพพลิเคชันบน Market Place
+activate Front-End
+
+Front-End->Back-End: ขอข้อมูลแอพพลิเคชันที่มีอยู่บน Market Place
+activate Back-End
+Back-End->Database: ขอข้อมูลแอพพลิเคชันที่มีอยู่บน Market Place
+activate Database
+Database-->Back-End: ส่งข้อมูลแอพพลิเคชันที่มีอยู่บน Market Place
+deactivate Database
+Back-End-->Front-End: ส่งข้อมูลแอพพลิเคชันที่มีอยู่บน Market Place
+Front-End-->ผู้ใช้: แสดงแอพพลิเคชันที่มีอยู่บน Market Place
+ผู้ใช้->Front-End: เลือกใช้งานแอพพลิเคชันบน Market Place
+
+
+Front-End->Back-End: ขอข้อมูลไฟล์ภาพของผู้ใช้ที่เข้ามาใช้งาน
+Back-End->Database: ขอข้อมูลไฟล์ภาพของผู้ใช้ที่เข้ามาใช้งาน
+activate Database
+Database-->Back-End: ส่งข้อมูลไฟล์ภาพของผู้ใช้ที่เข้ามาใช้งาน
+deactivate Database
+Back-End->Server: ส่งข้อมูลผู้ใช้เพื่อขอข้อมูลไฟล์ภาพ
+activate Server
+Server-->Back-End: ส่งข้อมูลไฟล์ภาพของผู้ใช้ที่ได้เก็บไว้
+deactivate Server
+Back-End-->Front-End: ส่งข้อมูลไฟล์ภาพของผู้ใช้ที่ได้เก็บไว้
+Front-End-->ผู้ใช้: แสดงไฟล์ภาพของผู้ใช้ที่เก็บไว้ในระบบ
+
+ผู้ใช้->Front-End: เลือกไฟล์ภาพที่ต้องการแสดงตัวอย่างการประมวลผล
+Front-End->Back-End: ข้อมูลแอพลิเคชั่นประมวลผลที่ได้เลือก และ ไฟล์ภาพที่เลือก
+
+Back-End->Server: ประมวลผลไฟล์ภาพ
+activate Server
+Server-->Back-End: ไฟล์ภาพที่ประมวลผลแล้ว
+deactivate Server
+Back-End-->Front-End: ไฟล์ภาพที่ประมวลผลแล้ว
+deactivate Back-End
+
+Front-End-->ผู้ใช้: แสดงตัวอย่างไฟล์ภาพที่ประมวลผลแล้ว
+ผู้ใช้->Front-End: เลือกที่จะสั่งงานประมวลผลแอพพลิเคชั่นนี้ และ เลือกไฟล์ภาพที่ต้องการนำไปประมวลผล
+Front-End->Back-End: แอพพลิเคชั่น และ ไฟล์ภาพที่เลือก
+activate Back-End
+Back-End->Database: ขอข้อมูลค่าใช้บริการแอพพลิเคชัน
+activate Database
+Database-->Back-End: ส่งข้อมูลค่าใช้บริการแอพพลิเคชัน
+deactivate Database
+Back-End-->Front-End: ส่งข้อมูลค่าใช้บริการแอพพลิเคชัน
+Front-End-->ผู้ใช้: แสดงข้อมูลค่าใช้บริการ
+ผู้ใช้->Front-End: ยืนยันการสั่งงาน
+Front-End->Back-End: สั่งงานประมวลผล
+Back-End->Server: สั่งงานประมวลผลไปที่ Server
+activate Server
+Server->Server: สั่งงานเครื่องที่มีทรัพยากรเพียงพอมากที่สุดสำหรับประมวลผลงาน
+Server-->Back-End: ประมวลผลงานเสร็จ
+deactivate Server
+Back-End-->Front-End: นำไฟล์ภาพทั้งหมดที่ประมวลผลเสร็จไปแสดง
+deactivate Back-End
+Front-End-->ผู้ใช้: แสดงไฟล์ภาพที่ประมวลผลเสร็จทั้งหมด
+deactivate Front-End
+deactivate ผู้ใช้
