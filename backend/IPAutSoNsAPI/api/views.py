@@ -1,13 +1,13 @@
 import email
 from lib2to3.pgen2 import token
-from urllib import response
+from urllib import request, response
 import yaml
 import base64
 from time import sleep
 from django.shortcuts import render
 from rest_framework import generics
 from .models import Job, User
-from .serializers import JobSerializer, UserSerializer
+from .serializers import JobSerializer, UserSerializer ,ImageSerializer
 from django.http import HttpResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -26,10 +26,6 @@ class ListUser(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-
-class ListUserLogin(generics.ListCreateAPIView):
-    queryset = User.objects.all().filter()
-    serializer_class = UserSerializer
 
 
 class DetailJob(generics.RetrieveUpdateDestroyAPIView):
@@ -147,13 +143,21 @@ class PasswordView(APIView):
         return Response({"status" : "Changing complete !!!"})     
 
 class LogoutView(APIView):
-    def post(self, requst):
+    def post(self, request):
         response = Response()
         response.delete_cookie('jwt')
         response.data = {
             'msg' : 'Logout Success'
         }
         return response
+
+class ImageView(APIView):
+    def post(self,request):
+        serializer = ImageSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
 
 def writeConfig(job_id_name, **kwargs):
     template = """apiVersion: batch/v1

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Job, User
+from .models import Job, User ,Image
 
 
 class JobSerializer(serializers.ModelSerializer):
@@ -41,3 +41,16 @@ class UserSerializer(serializers.ModelSerializer):
             instance.set_password(password)
         instance.save()
         return instance
+
+
+class ImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = (
+            'img_id',
+            'user_id',
+            'img_type',
+            'path',
+            'img_size',
+            'img_folder'  
+        )
+        model = Image
