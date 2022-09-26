@@ -11,8 +11,7 @@ urlpatterns = [
     path('jobs', views.ListJob.as_view()),
     path('users', views.ListUser.as_view()),
 
-    path('lastest', views.LastestJob.as_view()),
-    path('do_job', views.make_yaml),
+    path('make_docker_file', views.MakeDockerFile.as_view()),
 
     path('register', views.RegisterView.as_view()),
     path('login', views.LoginView.as_view()),

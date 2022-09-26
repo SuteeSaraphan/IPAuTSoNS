@@ -4,25 +4,12 @@
     <div class="main-home">
       <h1>Image Application page</h1>
 
-      <form @submit="add_job(), do_job()" style="padding:15px">
-        <div>
-          <label>job_id :</label>
-          <p>
-            <input type="text" @change="(e) => setNewJob({ ...newJob, job_id: e.target.value })" style="color:black" />
-          </p>
-        </div>
-
-        <div>
-          <label>user_id :</label>
-          <p>
-            <input type="text" @change="(e) => setNewJob({ ...newJob, user_id: e.target.value })" style="color:black" />
-          </p>
-        </div>
+      <form style="padding:15px">
 
         <div>
           <label>app_id :</label>
           <p>
-            <input type="text" @change="(e) => setNewJob({ ...newJob, app_id: e.target.value })" style="color:black" />
+            <input id="app_id" type="text" style="color:black" />
           </p>
         </div>
 
@@ -30,59 +17,40 @@
         <div>
           <label>path :</label>
           <p>
-            <input type="text" @change="(e) => setNewJob({ ...newJob, path: e.target.value })" style="color:black" />
+            <input id="path" type="text" style="color:black" />
           </p>
         </div>
 
         <div>
           <label>num_img :</label>
           <p>
-            <input type="text" @change="(e) => setNewJob({ ...newJob, num_img: e.target.value })" style="color:black" />
+            <input id="num_img" type="text" style="color:black" />
           </p>
         </div>
 
         <div>
           <label>img_selected :</label>
           <p>
-            <input type="text" @change="(e) => setNewJob({ ...newJob, img_selected: e.target.value })"
-              style="color:black" />
+            <input id="img_selected" type="text" style="color:black" />
           </p>
         </div>
 
 
-        <div>
-          <label>persent :</label>
-          <p>
-            <input type="text" @change="(e) => setNewJob({ ...newJob, persent: e.target.value })" style="color:black" />
-          </p>
+        <input @click="add_job()" type="button" value="Add new Job" style="color:black" />
+
+
+        <div v-for="job in jobs" v-bind:key="job.job_id">
+          <h2>job_id : {{ job.job_id }}</h2>
+          <p>user_id : {{ job.user_id }}</p>
+          <p>path : {{ job.path }}</p>
+          <p>num_img : {{ job.num_img }}</p>
+          <p>persent : {{ job.persent }}</p>
+          <p>status : {{ job.job_status }}</p>
+          <hr>
         </div>
-
-
-        <div>
-          <label>job_status :</label>
-          <p>
-            <input type="text" @change="(e) => setNewJob({ ...newJob, job_status: e.target.value })"
-              style="color:black" />
-          </p>
-        </div>
-
-
-
-
-        <input id="submit" type="submit" value="Add Job" />
       </form>
 
-      <div v-for="job in jobs" v-bind:key="job.job_id">
-        <h2>job_id : {{ job.job_id }}</h2>
-        <p>user_id : {{ job.user_id }}</p>
-        <p>path : {{ job.path }}</p>
-        <p>num_img : {{ job.num_img }}</p>
-        <p>persent : {{ job.persent }}</p>
-        <p>status : {{ job.job_status }}</p>
-        <button @click="do_job(job.job_id)">{{ job.job_id }}</button>
-        <hr>
 
-      </div>
 
 
     </div>
@@ -91,82 +59,52 @@
 
 
 <script>
-import { useState } from '../composables/state';
+
 import SlideBar from '@/components/SlideBar';
 import { useCookies } from "vue3-cookies";
 import router from '@/router';
+import axios from 'axios';
 export default {
   name: 'Img_appView',
   setup() {
-        const { cookies } = useCookies();
-        return { cookies };
+    const { cookies } = useCookies();
+    return { cookies };
   },
 
   data() {
-    const [newJob, setNewJob] = useState({
-      job_id: "",
-      user_id: "",
-      path: "",
-      num_img: 0,
-      persent: 0,
-      job_status: 0,
-      create_time: null
-    });
     return {
-      jobs: [],
-      newJob,
-      setNewJob,
-      job_id: ""
+      jobs: []
     }
   },
   methods: {
     add_job() {
-      console.log(this.newJob)
-      fetch('http://127.0.0.1:8000/api/jobs', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json;charset=utf-8',
-        },
-        body: JSON.stringify(this.newJob)
+      axios.post('http://127.0.0.1:8000/api/make_docker_file',
+        {
+          'jwt': this.cookies.get('jwt'),
+          'job_id': Math.random().toString(36).slice(2),
+          'app_id': document.getElementById('app_id').value,
+          'path': document.getElementById('path').value,
+          'num_img': document.getElementById('num_img').value,
+          'img_selected': document.getElementById('img_selected').value
+        }
+      ).then(async (respond) => {
+        alert(respond.data.status)
+        //console.log(respond)
       })
-        .then(function (response) {
-          if (response.status != 201) {
-            this.fetchError = response.status;
-          } else {
-            response.json().then(function (data) {
-              this.fetchResponse = data;
-            }.bind(this));
-          }
-        }.bind(this));
-    },
-
-    do_job(job_id) {
-      console.log(job_id)
-      fetch('http://127.0.0.1:8000/api/do_job')
-        .then(async response => await response.json())
-        .then(async response => {
-          this.jobs = response
-          console.log(response)
-        })
-    },
-
-
+    }
   },
   created() {
-    if (this.cookies.get('jwt')==null){
+    if (this.cookies.get('jwt') == null) {
       alert("You are not login yet , please login fisrt")
       router.push('login')
+    } else {
+      console.log("ok")
     }
-    fetch('http://127.0.0.1:8000/api/jobs')
-      .then(async response => await response.json())
-      .then(async response => {
-        this.jobs = response
-      })
+
   },
   components: {
     SlideBar
   },
-  
+
 }
 </script>

@@ -7,14 +7,13 @@ from time import sleep
 from django.shortcuts import render
 from rest_framework import generics
 from .models import Job, User
-from .serializers import JobSerializer, UserSerializer ,ImageSerializer
+from .serializers import JobSerializer, UserSerializer, ImageSerializer
 from django.http import HttpResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
-import jwt,datetime
-
-
+import jwt
+import datetime
 
 
 class ListJob(generics.ListCreateAPIView):
@@ -25,7 +24,6 @@ class ListJob(generics.ListCreateAPIView):
 class ListUser(generics.ListCreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-
 
 
 class DetailJob(generics.RetrieveUpdateDestroyAPIView):
@@ -43,7 +41,9 @@ class LastestJob(generics.ListCreateAPIView):
         job_status=0).order_by('-create_time')[:1]
     serializer_class = JobSerializer
 
-#for doing register new user
+# for doing register new user
+
+
 class RegisterView(APIView):
     def post(self, request):
         serializer = UserSerializer(data=request.data)
@@ -51,7 +51,9 @@ class RegisterView(APIView):
         serializer.save()
         return Response(serializer.data)
 
-#for user login
+# for user login
+
+
 class LoginView(APIView):
     def post(self, reqest):
         email = reqest.data['email']
@@ -64,52 +66,52 @@ class LoginView(APIView):
         if not user.check_password(password):
             raise AuthenticationFailed("Password is not match!")
 
-        payload={
-            'id' : user.user_id,
-            'exp' : datetime.datetime.utcnow() + datetime.timedelta(minutes=60),
-            'iat' : datetime.datetime.utcnow()
+        payload = {
+            'id': user.user_id,
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60),
+            'iat': datetime.datetime.utcnow()
         }
 
         token = jwt.encode(payload, 'secret', algorithm='HS256')
 
         respond = Response()
-        #respond.set_cookie(key='jwt',value=token,httponly=True)
+        # respond.set_cookie(key='jwt',value=token,httponly=True)
         respond.data = ({
-            'jwt' : token
+            'jwt': token
         })
 
-        return respond 
+        return respond
+
 
 class UserView(APIView):
-    def post(self,request):
-        #print(reqest.data['jwt'])
+    def post(self, request):
+        # print(reqest.data['jwt'])
         token = request.data['jwt']
 
         if not token:
             raise AuthenticationFailed('Unauthenticated')
-        
+
         try:
-            payload = jwt.decode(token,'secret', algorithms=['HS256'])
+            payload = jwt.decode(token, 'secret', algorithms=['HS256'])
         except jwt.ExpiredSignatureError:
             raise AuthenticationFailed('Unauthenticated')
 
         user = User.objects.get(user_id=payload['id'])
- 
+
         serializer = UserSerializer(user)
 
         return Response(serializer.data)
-    
 
-    def put(self,request):
+    def put(self, request):
         token = request.data['jwt']
         first_name = request.data['first_name']
         last_name = request.data['last_name']
 
         if not token:
             raise AuthenticationFailed('Unauthenticated')
-        
+
         try:
-            payload = jwt.decode(token,'secret', algorithms=['HS256'])
+            payload = jwt.decode(token, 'secret', algorithms=['HS256'])
         except jwt.ExpiredSignatureError:
             raise AuthenticationFailed('Unauthenticated')
 
@@ -118,19 +120,20 @@ class UserView(APIView):
         user.last_name = last_name
         user.save()
 
-        return Response({"status" : "Changing complete !!!"})
+        return Response({"status": "Changing complete !!!"})
+
 
 class PasswordView(APIView):
-    def put(self,request):
+    def put(self, request):
         token = request.data['jwt']
         old_password = request.data['old_password']
         new_password = request.data['new_password']
 
         if not token:
             raise AuthenticationFailed('Unauthenticated')
-        
+
         try:
-            payload = jwt.decode(token,'secret', algorithms=['HS256'])
+            payload = jwt.decode(token, 'secret', algorithms=['HS256'])
         except jwt.ExpiredSignatureError:
             raise AuthenticationFailed('Unauthenticated')
 
@@ -140,82 +143,96 @@ class PasswordView(APIView):
         else:
             user.set_password(new_password)
             user.save()
-            return Response({"status" : "Password is change!"})
+            return Response({"status": "Password is change!"})
 
-            
+
 class LogoutView(APIView):
     def post(self, request):
         response = Response()
         response.delete_cookie('jwt')
         response.data = {
-            'msg' : 'Logout Success'
+            'msg': 'Logout Success'
         }
         return response
 
+
 class ImageView(APIView):
-    def post(self,request):
+    def post(self, request):
         serializer = ImageSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
+
 
 class EditImageView(APIView):
-    def post(self,request):
+    def post(self, request):
         serializer = ImageSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
 
 
-def writeConfig(job_id_name, **kwargs):
-    template = """apiVersion: batch/v1
-    kind: Job
-    metadata:
-    name: {job_id}
+class MakeDockerFile(APIView):
+    def post(self,request):
+        token = request.data['jwt']
+        job_id = request.data['job_id']
+        app_id = request.data['app_id']
+        path = request.data['path']
+        num_img = request.data['num_img']
+        img_selected = request.data['img_selected']
+
+
+        if not token:
+            raise AuthenticationFailed('Unauthenticated')
+
+        try:
+            payload = jwt.decode(token, 'secret', algorithms=['HS256'])
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed('Unauthenticated')
+
+        user = User.objects.get(user_id=payload['id'])
+
+
+
+        template = """apiVersion: batch/v1
+kind: Job
+metadata:
+    name: """+job_id+"""
     namespace: jobdemonamespace
     labels:
-        job_name: {job_id}
-    spec:
+        job_name: """+job_id+"""
+spec:
     template:
         metadata:
-        labels:
-            app: my-job-pod-id
-        name: my-job-pod-id
+            labels:
+                app: my-job-pod-id
+            name: my-job-pod-id
         spec:
-        containers:
-            - image: "shuffler:latest"
-            imagePullPolicy: Never
-            name: "shuffler"
-            command:
-                - python3
-                - -u
-                - ./test.py "{user_id}" "{job_id}" "{app_id}" "{path}" "{img_selected}"
-            args:
-                - "Kubernetes"
-        restartPolicy: Never"""
-    with open('yaml_file/'+job_id_name+'.yaml', 'w') as yfile:
-        yfile.write(template.format(**kwargs))
+            containers:
+                - image: "shuffler:latest"
+                imagePullPolicy: Never
+                name: "shuffler"
+                command:
+                    - python3
+                    - -u
+                    - ./test.py """+user.user_id+""" """+job_id+""" """+app_id+""" """+path+""" """+img_selected+"""
+                args:
+                    - "Kubernetes"
+            restartPolicy: Never"""
+        with open('yaml_file/'+job_id+'.yaml', 'w') as yfile:
+            yfile.write(template)
 
-
-def make_yaml(request):
-    sleep(1)
-
-    print("going to make file")
-    lastest_job = Job.objects.all().filter(
-        job_status=0).order_by('create_time')[:1]
-    print(lastest_job[0].job_id)
-
-    writeConfig(lastest_job[0].job_id, job_id=lastest_job[0].job_id,
-                path=lastest_job[0].job_id,
-                user_id=lastest_job[0].user_id,
-                app_id=lastest_job[0].app_id,
-                img_selected=lastest_job[0].img_selected
-                )
-
-    lastest_job = Job.objects.get(job_id=lastest_job[0].job_id)
-    lastest_job.job_status = 1
-    lastest_job.save()
-
-    return HttpResponse("""<html><script>    windwow.location.replace('/');   </script></html>""")
-
-
+        job_data ={
+            'job_id' : job_id,
+            'user_id': user.user_id,
+            'app_id' : app_id,
+            'path' : path,
+            'num_img' : num_img,
+            'img_selected' : img_selected,
+            'job_status' : "1"
+        }
+        
+        serializer = JobSerializer(data=job_data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({"status": "File is made!"})

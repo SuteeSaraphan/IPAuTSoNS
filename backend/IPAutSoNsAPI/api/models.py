@@ -29,8 +29,6 @@ class Job(models.Model):
     create_time = models.DateTimeField(editable=False, auto_now_add=True)
 
     def __str__(self):
-
-        
         return self.job_id
 
 
