@@ -30,7 +30,7 @@
 
 
                         <div style="padding: 15px">
-                            <input type="button" value="Submit" style="color:black" @click="edit_profile()" />
+                            <input type="button" value="Submit" style="color:black" @click="edit_password()" />
                             <input type="button" value="Clear" style="color:black" @click="clear()"/>
                             <input type="button" value="Back" style="width:85%" @click="back()">
                         </div>
@@ -62,7 +62,7 @@ export default {
         
     },
     methods: {
-        edit_profile() {
+        edit_password() {
             axios.put('http://127.0.0.1:8000/api/password',
                 {
                     'jwt': this.cookies.get('jwt'),                

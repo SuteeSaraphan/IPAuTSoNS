@@ -122,10 +122,9 @@ class UserView(APIView):
 
 class PasswordView(APIView):
     def put(self,request):
-        print(request.data)
         token = request.data['jwt']
-        first_name = request.data['first_name']
-        last_name = request.data['last_name']
+        old_password = request.data['old_password']
+        new_password = request.data['new_password']
 
         if not token:
             raise AuthenticationFailed('Unauthenticated')
@@ -136,12 +135,14 @@ class PasswordView(APIView):
             raise AuthenticationFailed('Unauthenticated')
 
         user = User.objects.get(user_id=payload['id'])
-        user.first_name = first_name
-        user.last_name = last_name
-        user.save()
+        if not user.check_password(old_password):
+            raise AuthenticationFailed("Password is not match!")
+        else:
+            user.set_password(new_password)
+            user.save()
+            return Response({"status" : "Password is change!"})
 
-        return Response({"status" : "Changing complete !!!"})     
-
+            
 class LogoutView(APIView):
     def post(self, request):
         response = Response()
@@ -152,6 +153,13 @@ class LogoutView(APIView):
         return response
 
 class ImageView(APIView):
+    def post(self,request):
+        serializer = ImageSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+class EditImageView(APIView):
     def post(self,request):
         serializer = ImageSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
