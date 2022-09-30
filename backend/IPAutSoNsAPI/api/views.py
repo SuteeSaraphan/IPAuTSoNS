@@ -156,9 +156,11 @@ class PasswordView(APIView):
 
 class ImageView(APIView):
     def post(self, request):
+        folder = ""
         token = request.data['jwt']
         folder = request.data['folder']
-        print("folder :"+folder)
+        if str(folder) == "":
+            folder = "null"
 
         if not token:
             raise AuthenticationFailed('Unauthenticated')
@@ -192,6 +194,24 @@ class ImageView(APIView):
        
         return Response({"status": "request done!"})
 
+
+class AllImageView(APIView):
+    def post(self, request):
+        token = request.data['jwt']
+
+        if not token:
+            raise AuthenticationFailed('Unauthenticated')
+
+        try:
+            payload = jwt.decode(token, 'secret', algorithms=['HS256'])
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed('Unauthenticated')
+
+        user = User.objects.get(user_id=payload['id'])
+        print(user.user_id)
+
+
+        return Response({"status": "request done!"})
 
 
 

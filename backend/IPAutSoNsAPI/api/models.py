@@ -3,7 +3,11 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
 
 def upload_path(instance,filename):
-    return os.path.join("%s" % instance.user_id, "%s" % instance.img_folder,filename)
+    if(instance.img_folder == "null"):
+        return os.path.join("%s" % instance.user_id,"root",filename)
+    elif(instance.img_folder != "null"):
+        return os.path.join("%s" % instance.user_id,"root","%s" % instance.img_folder,filename)
+
 
 class Image(models.Model):
     img_id = models.CharField(max_length=100, primary_key=True)
