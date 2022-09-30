@@ -39,17 +39,18 @@
         <input @click="add_job()" type="button" value="Add new Job" style="color:black" />
 
 
-        <div v-for="job in jobs" v-bind:key="job.job_id">
-          <h2>job_id : {{ job.job_id }}</h2>
-          <p>user_id : {{ job.user_id }}</p>
-          <p>path : {{ job.path }}</p>
-          <p>num_img : {{ job.num_img }}</p>
-          <p>persent : {{ job.persent }}</p>
-          <p>status : {{ job.job_status }}</p>
-          <hr>
-        </div>
-      </form>
 
+      </form>
+      <div v-for="job in jobs" v-bind:key="job.job_id" style="padding : 15px">
+        <h2>job_id : {{ job.job_id }}</h2>
+        <p>user_id : {{ job.user_id }}</p>
+        <p>path : {{ job.path }}</p>
+        <p>num_img : {{ job.num_img }}</p>
+        <p>persent : {{ job.persent }}</p>
+        <p>status : {{ job.job_status }}</p>
+        
+        <hr>
+      </div>
 
 
 
@@ -98,7 +99,7 @@ export default {
       alert("You are not login yet , please login fisrt")
       router.push('login')
     } else {
-      console.log("ok")
+      axios.get('http://127.0.0.1:8000/api/jobs',).then(async (respond) => this.jobs = respond.data)
     }
 
   },

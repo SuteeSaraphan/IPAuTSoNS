@@ -1,19 +1,20 @@
-import email
-from lib2to3.pgen2 import token
-from urllib import request, response
-import yaml
-import base64
+from ctypes import sizeof
+from operator import length_hint
+import random
+import string
 from time import sleep
 from django.shortcuts import render
 from rest_framework import generics
 from .models import Job, User
 from .serializers import JobSerializer, UserSerializer, ImageSerializer
-from django.http import HttpResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
 import jwt
 import datetime
+from django.core.files.storage import default_storage    
+from django.core.files.base import ContentFile
+
 
 
 class ListJob(generics.ListCreateAPIView):
@@ -146,30 +147,52 @@ class PasswordView(APIView):
             return Response({"status": "Password is change!"})
 
 
-class LogoutView(APIView):
-    def post(self, request):
-        response = Response()
-        response.delete_cookie('jwt')
-        response.data = {
-            'msg': 'Logout Success'
-        }
-        return response
-
+# class ImageView(APIView):
+#     def post(self, request):
+#         serializer = ImageSerializer(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         serializer.save()
+#         return Response(serializer.data)
 
 class ImageView(APIView):
     def post(self, request):
-        serializer = ImageSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
+        token = request.data['jwt']
+        folder = request.data['folder']
+        print("folder :"+folder)
+
+        if not token:
+            raise AuthenticationFailed('Unauthenticated')
+
+        try:
+            payload = jwt.decode(token, 'secret', algorithms=['HS256'])
+        except jwt.ExpiredSignatureError:
+            raise AuthenticationFailed('Unauthenticated')
+
+        user = User.objects.get(user_id=payload['id'])
+        #print(user.user_id)
+
+        for img_file in request.FILES.getlist('img_file'):
+            # print("name : "+str(img_file.name))
+            # print("size : "+str(img_file.size)+" byte")
+            # print("type : " +img_file.content_type)
+            # print("------------------")
+            img_data = {
+                'img_id':''.join(random.choices(string.ascii_lowercase + string.digits, k=6)),
+                'user_id': user.user_id,
+                'img_type' : img_file.content_type,
+                'img_folder' : folder,
+                'path' : img_file,
+                'img_size' : img_file.size
+            }
+            serializer = ImageSerializer(data=img_data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            print("file "+img_file.name+" upload done")
+
+       
+        return Response({"status": "request done!"})
 
 
-class EditImageView(APIView):
-    def post(self, request):
-        serializer = ImageSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
 
 
 class MakeDockerFile(APIView):

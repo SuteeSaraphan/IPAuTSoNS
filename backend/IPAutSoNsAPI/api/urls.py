@@ -19,7 +19,7 @@ urlpatterns = [
     path('password', views.PasswordView.as_view()),
 
     path('image', views.ImageView.as_view()),
-    path('edit_image', views.EditImageView.as_view())
+
    
 
 ]

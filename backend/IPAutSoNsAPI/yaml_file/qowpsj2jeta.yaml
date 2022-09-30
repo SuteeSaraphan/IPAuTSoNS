@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+    name: qowpsj2jeta
+    namespace: jobdemonamespace
+    labels:
+        job_name: qowpsj2jeta
+spec:
+    template:
+        metadata:
+            labels:
+                app: my-job-pod-id
+            name: my-job-pod-id
+        spec:
+            containers:
+                - image: "shuffler:latest"
+                imagePullPolicy: Never
+                name: "shuffler"
+                command:
+                    - python3
+                    - -u
+                    - ./test.py p0g598cq0xo qowpsj2jeta 123 123 123
+                args:
+                    - "Kubernetes"
+            restartPolicy: Never
