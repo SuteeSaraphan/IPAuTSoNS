@@ -44,7 +44,6 @@ class LoginView(APIView):
     def post(self, reqest):
         email = reqest.data['email']
         password = reqest.data['password']
-
         user = User.objects.filter(email=email).first()
 
         if user is None:

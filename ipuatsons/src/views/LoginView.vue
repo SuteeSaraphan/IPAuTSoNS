@@ -59,16 +59,14 @@ export default {
             )
                 .then(async response => {
                     this.cookies.set('jwt', response.data.jwt, '1h')
-                    axios.post('http://127.0.0.1:8000/api/user',
-                        {
-                            'jwt': this.cookies.get('jwt')
-                        }
-                    ).then(async res => {
-                        res
-                        router.push('home')
-                    }).catch(error => {
-                        alert(error);
-                    })
+                    axios.defaults.headers.get['jwt'] = this.cookies.get('jwt');
+                    axios.get('http://127.0.0.1:8000/api/user')
+                        .then(async res => {
+                            res
+                            router.push('home')
+                        }).catch(error => {
+                            alert(error);
+                        })
                 })
         },
         go_register() {
