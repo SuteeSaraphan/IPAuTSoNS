@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Job, User ,Image
+from .models import Folder_img, Job, User, Image
 
 
 class JobSerializer(serializers.ModelSerializer):
@@ -30,8 +30,8 @@ class UserSerializer(serializers.ModelSerializer):
         )
         model = User
 
-        extra_kwargs ={
-            'password' : {'write_only':True}
+        extra_kwargs = {
+            'password': {'write_only': True}
         }
 
     def create(self, validated_data):
@@ -51,6 +51,18 @@ class ImageSerializer(serializers.ModelSerializer):
             'img_type',
             'path',
             'img_size',
-            'img_folder'  
+            'img_folder'
         )
         model = Image
+
+
+class FolderImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = (
+            'user_id',
+            'folder_id',
+            'folder_name',
+            'path',
+            'is_hidden'
+        )
+        model = Folder_img

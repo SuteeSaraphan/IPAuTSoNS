@@ -8,9 +8,6 @@ from . import views
 
 
 urlpatterns = [
-    path('jobs', views.ListJob.as_view()),
-    path('users', views.ListUser.as_view()),
-
     path('make_docker_file', views.MakeDockerFile.as_view()),
 
     path('register', views.RegisterView.as_view()),
@@ -20,6 +17,7 @@ urlpatterns = [
 
     path('image', views.ImageView.as_view()),
     path('all_images', views.AllImageView.as_view()),
+    path('folder_img', views.FolderView.as_view()),
    
 
 ]

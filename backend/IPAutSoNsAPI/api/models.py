@@ -1,3 +1,4 @@
+from email.policy import default
 import os
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
@@ -18,6 +19,15 @@ class Image(models.Model):
     img_size = models.CharField(max_length=20, null=False)
     def __str__(self):
         return self.img_id
+
+class Folder_img(models.Model):
+    folder_id = models.CharField(max_length=100, primary_key=True)
+    user_id = models.CharField(max_length=100 , null=False)
+    folder_name = models.CharField(max_length=100 , null=False)
+    path = models.CharField(max_length=200 , null=False)
+    is_hidden = models.BooleanField(default = False)
+    def __str__(self):
+        return self.folder_id
 
     
 

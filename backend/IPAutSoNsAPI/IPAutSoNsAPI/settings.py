@@ -38,16 +38,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework', #new
-    'corsheaders', #new
-    'api', #new
-    #'rest_framework_simplejwt',#new
+    'rest_framework',  # new
+    'corsheaders',  # new
+    'api',  # new
+    # 'rest_framework_simplejwt',#new
 ]
 
-MIDDLEWARE = [ 
+MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware', # new
+    'corsheaders.middleware.CorsMiddleware',  # new
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -58,24 +58,36 @@ MIDDLEWARE = [
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
-        #'rest_framework_simplejwt.authentication.JWTAuthentication',
+        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
     ]
 }
 
-CORS_ORIGIN_WHITELIST=[
+CORS_ORIGIN_WHITELIST = [
     'http://localhost:8080',
     'http://10.66.1.176:8080',
 ]
 
 
-
 CORS_ALLOW_METHODS = [
-    "DELETE",
-    "GET",
-    "OPTIONS",
-    "PATCH",
-    "POST",
-    "PUT",
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+]
+
+CORS_ALLOW_HEADERS = [
+'accept',
+'accept-encoding',
+'authorization',
+'content-type',
+'dnt',
+'origin',
+'user-agent',
+'x-csrftoken',
+'x-requested-with',
+'jwt'
 ]
 
 
@@ -111,10 +123,10 @@ DATABASES = {
 }
 '''
 DATABASES = {
-   'default': {
-      'ENGINE': 'djongo',
-      'NAME': 'ipautsons',
-   }
+    'default': {
+        'ENGINE': 'djongo',
+        'NAME': 'ipautsons',
+    }
 }
 
 
@@ -154,13 +166,13 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-MEDIA_URL =  '/images/'
+MEDIA_URL = '/images/'
 
-STATICFILES_DIRS =[
-    os.path.join(BASE_DIR,'static')
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static')
 ]
 
-MEDIA_ROOT = os.path.join(BASE_DIR,'static/images')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
 
 
 # Default primary key field type
