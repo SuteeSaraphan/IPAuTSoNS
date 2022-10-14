@@ -15,8 +15,11 @@ import jwt
 import datetime
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
+import os
 
-#for Authentication user with JWT
+# for Authentication user with JWT
+
+
 def Authentication(token):
 
     if not token:
@@ -25,7 +28,7 @@ def Authentication(token):
         payload = jwt.decode(token, 'secret', algorithms=['HS256'])
     except jwt.ExpiredSignatureError:
         raise AuthenticationFailed('Unauthenticated')
-    
+
     return payload
 
 
@@ -39,6 +42,7 @@ class RegisterView(APIView):
         return Response(serializer.data)
 
 # for user login
+
 
 class LoginView(APIView):
     def post(self, reqest):
@@ -69,7 +73,7 @@ class LoginView(APIView):
 
 
 class UserView(APIView):
-    #for get user data
+    # for get user data
     def get(self, request):
         token = request.META['HTTP_JWT']
         payload = Authentication(token)
@@ -77,7 +81,7 @@ class UserView(APIView):
         serializer = UserSerializer(user)
         return Response(serializer.data)
 
-    #for change user data
+    # for change user data
     def put(self, request):
         token = request.data['jwt']
         first_name = request.data['first_name']
@@ -94,7 +98,7 @@ class UserView(APIView):
 
 
 class PasswordView(APIView):
-    #for change user password
+    # for change user password
     def put(self, request):
         token = request.data['jwt']
         old_password = request.data['old_password']
@@ -163,13 +167,27 @@ class AllImageView(APIView):
 
 class FolderView(APIView):
     def post(self, request):
-        print(request.data)
-        token = request.META['HTTP_JWT']
+        token = request.data['jwt']
         payload = Authentication(token)
-        # serializer = FolderImageSerializer(data=request.data)
-        # serializer.is_valid(raise_exception=True)
-        # serializer.save()
-        return Response({'status': 'done'})
+        folder_path = os.path.join(r'C:\IPAuTSoNS\backend\IPAutSoNsAPI\static\images',payload['id'], "root", request.data['folder_name'])
+        try:
+            os.mkdir(folder_path)
+        except OSError as error:
+            print(error)
+            return Response({'status':'!!! Folder is already exits !!!'})
+
+        folder_data = {
+            'folder_id': request.data['folder_id'],
+            'user_id': payload['id'],
+            'folder_name': request.data['folder_name'],
+            'path': folder_path,
+            'is_hidden': False
+        }
+
+        serializer = FolderImageSerializer(data=folder_data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({'status': '!!! Create new folder complete !!!'})
 
     def get(self, request):
         token = request.META['HTTP_JWT']

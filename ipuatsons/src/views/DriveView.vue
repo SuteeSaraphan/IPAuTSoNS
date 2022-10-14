@@ -121,15 +121,9 @@ export default {
                         'jwt': this.cookies.get('jwt'),
                         "folder_id": Math.random().toString(36).slice(2),
                         "folder_name": document.getElementById("new_folder").value,
-                        "is_hidden": "false"
                     }
                 ).then(async response => {
-                    response.data
-                    alert('Regis complete')
-                    router.push('login')
-                }).catch(async error => {
-                    alert(error.response.data.email)
-                    router.push('register')
+                    console.log(response.data['status'])
                 })
             }
 
