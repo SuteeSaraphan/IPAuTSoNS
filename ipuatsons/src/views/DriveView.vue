@@ -8,19 +8,15 @@
                 <input type="file" accept="image/*" @change="uploadImage($event)" id="file-input" multiple="multiple">
                 <hr>
                 <label>Folder : </label>
-                <input type="text" id="folder">
                 <button type="button" @click="onUploadFile" style="color:black">Upload</button>
-
+                <form>
+                <select id="folder" >
+                    <option v-for="file in files" v-bind:key="file.id" style="color:black">{{file.folder_name}}</option>
+                </select>
+            </form>
 
             </form>
-            <!-- <form>
-                <select id="img_folder">
-                    <option value="volvo">Volvo</option>
-                    <option value="saab">Saab</option>
-                    <option value="vw">VW</option>
-                    <option value="audi" selected>Audi</option>
-                </select>
-            </form> -->
+          
 
 
             <div>
@@ -35,11 +31,13 @@
 
 
 
-            <div>
-                <ul>
+            <div style="background:grey">
+                <ul style="padding:5px;">
                     <li v-for="file in files" v-bind:key="file.id">
-                        {{file}}
+                        <button type="button" style="color:black" @click="enterFolder(file.folder_id)" >{{file.folder_name}}</button>
+                        <hr>
                     </li>
+                    
                 </ul>
             </div>
 
@@ -66,7 +64,7 @@ export default {
         return {
             selectedFile: [],
             token_url: "",
-
+            files :[]
         }
     },
     methods: {
@@ -105,7 +103,7 @@ export default {
                 config
             ).then(
                 async (response) => {
-                    alert('image upload response >', response.data.status)
+                    alert('image upload response >'+response.data['status'])
                     location.reload();
                 }
             )
@@ -116,18 +114,26 @@ export default {
             if (document.getElementById("new_folder").value.length == 0) {
                 alert("Folder name is empty")
             } else {
-                axios.post('http://127.0.0.1:8000/api/folder_img', 
-                    {   
+                axios.post('http://127.0.0.1:8000/api/folder_img',
+                    {
                         'jwt': this.cookies.get('jwt'),
                         "folder_id": Math.random().toString(36).slice(2),
                         "folder_name": document.getElementById("new_folder").value,
                     }
                 ).then(async response => {
-                    console.log(response.data['status'])
+                    alert(response.data['status']);
+                    location.reload();
+                    
                 })
             }
 
         },
+
+
+        enterFolder(folder_id){
+            console.log(folder_id)
+
+        }
     }
     ,
     components: {
@@ -144,8 +150,8 @@ export default {
             axios.defaults.headers.get['jwt'] = this.cookies.get('jwt');
             const URL = 'http://127.0.0.1:8000/api/folder_img';
             axios.get(URL)
-                .then(res => console.log(res))
-                .catch(err => console.log(err))
+                .then(res => this.files = res.data)
+                .catch(err => console.log(err.data))
 
         }
     }
