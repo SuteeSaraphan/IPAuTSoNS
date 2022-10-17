@@ -1,11 +1,12 @@
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "@/views/HomeView.vue";
 import DriveView from "@/views/DriveView.vue";
-import Img_appView from "@/views/Img_appView.vue";
+import ImgAppView from "@/views/ImgAppView.vue";
 import LoginView from "@/views/LoginView.vue";
 import RegisView from "@/views/RegisView.vue";
 import SettingView from "@/views/SettingView";
 import ChangePassView from "@/views/ChangePassView";
+import ImgFolderView from "@/views/ImgFolderView";
 
 const routes = [
   {
@@ -21,9 +22,15 @@ const routes = [
   },
 
   {
+    path: "/img_folder",
+    name: "img_folder",
+    component: ImgFolderView,
+  },
+
+  {
     path: "/img_app",
     name: "img_app",
-    component: Img_appView,
+    component: ImgAppView,
   },
 
   {

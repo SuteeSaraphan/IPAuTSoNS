@@ -10,22 +10,18 @@
                 <label>Folder : </label>
                 <button type="button" @click="onUploadFile" style="color:black">Upload</button>
                 <form>
-                <select id="folder" >
-                    <option v-for="file in files" v-bind:key="file.id" style="color:black">{{file.folder_name}}</option>
-                </select>
+                    <select id="folder">
+                        <option v-for="file in files" v-bind:key="file.id" style="color:black">{{file.folder_name}}
+                        </option>
+                    </select>
+                </form>
             </form>
-
-            </form>
-          
-
 
             <div>
                 <form style="padding:5px;">
                     <label>Add new folder : </label>
                     <input type="text" id="new_folder">
                     <button type="button" @click="addNewFolder" style="color:black">Add new folder</button>
-
-
                 </form>
             </div>
 
@@ -34,10 +30,10 @@
             <div style="background:grey">
                 <ul style="padding:5px;">
                     <li v-for="file in files" v-bind:key="file.id">
-                        <button type="button" style="color:black" @click="enterFolder(file.folder_id)" >{{file.folder_name}}</button>
+                        <p style="color:black" @click="enterFolder(file.folder_id)">{{file.folder_name}}</p>
                         <hr>
                     </li>
-                    
+
                 </ul>
             </div>
 
@@ -64,7 +60,7 @@ export default {
         return {
             selectedFile: [],
             token_url: "",
-            files :[]
+            files: []
         }
     },
     methods: {
@@ -77,36 +73,42 @@ export default {
 
 
 
+
         },
         onUploadFile() {
-            const URL = 'http://127.0.0.1:8000/api/image';
-            let data = new FormData();
-            data.append('jwt', this.cookies.get('jwt'));
-            data.append('folder', document.getElementById("folder").value);
+            if (this.selectedFile.length > 0) {
+                const URL = 'http://127.0.0.1:8000/api/image';
+                let data = new FormData();
+                data.append('jwt', this.cookies.get('jwt'));
+                data.append('folder', document.getElementById("folder").value);
 
-            //console.log(this.selectedFile[0])
+                //console.log(this.selectedFile[0])
 
-            for (let i = 0; i < this.selectedFile.length; i++) {
-                data.append('img_file', this.selectedFile[i]);
+                for (let i = 0; i < this.selectedFile.length; i++) {
+                    data.append('img_file', this.selectedFile[i]);
+                }
+
+                //console.log(data)
+
+                let config = {
+                    header: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }
+                axios.post(
+                    URL,
+                    data,
+                    config
+                ).then(
+                    async (response) => {
+                        alert('image upload response >' + response.data['status'])
+                        location.reload();
+                    }
+                )
+            }else{
+                alert('Please selected file before upload')
             }
 
-            //console.log(data)
-
-            let config = {
-                header: {
-                    'Content-Type': 'multipart/form-data'
-                }
-            }
-            axios.post(
-                URL,
-                data,
-                config
-            ).then(
-                async (response) => {
-                    alert('image upload response >'+response.data['status'])
-                    location.reload();
-                }
-            )
         },
 
 
@@ -123,16 +125,16 @@ export default {
                 ).then(async response => {
                     alert(response.data['status']);
                     location.reload();
-                    
+
                 })
             }
 
         },
 
 
-        enterFolder(folder_id){
+        enterFolder(folder_id) {
             console.log(folder_id)
-
+            router.push('img_folder')
         }
     }
     ,
