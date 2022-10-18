@@ -1,0 +1,42 @@
+{
+    "id": "1",
+    "job": "BlackWhite",
+    "date": "2022-10-10 15:34:06.553004",
+    "folder": "S:\\IPAuTSoNS\\script\\user\\newtest/*",
+    "countfiles": 2,
+    "files": [
+        "S:\\IPAuTSoNS\\script\\user\\newtest\\101594714_p0.png",
+        "S:\\IPAuTSoNS\\script\\user\\newtest\\Untitled_-_2021-08-26T124510.959__81298.1629999915.jpg"
+    ]
+}{
+    "id": "1",
+    "job": "BlackWhite",
+    "date": "2022-10-10 15:34:20.699781",
+    "folder": "S:\\IPAuTSoNS\\script\\user\\newtest/*",
+    "countfiles": 2,
+    "files": [
+        "S:\\IPAuTSoNS\\script\\user\\newtest\\101594714_p0.png",
+        "S:\\IPAuTSoNS\\script\\user\\newtest\\Untitled_-_2021-08-26T124510.959__81298.1629999915.jpg"
+    ]
+}{
+    "id": "1",
+    "job": "BlackWhite",
+    "date": "2022-10-10 15:34:30.713553",
+    "folder": "S:\\IPAuTSoNS\\script\\user\\newtest/*",
+    "countfiles": 2,
+    "files": [
+        "S:\\IPAuTSoNS\\script\\user\\newtest\\101594714_p0.png",
+        "S:\\IPAuTSoNS\\script\\user\\newtest\\Untitled_-_2021-08-26T124510.959__81298.1629999915.jpg"
+    ]
+}{
+    "id": "1",
+    "job": "ASCII",
+    "date": "2022-10-10 16:18:07.499588",
+    "folder": "S:\\IPAuTSoNS\\script\\user\\newtest\\as/*",
+    "countfiles": 3,
+    "files": [
+        "S:\\IPAuTSoNS\\script\\user\\newtest\\as\\101594714_p0.png",
+        "S:\\IPAuTSoNS\\script\\user\\newtest\\as\\Flamecraft-Image-One__71100.1630000097.jpg",
+        "S:\\IPAuTSoNS\\script\\user\\newtest\\as\\Untitled_-_2021-08-26T124510.959__81298.1629999915.jpg"
+    ]
+}
