@@ -97,7 +97,7 @@ export default {
   created() {
     if (this.cookies.get('jwt') == null) {
       alert("You are not login yet , please login fisrt")
-      router.push('login')
+      router.push('/login')
     } else {
       axios.get('http://127.0.0.1:8000/api/jobs',).then(async (respond) => this.jobs = respond.data)
     }

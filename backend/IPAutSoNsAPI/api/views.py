@@ -18,10 +18,7 @@ from django.core.files.base import ContentFile
 import os
 
 # for Authentication user with JWT
-
-
 def Authentication(token):
-
     if not token:
         raise AuthenticationFailed('Unauthenticated')
     try:
@@ -174,7 +171,11 @@ class FolderView(APIView):
             os.mkdir(folder_path)
         except OSError as error:
             print(error)
-            return Response({'status':'!!! Folder is already exits !!!'})
+            try:
+                os.path.join(r'C:\IPAuTSoNS\backend\IPAutSoNsAPI\static\images',payload['id'], "root")
+            except OSError as error_root :
+                return Response({'status':'!!! Somthing is wrong try again !!!'})
+            
 
         folder_data = {
             'folder_id': request.data['folder_id'],

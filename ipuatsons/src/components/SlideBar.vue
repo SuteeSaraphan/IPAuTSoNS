@@ -3,7 +3,7 @@
   <div class="sidebar">
       <a href="#" class="logo" style="text-align-last: center;">
         <h1>
-          <router-link to="/">IPAUTSONS</router-link>
+          <router-link to="/home">IPAUTSONS</router-link>
         </h1>
       </a>
 
@@ -112,13 +112,13 @@ export default {
     }, 
     created(){
     if (this.cookies.get('jwt')==null){
-      router.push('login')
+      router.push('/login')
     }
   },
     methods: {
       logout(){
         this.cookies.remove('jwt')
-        router.push('login')
+        router.push('/login')
       }
   
   },

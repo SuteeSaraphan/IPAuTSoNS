@@ -77,7 +77,7 @@ export default {
 
         },
         change_password() {
-            router.push('changepass')
+            router.push('/changepass')
         },
         
         clear(){

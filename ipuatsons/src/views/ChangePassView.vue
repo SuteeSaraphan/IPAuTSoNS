@@ -77,7 +77,7 @@ export default {
 
         },
         back() {
-            router.push('setting')
+            router.push('/setting')
         },
         
         clear(){
@@ -88,15 +88,21 @@ export default {
 
     },
     created() {
-        axios.post('http://127.0.0.1:8000/api/user',
-            {
-                'jwt': this.cookies.get('jwt')
-            }
-        ).then(async res => {
-            res
-        }).catch(error => {
-            alert(error);
-        })
+        if (this.cookies.get('jwt') == null) {
+            alert("You are not login yet , please login fisrt")
+            router.push('/login')
+        }
+        else {
+            axios.defaults.headers.get['jwt'] = this.cookies.get('jwt');
+            const URL = 'http://127.0.0.1:8000/api/user';
+            axios.get(URL)
+                .then(res =>  res)
+                .catch(err => {
+                    alert('Can not change password now try again later')
+                    console.log(err.data)
+                })
+
+        }
     }
 
 }

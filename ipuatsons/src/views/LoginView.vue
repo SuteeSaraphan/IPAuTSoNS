@@ -63,14 +63,14 @@ export default {
                     axios.get('http://127.0.0.1:8000/api/user')
                         .then(async res => {
                             res
-                            router.push('home')
+                            router.push('/home')
                         }).catch(error => {
                             alert(error);
                         })
                 })
         },
         go_register() {
-            router.push('register')
+            router.push('/register')
         }
     }
 }

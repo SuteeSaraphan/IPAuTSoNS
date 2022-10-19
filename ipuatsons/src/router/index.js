@@ -22,7 +22,7 @@ const routes = [
   },
 
   {
-    path: "/img_folder",
+    path: "/img_folder/:folder_id",
     name: "img_folder",
     component: ImgFolderView,
   },

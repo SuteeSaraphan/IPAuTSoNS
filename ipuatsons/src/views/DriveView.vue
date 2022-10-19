@@ -134,7 +134,8 @@ export default {
 
         enterFolder(folder_id) {
             console.log(folder_id)
-            router.push('img_folder')
+            let path = "/img_folder/"+folder_id
+            router.push({ path })
         }
     }
     ,
@@ -144,9 +145,10 @@ export default {
     created() {
 
 
+
         if (this.cookies.get('jwt') == null) {
             alert("You are not login yet , please login fisrt")
-            router.push('login')
+            router.push('/login')
         }
         else {
             axios.defaults.headers.get['jwt'] = this.cookies.get('jwt');

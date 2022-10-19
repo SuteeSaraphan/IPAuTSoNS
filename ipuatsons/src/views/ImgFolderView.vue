@@ -3,6 +3,7 @@
         <SlideBar></SlideBar>
         <div class="main-home">
             <h1>Image Folder page</h1>
+            Folder name : {{$route.params.folder_id}}
             <form style="padding:5px;">
                 <input type="file" accept="image/*" @change="uploadImage($event)" id="file-input" multiple="multiple">
                 <button type="button" @click="onUploadFile" style="color:black">Upload</button>
@@ -29,7 +30,8 @@ export default {
         return {
             selectedFile: [],
             token_url: "",
-            files: []
+            files: [],
+            owner : 0
         }
     },
     methods: {
@@ -83,18 +85,30 @@ export default {
     },
     created() {
 
-
         if (this.cookies.get('jwt') == null) {
             alert("You are not login yet , please login fisrt")
-            router.push('login')
+            router.push('/login')
         }
         else {
             axios.defaults.headers.get['jwt'] = this.cookies.get('jwt');
             const URL = 'http://127.0.0.1:8000/api/folder_img';
             axios.get(URL)
-                .then(res => this.files = res.data)
+                .then(res => {
+                    this.files = res.data
+                    for(let i in this.files){
+                        if (this.$route.params.folder_id == this.files[i].folder_id){
+                            this.owner += 1
+                        }
+                    }
+
+                    if (this.owner != 1){
+                        alert("You can not access this folder");
+                        router.push('/drive')
+                    }
+                })
                 .catch(err => console.log(err.data))
 
+            
         }
     }
 };
