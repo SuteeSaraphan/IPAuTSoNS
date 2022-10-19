@@ -14,8 +14,20 @@ from PIL import Image, ImageDraw, ImageFont
 from matplotlib import pyplot as plt
 from keras.preprocessing import image
 from models.module_photo2pixel import Photo2PixelModel
-from utils import img_common_util
 
+
+def convert_image_to_tensor(img):
+    img = img.convert("RGB")
+    img_np = np.array(img).astype(np.float32)
+    img_np = np.transpose(img_np, axes=[2, 0, 1])[np.newaxis, :, :, :]
+    img_pt = torch.from_numpy(img_np)
+    return img_pt
+
+
+def convert_tensor_to_image(img_pt):
+    img_pt = img_pt[0, ...].permute(1, 2, 0)
+    result_rgb_np = img_pt.cpu().numpy().astype(np.uint8)
+    return Image.fromarray(result_rgb_np)
 
 
 
@@ -29,7 +41,7 @@ def test():
         edge_thresh = 100
 
         img_input = Image.open(imageinput)
-        img_pt_input = img_common_util.convert_image_to_tensor(img_input)
+        img_pt_input = convert_image_to_tensor(img_input)
 
         model = Photo2PixelModel()
         model.eval()
@@ -40,7 +52,7 @@ def test():
                 param_pixel_size=pixel_size,
                 param_edge_thresh=edge_thresh
             )
-        img_output = img_common_util.convert_tensor_to_image(img_pt_output)
+        img_output = convert_tensor_to_image(img_pt_output)
         img_output.save(output)
  
 def saveLog():
@@ -70,5 +82,5 @@ folder = sys.argv[2]
 folder = folder+"/*"
 All_files = glob(folder)
 
-saveLog()
+#saveLog()
 test()

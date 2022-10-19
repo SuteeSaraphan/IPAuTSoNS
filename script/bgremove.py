@@ -42,7 +42,8 @@ def saveLog():
 #command in cmd
 iduser = sys.argv[1] 
 folder = sys.argv[2]
+folder = folder+"/*"
 All_files = glob(folder)
 
-saveLog()
+#saveLog()
 test()
