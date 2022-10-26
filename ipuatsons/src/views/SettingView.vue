@@ -79,23 +79,23 @@ export default {
         change_password() {
             router.push('/changepass')
         },
-        
-        clear(){
+
+        clear() {
             document.getElementById("first_name").value = ""
             document.getElementById("last_name").value = ""
         }
     },
     created() {
-            axios.defaults.headers.get['jwt'] = this.cookies.get('jwt');
-            const URL = 'http://127.0.0.1:8000/api/user';
-            axios.get(URL).then(async res => {
-                document.getElementById("email").value = res.data.email
-                document.getElementById("first_name").value = res.data.first_name
-                document.getElementById("last_name").value = res.data.last_name
-            }).catch(error => {
-                alert(error);
-            })
-   
+        axios.defaults.headers.get['jwt'] = this.cookies.get('jwt');
+        const URL = 'http://127.0.0.1:8000/api/user';
+        axios.get(URL).then(async res => {
+            document.getElementById("email").value = res.data.email
+            document.getElementById("first_name").value = res.data.first_name
+            document.getElementById("last_name").value = res.data.last_name
+        }).catch(error => {
+            alert(error);
+        })
+
 
     }
 

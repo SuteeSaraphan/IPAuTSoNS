@@ -3,11 +3,28 @@
         <SlideBar></SlideBar>
         <div class="main-home">
             <h1>Image Folder page</h1>
-            Folder name : {{$route.params.folder_id}}
+            Folder name : {{ this.files[0].folder_name }}
             <form style="padding:5px;">
                 <input type="file" accept="image/*" @change="uploadImage($event)" id="file-input" multiple="multiple">
                 <button type="button" @click="onUploadFile" style="color:black">Upload</button>
             </form>
+            <hr>
+            <div class="row">
+                <div class="column" v-for="image in this.images" v-bind:key="image.img_id">
+                    <div class="content">
+                        <div class="card">
+                            <img style='display:block; width:250px;height:200px; object-fit: scale-down; border: 1px; image-rendering: auto;'
+                                :src="`data:image/jpeg;base64,${image.img_data}`" alt="{{ image.img_id }}">
+                            <div class="container" >
+                                {{ image.img_id }}
+                                {{image.img_type}}
+
+                                <button style="background-color: red;padding:2px;" >Delete</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
         </div>
     </div>
@@ -18,8 +35,14 @@ import SlideBar from '@/components/SlideBar'
 import { useCookies } from "vue3-cookies";
 import router from '@/router';
 import axios from 'axios';
+const URL_IMG_FOLDER = 'http://127.0.0.1:8000/api/folder_img';
+const URL_IMG_UPLOAD = 'http://127.0.0.1:8000/api/upload_image';
+const URL_GET_IMG = 'http://127.0.0.1:8000/api/image';
+
+
 
 export default {
+   
 
     name: "ImgFolderView",
     setup() {
@@ -31,10 +54,12 @@ export default {
             selectedFile: [],
             token_url: "",
             files: [],
-            owner : 0
+            images: [],
+            owner: 0
         }
     },
     methods: {
+        
 
         uploadImage(event) {
             this.selectedFile = []
@@ -46,10 +71,10 @@ export default {
 
         },
         onUploadFile() {
-            const URL = 'http://127.0.0.1:8000/api/image';
+
             let data = new FormData();
             data.append('jwt', this.cookies.get('jwt'));
-            data.append('folder', document.getElementById("folder").value);
+            data.append('folder', this.files[0].folder_name);
 
             //console.log(this.selectedFile[0])
 
@@ -65,7 +90,7 @@ export default {
                 }
             }
             axios.post(
-                URL,
+                URL_IMG_UPLOAD,
                 data,
                 config
             ).then(
@@ -91,24 +116,31 @@ export default {
         }
         else {
             axios.defaults.headers.get['jwt'] = this.cookies.get('jwt');
-            const URL = 'http://127.0.0.1:8000/api/folder_img';
-            axios.get(URL)
+            axios.get(URL_IMG_FOLDER)
                 .then(res => {
                     this.files = res.data
-                    for(let i in this.files){
-                        if (this.$route.params.folder_id == this.files[i].folder_id){
+                    for (let i in this.files) {
+                        if (this.$route.params.folder_id == this.files[i].folder_id) {
                             this.owner += 1
                         }
                     }
 
-                    if (this.owner != 1){
+                    if (this.owner != 1) {
                         alert("You can not access this folder");
                         router.push('/drive')
+                    } else {
+                        axios.get(URL_GET_IMG + "/" + this.$route.params.folder_id)
+                            .then(res => {
+                                console.log(res.data)
+                                this.images = res.data
+                            })
                     }
+
+
                 })
                 .catch(err => console.log(err.data))
 
-            
+
         }
     }
 };

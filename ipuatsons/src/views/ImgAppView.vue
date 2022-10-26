@@ -48,7 +48,7 @@
         <p>num_img : {{ job.num_img }}</p>
         <p>persent : {{ job.persent }}</p>
         <p>status : {{ job.job_status }}</p>
-        
+
         <hr>
       </div>
 

@@ -31,7 +31,7 @@
 
                         <div style="padding: 15px">
                             <input type="button" value="Submit" style="color:black" @click="edit_password()" />
-                            <input type="button" value="Clear" style="color:black" @click="clear()"/>
+                            <input type="button" value="Clear" style="color:black" @click="clear()" />
                             <input type="button" value="Back" style="width:85%" @click="back()">
                         </div>
                     </form>
@@ -59,18 +59,18 @@ export default {
         return { cookies };
     },
     data() {
-        
+
     },
     methods: {
         edit_password() {
             axios.put('http://127.0.0.1:8000/api/password',
                 {
-                    'jwt': this.cookies.get('jwt'),                
-                    'old_password':document.getElementById("old_password").value,
-                    'new_password':document.getElementById("new_password").value
+                    'jwt': this.cookies.get('jwt'),
+                    'old_password': document.getElementById("old_password").value,
+                    'new_password': document.getElementById("new_password").value
                 }
             ).then(async res => {
-               alert(res.data.status)
+                alert(res.data.status)
             }).catch(error => {
                 alert(error);
             })
@@ -79,8 +79,8 @@ export default {
         back() {
             router.push('/setting')
         },
-        
-        clear(){
+
+        clear() {
             document.getElementById("old_password").value = ""
             document.getElementById("new_password").value = ""
             document.getElementById("new_password_confirm").value = ""
@@ -96,7 +96,7 @@ export default {
             axios.defaults.headers.get['jwt'] = this.cookies.get('jwt');
             const URL = 'http://127.0.0.1:8000/api/user';
             axios.get(URL)
-                .then(res =>  res)
+                .then(res => res)
                 .catch(err => {
                     alert('Can not change password now try again later')
                     console.log(err.data)

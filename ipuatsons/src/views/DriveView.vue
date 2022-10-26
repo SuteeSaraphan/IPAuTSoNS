@@ -77,7 +77,7 @@ export default {
         },
         onUploadFile() {
             if (this.selectedFile.length > 0) {
-                const URL = 'http://127.0.0.1:8000/api/image';
+                const URL = 'http://127.0.0.1:8000/api/upload_image';
                 let data = new FormData();
                 data.append('jwt', this.cookies.get('jwt'));
                 data.append('folder', document.getElementById("folder").value);
@@ -105,7 +105,7 @@ export default {
                         location.reload();
                     }
                 )
-            }else{
+            } else {
                 alert('Please selected file before upload')
             }
 
@@ -134,7 +134,7 @@ export default {
 
         enterFolder(folder_id) {
             console.log(folder_id)
-            let path = "/img_folder/"+folder_id
+            let path = "/img_folder/" + folder_id
             router.push({ path })
         }
     }

@@ -15,7 +15,8 @@ urlpatterns = [
     path('user', views.UserView.as_view()),
     path('password', views.PasswordView.as_view()),
 
-    path('image', views.ImageView.as_view()),
+    path('upload_image', views.ImageView.as_view()),
+    path('image/<str:folder_id>', views.ImageView.as_view()),
     path('all_images', views.AllImageView.as_view()),
     path('folder_img', views.FolderView.as_view()),
    

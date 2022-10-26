@@ -1,5 +1,6 @@
 from ctypes import sizeof
 from lib2to3.pgen2 import token
+from msilib.schema import Error
 from operator import length_hint
 import random
 import string
@@ -16,8 +17,13 @@ import datetime
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 import os
+import base64
+from pathlib import Path
+
 
 # for Authentication user with JWT
+
+
 def Authentication(token):
     if not token:
         raise AuthenticationFailed('Unauthenticated')
@@ -112,25 +118,44 @@ class PasswordView(APIView):
             return Response({"status": "Password is change!"})
 
 
-# class ImageView(APIView):
-#     def post(self, request):
-#         serializer = ImageSerializer(data=request.data)
-#         serializer.is_valid(raise_exception=True)
-#         serializer.save()
-#         return Response(serializer.data)
-
 class ImageView(APIView):
-    def post(self, request):
-        folder = ""
-        token = request.data['jwt']
-        folder = request.data['folder']
-        if str(folder) == "":
-            folder = "null"
-
+    def get(self, request, folder_id):
+        temp_respond = []
+        token = request.META['HTTP_JWT']
         payload = Authentication(token)
 
+        folder_serializer = FolderImageSerializer(
+            Folder_img.objects.get(folder_id=folder_id)
+        )
+
+        img_serializer = ImageSerializer(
+            Image.objects.all().filter(user_id=payload['id'], img_folder=folder_serializer.data['folder_name']), many=True)
+        for i in img_serializer.data:
+            try:
+                with open('C:/IPAuTSoNS/backend/IPAutSoNsAPI'+os.path.join(i['path']),'rb') as image_file:
+                    image_data = base64.b64encode(image_file.read())
+                    temp_img_data ={
+                        'img_id':i['img_id'],
+                        'user_id':i['user_id'],
+                        'img_type':i['img_type'],
+                        'img_folder':i['img_folder'],
+                        'path':i['path'],
+                        'img_size':i['img_size'],
+                        'img_data' : image_data
+                    }
+                    temp_respond.append(temp_img_data)
+
+
+            except BaseException as error:
+                print(error)
+
+        return Response(temp_respond)
+
+    def post(self, request):
+        token = request.data['jwt']
+        folder = request.data['folder']
+        payload = Authentication(token)
         user = User.objects.get(user_id=payload['id'])
-        # print(user.user_id)
 
         for img_file in request.FILES.getlist('img_file'):
             # print("name : "+str(img_file.name))
@@ -166,16 +191,17 @@ class FolderView(APIView):
     def post(self, request):
         token = request.data['jwt']
         payload = Authentication(token)
-        folder_path = os.path.join(r'C:\IPAuTSoNS\backend\IPAutSoNsAPI\static\images',payload['id'], "root", request.data['folder_name'])
+        folder_path = os.path.join(r'C:\IPAuTSoNS\backend\IPAutSoNsAPI\media',
+                                   payload['id'], "root", request.data['folder_name'])
         try:
             os.mkdir(folder_path)
         except OSError as error:
             print(error)
             try:
-                os.path.join(r'C:\IPAuTSoNS\backend\IPAutSoNsAPI\static\images',payload['id'], "root")
-            except OSError as error_root :
-                return Response({'status':'!!! Somthing is wrong try again !!!'})
-            
+                os.path.join(
+                    r'C:\IPAuTSoNS\backend\IPAutSoNsAPI\media', payload['id'], "root")
+            except OSError as error_root:
+                return Response({'status': '!!! Somthing is wrong try again !!!'})
 
         folder_data = {
             'folder_id': request.data['folder_id'],
