@@ -6,6 +6,7 @@ import random
 import string
 from time import sleep
 from django.shortcuts import render
+from requests import delete
 from rest_framework import generics
 from .models import Folder_img, Image, Job, User
 from .serializers import JobSerializer, UserSerializer, ImageSerializer, FolderImageSerializer
@@ -119,6 +120,8 @@ class PasswordView(APIView):
 
 
 class ImageView(APIView):
+
+    #get image
     def get(self, request, folder_id):
         temp_respond = []
         token = request.META['HTTP_JWT']
@@ -151,6 +154,7 @@ class ImageView(APIView):
 
         return Response(temp_respond)
 
+    #add image
     def post(self, request):
         token = request.data['jwt']
         folder = request.data['folder']
@@ -177,6 +181,25 @@ class ImageView(APIView):
 
         return Response({"status": "Upload done!"})
 
+    #delete image
+    def delete(self, request, folder_id):
+        token = request.META['HTTP_JWT']
+        payload = Authentication(token)
+        img_id = folder_id
+        image = Image.objects.get(img_id=img_id)
+        try:
+            os.remove('C:/IPAuTSoNS/backend/IPAutSoNsAPI/media/'+os.path.join(str(image.path)))
+        except BaseException as error:
+            print(error)
+            return Response({"status": "Delete fail ! try again"})
+        else:
+            image.delete()
+            image.save()
+            return Response({"status": "Delete done!"})
+
+        
+
+        
 
 class AllImageView(APIView):
     def get(self, request):
@@ -197,24 +220,20 @@ class FolderView(APIView):
             os.mkdir(folder_path)
         except OSError as error:
             print(error)
-            try:
-                os.path.join(
-                    r'C:\IPAuTSoNS\backend\IPAutSoNsAPI\media', payload['id'], "root")
-            except OSError as error_root:
-                return Response({'status': '!!! Somthing is wrong try again !!!'})
+            return Response({'status': '!!! Somthing is wrong try again !!!'})
+        else:
+            folder_data = {
+                'folder_id': request.data['folder_id'],
+                'user_id': payload['id'],
+                'folder_name': request.data['folder_name'],
+                'path': folder_path,
+                'is_hidden': False
+            }
 
-        folder_data = {
-            'folder_id': request.data['folder_id'],
-            'user_id': payload['id'],
-            'folder_name': request.data['folder_name'],
-            'path': folder_path,
-            'is_hidden': False
-        }
-
-        serializer = FolderImageSerializer(data=folder_data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response({'status': '!!! Create new folder complete !!!'})
+            serializer = FolderImageSerializer(data=folder_data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response({'status': '!!! Create new folder complete !!!'})
 
     def get(self, request):
         token = request.META['HTTP_JWT']

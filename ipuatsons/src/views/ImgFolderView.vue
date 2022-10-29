@@ -19,7 +19,7 @@
                                 {{ image.img_id }}
                                 {{image.img_type}}
 
-                                <button style="background-color: red;padding:2px;" >Delete</button>
+                                <button style="background-color: red;padding:2px;" @click="deleteImage(image.img_id)" >Delete</button>
                             </div>
                         </div>
                     </div>
@@ -101,6 +101,15 @@ export default {
             )
         },
 
+        deleteImage(img_id){
+            axios.defaults.headers.delete['jwt'] = this.cookies.get('jwt');
+            axios.delete(URL_GET_IMG + "/" + img_id)
+            .then(async res =>{
+                alert(res.data['status']);
+                location.reload();
+            })
+        }
+
 
 
     }
@@ -131,7 +140,7 @@ export default {
                     } else {
                         axios.get(URL_GET_IMG + "/" + this.$route.params.folder_id)
                             .then(res => {
-                                console.log(res.data)
+                                //console.log(res.data)
                                 this.images = res.data
                             })
                     }
