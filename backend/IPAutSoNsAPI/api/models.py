@@ -1,12 +1,40 @@
-from pyexpat import model
+from email.policy import default
+import os
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
 
+def upload_path(instance,filename):
+    if(instance.img_folder == "null"):
+        return os.path.join("%s" % instance.user_id,"root",filename)
+    elif(instance.img_folder != "null"):
+        return os.path.join("%s" % instance.user_id,"root","%s" % instance.img_folder,filename)
+
+
+class Image(models.Model):
+    img_id = models.CharField(max_length=100, primary_key=True)
+    user_id = models.CharField(max_length=100 , null=False)
+    img_type = models.CharField(max_length=20, null=False)
+    img_folder = models.CharField(max_length=100)
+    path = models.ImageField(upload_to = upload_path, null=False)
+    img_size = models.CharField(max_length=20, null=False)
+    def __str__(self):
+        return self.img_id
+
+class Folder_img(models.Model):
+    folder_id = models.CharField(max_length=100, primary_key=True)
+    user_id = models.CharField(max_length=100 , null=False)
+    folder_name = models.CharField(max_length=100 , null=False)
+    path = models.CharField(max_length=200 , null=False)
+    is_hidden = models.BooleanField(default = False)
+    def __str__(self):
+        return self.folder_id
+
+    
 
 class Job(models.Model):
     job_id = models.CharField(max_length=100, primary_key=True)
-    user_id = models.CharField(max_length=100)
-    app_id = models.CharField(max_length=100)
+    user_id = models.CharField(max_length=20)
+    app_id = models.CharField(max_length=100 ,default="00")
     path = models.CharField(max_length=200)
     num_img = models.IntegerField(default=0)
     img_selected = models.CharField(max_length=500)
@@ -15,13 +43,11 @@ class Job(models.Model):
     create_time = models.DateTimeField(editable=False, auto_now_add=True)
 
     def __str__(self):
-
-        
         return self.job_id
 
 
 class User(AbstractBaseUser):
-    user_id = models.CharField(primary_key=True,unique=True,max_length=20)
+    user_id = models.CharField(primary_key=True,unique=True,max_length=100)
     password = models.CharField(max_length=50, null=False)
     email = models.EmailField(max_length=254, null=False ,unique=True)
     is_vip = models.BooleanField(default=False, null=False)

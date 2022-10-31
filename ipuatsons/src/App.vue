@@ -11,7 +11,7 @@ export default {
 
   data() {
     return {
-    
+
     }
   },
   methods: {
@@ -19,12 +19,10 @@ export default {
   },
   created() {
     //console.log("created is work");
-    
+
   },
-  
+
 }
 
 </script>
 
-<style>
-</style>

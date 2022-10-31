@@ -1,7 +1,7 @@
 <template>
     <div class="login-regis">
         <div class="menu">
-            <form style="width:25%">
+            <form style="width:25%" >
                 <img src="@/img/logo.png" style="width:250px" alt="">
                 <div style="text-align: left">
                     <label style="font-size: 15px">Email :</label>
@@ -20,8 +20,8 @@
                 </div>
 
                 <div style="padding: 7px">
-                    <input type="button" value="Login" style="color:black" @click="login()" />
-                    <input type="button" value="Register" style="color:black" @click="go_register()" />
+                    <input type="button" value="Login" @click="login()"/>
+                    <input type="button" value="Register" style="color: white;background-color: #5294e2;" @click="go_register()" />
                 </div>
             </form>
         </div>
@@ -59,25 +59,20 @@ export default {
             )
                 .then(async response => {
                     this.cookies.set('jwt', response.data.jwt, '1h')
-                    axios.post('http://127.0.0.1:8000/api/user',
-                        {
-                            'jwt': this.cookies.get('jwt')
-                        }
-                    ).then(async res => {
-                        res
-                        router.push('home')
-                    }).catch(error => {
-                        alert(error);
-                    })
+                    axios.defaults.headers.get['jwt'] = this.cookies.get('jwt');
+                    axios.get('http://127.0.0.1:8000/api/user')
+                        .then(async res => {
+                            res
+                            router.push('/home')
+                        }).catch(error => {
+                            alert(error);
+                        })
                 })
         },
         go_register() {
-            router.push('register')
+            router.push('/register')
         }
     }
 }
 </script>
 
-<style>
-
-</style>
