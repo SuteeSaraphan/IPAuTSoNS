@@ -11,7 +11,7 @@
                 <button type="button" @click="onUploadFile" style="color:black">Upload</button>
                 <form>
                     <select id="folder">
-                        <option v-for="file in files" v-bind:key="file.id" style="color:black">{{file.folder_name}}
+                        <option v-for="file in files" v-bind:key="file.id" style="color:black">{{ file.folder_name }}
                         </option>
                     </select>
                 </form>
@@ -27,10 +27,19 @@
 
 
 
-            <div style="background:grey">
+            <div style="background:#e7e5e6">
                 <ul style="padding:5px;">
-                    <li v-for="file in files" v-bind:key="file.id">
-                        <p style="color:black" @click="enterFolder(file.folder_id)">{{file.folder_name}}</p>
+                    <li v-for="file in files" v-bind:key="file.id" style="margin-top: 5px;margin-bottom: 5px;">
+                        <div style="display:flex; flex-direction: row;justify-content:space-between;align-items:center;">
+                            <div style="color:black;padding:10px" @click="enterFolder(file.folder_id)">{{ file.folder_name }}</div>
+                            <div class="dropup">
+                                <button class="dropbtn">Option</button>
+                                <div class="dropup-content">
+                                    <a @click="deleteFolder(file.folder_id)">Delete</a>
+                                    <a href="#">Edit name</a>
+                                </div>
+                            </div>
+                        </div>
                         <hr>
                     </li>
 
@@ -136,16 +145,27 @@ export default {
             console.log(folder_id)
             let path = "/img_folder/" + folder_id
             router.push({ path })
+        },
+
+
+        deleteFolder(folder_id) {
+            alert('on delete');
+            axios.defaults.headers.delete['jwt'] = this.cookies.get('jwt');
+            axios.delete("http://127.0.0.1:8000/api/folder_img/"+folder_id)
+                .then(async res => {
+                    alert(res.data['status']);
+                    location.reload();
+                })
         }
+
+
+
     }
     ,
     components: {
         SlideBar
     },
     created() {
-
-
-
         if (this.cookies.get('jwt') == null) {
             alert("You are not login yet , please login fisrt")
             router.push('/login')

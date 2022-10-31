@@ -3,6 +3,7 @@ from lib2to3.pgen2 import token
 from msilib.schema import Error
 from operator import length_hint
 import random
+import shutil
 import string
 from time import sleep
 from django.shortcuts import render
@@ -194,7 +195,6 @@ class ImageView(APIView):
             return Response({"status": "Delete fail ! try again"})
         else:
             image.delete()
-            image.save()
             return Response({"status": "Delete done!"})
 
         
@@ -235,12 +235,28 @@ class FolderView(APIView):
             serializer.save()
             return Response({'status': '!!! Create new folder complete !!!'})
 
+    #send image folder
     def get(self, request):
         token = request.META['HTTP_JWT']
         payload = Authentication(token)
         serializer = FolderImageSerializer(
             Folder_img.objects.all().filter(user_id=payload['id']), many=True)
         return Response(serializer.data)
+
+        #delete image folder
+    def delete(self, request, folder_id):
+        token = request.META['HTTP_JWT']
+        payload = Authentication(token)
+        folder_img = Folder_img.objects.get(folder_id=folder_id)
+        try:
+            shutil.rmtree(os.path.join(str(folder_img.path)))
+        except BaseException as error:
+            print(error)
+            return Response({"status": "Delete fail ! try again"})
+        else:
+            folder_img.delete()
+            return Response({"status": "Delete done !"})
+
 
 
 class MakeDockerFile(APIView):

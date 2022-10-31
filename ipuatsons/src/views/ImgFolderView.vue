@@ -15,11 +15,14 @@
                         <div class="card">
                             <img style='display:block; width:250px;height:200px; object-fit: scale-down; border: 1px; image-rendering: auto;'
                                 :src="`data:image/jpeg;base64,${image.img_data}`" alt="{{ image.img_id }}">
-                            <div class="container" >
-                                {{ image.img_id }}
-                                {{image.img_type}}
-
-                                <button style="background-color: red;padding:2px;" @click="deleteImage(image.img_id)" >Delete</button>
+                            <div class="container"
+                                style="display:flex; flex-direction: row;justify-content:space-between;align-items:center;">
+                                <div style="padding:2px;">
+                                    {{ image.img_id }}
+                                    {{ image.img_type }}
+                                </div>
+                                <button style="background-color: red; padding:2px;border: none;"
+                                    @click="deleteImage(image.img_id)">Delete</button>
                             </div>
                         </div>
                     </div>
@@ -42,7 +45,7 @@ const URL_GET_IMG = 'http://127.0.0.1:8000/api/image';
 
 
 export default {
-   
+
 
     name: "ImgFolderView",
     setup() {
@@ -59,7 +62,7 @@ export default {
         }
     },
     methods: {
-        
+
 
         uploadImage(event) {
             this.selectedFile = []
@@ -101,13 +104,13 @@ export default {
             )
         },
 
-        deleteImage(img_id){
+        deleteImage(img_id) {
             axios.defaults.headers.delete['jwt'] = this.cookies.get('jwt');
             axios.delete(URL_GET_IMG + "/" + img_id)
-            .then(async res =>{
-                alert(res.data['status']);
-                location.reload();
-            })
+                .then(async res => {
+                    alert(res.data['status']);
+                    location.reload();
+                })
         }
 
 
