@@ -28,10 +28,12 @@ from pathlib import Path
 
 def Authentication(token):
     if not token:
+        print('no token')
         raise AuthenticationFailed('Unauthenticated')
     try:
         payload = jwt.decode(token, 'secret', algorithms=['HS256'])
     except jwt.ExpiredSignatureError:
+        print('Expired')
         raise AuthenticationFailed('Unauthenticated')
 
     return payload
@@ -47,8 +49,6 @@ class RegisterView(APIView):
         return Response(serializer.data)
 
 # for user login
-
-
 class LoginView(APIView):
     def post(self, reqest):
         email = reqest.data['email']
@@ -237,8 +237,11 @@ class FolderView(APIView):
 
     #send image folder
     def get(self, request):
+        print("run get folder image 1")
         token = request.META['HTTP_JWT']
+        print(token)
         payload = Authentication(token)
+        print("run get folder image 2")
         serializer = FolderImageSerializer(
             Folder_img.objects.all().filter(user_id=payload['id']), many=True)
         return Response(serializer.data)

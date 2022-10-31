@@ -3,7 +3,6 @@
         <SlideBar></SlideBar>
         <div class="main-home">
             <h1>Drive page</h1>
-            <h1>v-model</h1>
             <form style="padding:5px;">
                 <input type="file" accept="image/*" @change="uploadImage($event)" id="file-input" multiple="multiple">
                 <hr>

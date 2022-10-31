@@ -3,7 +3,8 @@
         <SlideBar></SlideBar>
         <div class="main-home">
             <h1>Image Folder page</h1>
-            Folder name : {{ this.files[0].folder_name }}
+            <h2 v-if="this.files.length==0">Folder name : Untitle</h2>
+            <h2 v-if="this.files.length!=0">Folder name : {{ this.files[0].folder_name }}</h2>
             <form style="padding:5px;">
                 <input type="file" accept="image/*" @change="uploadImage($event)" id="file-input" multiple="multiple">
                 <button type="button" @click="onUploadFile" style="color:black">Upload</button>
@@ -17,9 +18,8 @@
                                 :src="`data:image/jpeg;base64,${image.img_data}`" alt="{{ image.img_id }}">
                             <div class="container"
                                 style="display:flex; flex-direction: row;justify-content:space-between;align-items:center;">
-                                <div style="padding:2px;">
-                                    {{ image.img_id }}
-                                    {{ image.img_type }}
+                                <div style="padding:2px; text-overflow: ellipsis; overflow: hidden; width: 130px; white-space: nowrap;">
+                                    {{ showImgName(image.path) }}
                                 </div>
                                 <button style="background-color: red; padding:2px;border: none;"
                                     @click="deleteImage(image.img_id)">Delete</button>
@@ -111,6 +111,11 @@ export default {
                     alert(res.data['status']);
                     location.reload();
                 })
+        },
+
+        showImgName(path) {
+            let temp = path.split("/");
+            return temp[5]
         }
 
 
@@ -143,14 +148,14 @@ export default {
                     } else {
                         axios.get(URL_GET_IMG + "/" + this.$route.params.folder_id)
                             .then(res => {
-                                //console.log(res.data)
+                                console.log(res.data)
                                 this.images = res.data
                             })
                     }
 
 
                 })
-                .catch(err => console.log(err.data))
+                .catch(err => console.log(err))
 
 
         }
