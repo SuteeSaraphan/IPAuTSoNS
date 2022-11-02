@@ -121,7 +121,7 @@ class PasswordView(APIView):
 
 class ImageView(APIView):
 
-    #get image
+    #send image
     def get(self, request, folder_id):
         temp_respond = []
         token = request.META['HTTP_JWT']
@@ -242,7 +242,7 @@ class FolderView(APIView):
             Folder_img.objects.all().filter(user_id=payload['id']), many=True)
         return Response(serializer.data)
 
-        #delete image folder
+    #delete image folder
     def delete(self, request, folder_id):
         token = request.META['HTTP_JWT']
         payload = Authentication(token)
@@ -253,7 +253,12 @@ class FolderView(APIView):
             print(error)
             return Response({"status": "Delete fail ! try again"})
         else:
+            print(folder_img.folder_name)
+            del_img = Image.objects.all().filter(img_folder = folder_img.folder_name)
             folder_img.delete()
+            del_img.delete()
+            
+
             return Response({"status": "Delete done !"})
 
 

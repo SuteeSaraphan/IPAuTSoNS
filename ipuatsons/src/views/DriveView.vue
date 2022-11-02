@@ -136,6 +136,7 @@ export default {
                     
                 )
             } else {
+                this.isLoading = false
                 alert('Please selected file before upload')
             }
 
@@ -171,7 +172,6 @@ export default {
 
         deleteFolder(folder_id) {
             if (confirm("Are you sure to delete this folder ?")) {
-                alert('on delete');
                 axios.defaults.headers.delete['jwt'] = this.cookies.get('jwt');
                 axios.delete("http://127.0.0.1:8000/api/folder_img/" + folder_id)
                     .then(async res => {
@@ -201,7 +201,9 @@ export default {
                     this.files = res.data;
                     this.isLoading = false
                 })
-                .catch(err => console.log(err.data))
+                .catch(err => {
+                    this.isLoading = false
+                    alert(err.data)})
 
         }
     }
