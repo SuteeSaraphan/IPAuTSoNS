@@ -28,12 +28,11 @@ from pathlib import Path
 
 def Authentication(token):
     if not token:
-        print('no token')
         raise AuthenticationFailed('Unauthenticated')
     try:
-        payload = jwt.decode(token, 'secret', algorithms=['HS256'])
+        payload = jwt.decode(token, 'IPAutSoNs', algorithms=['HS256'])
     except jwt.ExpiredSignatureError:
-        print('Expired')
+
         raise AuthenticationFailed('Unauthenticated')
 
     return payload
@@ -66,7 +65,7 @@ class LoginView(APIView):
             'iat': datetime.datetime.utcnow()
         }
 
-        token = jwt.encode(payload, 'secret', algorithm='HS256')
+        token = jwt.encode(payload, 'IPAutSoNs', algorithm='HS256')
 
         respond = Response()
         # respond.set_cookie(key='jwt',value=token,httponly=True)
@@ -237,11 +236,8 @@ class FolderView(APIView):
 
     #send image folder
     def get(self, request):
-        print("run get folder image 1")
         token = request.META['HTTP_JWT']
-        print(token)
         payload = Authentication(token)
-        print("run get folder image 2")
         serializer = FolderImageSerializer(
             Folder_img.objects.all().filter(user_id=payload['id']), many=True)
         return Response(serializer.data)

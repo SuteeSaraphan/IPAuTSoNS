@@ -2,27 +2,50 @@
     <div>
         <SlideBar></SlideBar>
         <div class="main-home">
+            <div class="loading" v-if="this.isLoading">Loading&#8230;</div>
             <h1>Image Folder page</h1>
-            <h2 v-if="this.files.length==0">Folder name : Untitle</h2>
-            <h2 v-if="this.files.length!=0">Folder name : {{ this.files[0].folder_name }}</h2>
+            <h2 v-if="this.files.length == 0">Folder name : Untitle</h2>
+            <h2 v-if="this.files.length != 0">Folder name : {{ this.files[0].folder_name }}</h2>
+
+            <!-- upload image here  -->
             <form style="padding:5px;">
                 <input type="file" accept="image/*" @change="uploadImage($event)" id="file-input" multiple="multiple">
                 <button type="button" @click="onUploadFile" style="color:black">Upload</button>
             </form>
+
             <hr>
+
+            <!-- show image here  -->
             <div class="row">
                 <div class="column" v-for="image in this.images" v-bind:key="image.img_id">
                     <div class="content">
                         <div class="card">
-                            <img style='display:block; width:250px;height:200px; object-fit: scale-down; border: 1px; image-rendering: auto;'
-                                :src="`data:image/jpeg;base64,${image.img_data}`" alt="{{ image.img_id }}">
+
+
+                            <img style='display:block; 
+                                        width:250px;
+                                        height:200px;
+                                        object-fit: scale-down; 
+                                        border: 1px; 
+                                        image-rendering: auto;' :src="`data:image/jpeg;base64,${image.img_data}`"
+                                alt="{{ image.img_id }}">
+
+
                             <div class="container"
                                 style="display:flex; flex-direction: row;justify-content:space-between;align-items:center;">
-                                <div style="padding:2px; text-overflow: ellipsis; overflow: hidden; width: 130px; white-space: nowrap;">
+
+                                <div style="padding:2px; 
+                                            text-overflow: ellipsis; 
+                                            overflow: hidden; 
+                                            width: 130px; 
+                                            white-space: nowrap;">
                                     {{ showImgName(image.path) }}
                                 </div>
-                                <button style="background-color: red; padding:2px;border: none;"
-                                    @click="deleteImage(image.img_id)">Delete</button>
+
+                                <!-- delete image button here  -->
+                                <button style="background-color: red;
+                                                padding:2px;
+                                                border: none;" @click="deleteImage(image.img_id)">Delete</button>
                             </div>
                         </div>
                     </div>
@@ -58,7 +81,8 @@ export default {
             token_url: "",
             files: [],
             images: [],
-            owner: 0
+            owner: 0,
+            isLoading: true,
         }
     },
     methods: {
@@ -74,7 +98,7 @@ export default {
 
         },
         onUploadFile() {
-
+            this.isLoading=true
             let data = new FormData();
             data.append('jwt', this.cookies.get('jwt'));
             data.append('folder', this.files[0].folder_name);
@@ -98,19 +122,37 @@ export default {
                 config
             ).then(
                 async (response) => {
+                    this.isLoading=false
                     alert('image upload response >' + response.data['status'])
                     location.reload();
                 }
-            )
+            ).catch(err =>{
+                this.isLoading=false
+                alert(err)
+            })
         },
 
         deleteImage(img_id) {
-            axios.defaults.headers.delete['jwt'] = this.cookies.get('jwt');
-            axios.delete(URL_GET_IMG + "/" + img_id)
-                .then(async res => {
-                    alert(res.data['status']);
-                    location.reload();
-                })
+            if (confirm("Are you sure to delete this image ?")) {
+                axios.defaults.headers.delete['jwt'] = this.cookies.get('jwt');
+                axios.delete(URL_GET_IMG + "/" + img_id)
+                    .then(async res => {
+                        alert(res.data['status']);
+                        location.reload();
+                    })
+            }
+        },
+
+
+        editImgName() {
+            let text;
+            let person = prompt("Please enter your name:", "Harry Potter");
+            if (person == null || person == "") {
+                text = "User cancelled the prompt.";
+            } else {
+                text = "Hello " + person + "! How are you today?";
+            }
+            document.getElementById("demo").innerHTML = text;
         },
 
         showImgName(path) {
@@ -148,7 +190,7 @@ export default {
                     } else {
                         axios.get(URL_GET_IMG + "/" + this.$route.params.folder_id)
                             .then(res => {
-                                console.log(res.data)
+                                this.isLoading=false
                                 this.images = res.data
                             })
                     }

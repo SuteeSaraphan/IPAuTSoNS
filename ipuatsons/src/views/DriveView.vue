@@ -1,8 +1,12 @@
-<template>
+<template> 
+
     <div>
         <SlideBar></SlideBar>
         <div class="main-home">
+            <div class="loading" v-if="this.isLoading">Loading&#8230;</div>
             <h1>Drive page</h1>
+
+            <!-- upload image here  -->
             <form style="padding:5px;">
                 <input type="file" accept="image/*" @change="uploadImage($event)" id="file-input" multiple="multiple">
                 <hr>
@@ -16,6 +20,7 @@
                 </form>
             </form>
 
+            <!--Add new folder image here  -->
             <div>
                 <form style="padding:5px;">
                     <label>Add new folder : </label>
@@ -25,12 +30,19 @@
             </div>
 
 
-
+            <!-- folder image list show here  -->
             <div style="background:#e7e5e6">
                 <ul style="padding:5px;">
                     <li v-for="file in files" v-bind:key="file.id" style="margin-top: 5px;margin-bottom: 5px;">
-                        <div style="display:flex; flex-direction: row;justify-content:space-between;align-items:center;">
-                            <div style="color:black;padding:10px" @click="enterFolder(file.folder_id)">{{ file.folder_name }}</div>
+                    
+                        <div style="display : flex; 
+                             flex-direction : row;
+                             justify-content: space-between;
+                             align-items : center;">
+
+                            <div style="color:black;padding:10px" @click="enterFolder(file.folder_id)">{{file.folder_name}}</div>
+
+                            <!-- dropUp list here  -->
                             <div class="dropup">
                                 <button class="dropbtn">Option</button>
                                 <div class="dropup-content">
@@ -38,6 +50,8 @@
                                     <a href="#">Edit name</a>
                                 </div>
                             </div>
+
+
                         </div>
                         <hr>
                     </li>
@@ -68,7 +82,8 @@ export default {
         return {
             selectedFile: [],
             token_url: "",
-            files: []
+            files: [],
+            isLoading: true,
         }
     },
     methods: {
@@ -84,6 +99,7 @@ export default {
 
         },
         onUploadFile() {
+            this.isLoading=true
             if (this.selectedFile.length > 0) {
                 const URL = 'http://127.0.0.1:8000/api/upload_image';
                 let data = new FormData();
@@ -109,9 +125,15 @@ export default {
                     config
                 ).then(
                     async (response) => {
+                        this.isLoading=false
                         alert('image upload response >' + response.data['status'])
                         location.reload();
                     }
+                ).catch(err => {
+                    this.isLoading=false
+                    alert(err)
+                }
+                    
                 )
             } else {
                 alert('Please selected file before upload')
@@ -148,13 +170,15 @@ export default {
 
 
         deleteFolder(folder_id) {
-            alert('on delete');
-            axios.defaults.headers.delete['jwt'] = this.cookies.get('jwt');
-            axios.delete("http://127.0.0.1:8000/api/folder_img/"+folder_id)
-                .then(async res => {
-                    alert(res.data['status']);
-                    location.reload();
-                })
+            if (confirm("Are you sure to delete this folder ?")) {
+                alert('on delete');
+                axios.defaults.headers.delete['jwt'] = this.cookies.get('jwt');
+                axios.delete("http://127.0.0.1:8000/api/folder_img/" + folder_id)
+                    .then(async res => {
+                        alert(res.data['status']);
+                        location.reload();
+                    })
+            }
         }
 
 
@@ -173,7 +197,10 @@ export default {
             axios.defaults.headers.get['jwt'] = this.cookies.get('jwt');
             const URL = 'http://127.0.0.1:8000/api/folder_img';
             axios.get(URL)
-                .then(res => this.files = res.data)
+                .then(res => {
+                    this.files = res.data;
+                    this.isLoading = false
+                })
                 .catch(err => console.log(err.data))
 
         }
