@@ -23,7 +23,7 @@
 
 
                             <img style='display:block; 
-                                        width:250px;
+                                        width:200px;
                                         height:200px;
                                         object-fit: scale-down; 
                                         border: 1px; 
