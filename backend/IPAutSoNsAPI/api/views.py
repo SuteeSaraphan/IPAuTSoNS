@@ -1,4 +1,5 @@
 from ctypes import sizeof
+from io import BytesIO, StringIO
 from lib2to3.pgen2 import token
 from msilib.schema import Error
 from operator import length_hint
@@ -9,7 +10,7 @@ from time import sleep
 from django.shortcuts import render
 from requests import delete
 from rest_framework import generics
-from .models import Folder_img, Image, Job, User
+from .models import Folder_img, Job, User, Image_file
 from .serializers import JobSerializer, UserSerializer, ImageSerializer, FolderImageSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -21,6 +22,7 @@ from django.core.files.base import ContentFile
 import os
 import base64
 from pathlib import Path
+from PIL import Image
 
 
 # for Authentication user with JWT
@@ -48,6 +50,8 @@ class RegisterView(APIView):
         return Response(serializer.data)
 
 # for user login
+
+
 class LoginView(APIView):
     def post(self, reqest):
         email = reqest.data['email']
@@ -121,40 +125,86 @@ class PasswordView(APIView):
 
 class ImageView(APIView):
 
-    #send image
-    def get(self, request, folder_id):
-        temp_respond = []
-        token = request.META['HTTP_JWT']
-        payload = Authentication(token)
+    # send image to api
+    def get(self, request, type, folder_id):
+        if (type == "all"):
+            temp_respond = []
+            token = request.META['HTTP_JWT']
+            payload = Authentication(token)
 
-        folder_serializer = FolderImageSerializer(
-            Folder_img.objects.get(folder_id=folder_id)
-        )
+            folder_serializer = FolderImageSerializer(
+                Folder_img.objects.get(folder_id=folder_id)
+            )
 
-        img_serializer = ImageSerializer(
-            Image.objects.all().filter(user_id=payload['id'], img_folder=folder_serializer.data['folder_name']), many=True)
-        for i in img_serializer.data:
-            try:
-                with open('C:/IPAuTSoNS/backend/IPAutSoNsAPI'+os.path.join(i['path']),'rb') as image_file:
-                    image_data = base64.b64encode(image_file.read())
-                    temp_img_data ={
-                        'img_id':i['img_id'],
-                        'user_id':i['user_id'],
-                        'img_type':i['img_type'],
-                        'img_folder':i['img_folder'],
-                        'path':i['path'],
-                        'img_size':i['img_size'],
-                        'img_data' : image_data
-                    }
-                    temp_respond.append(temp_img_data)
+            img_serializer = ImageSerializer(
+                Image_file.objects.all().filter(user_id=payload['id'], img_folder=folder_serializer.data['folder_name']), many=True)
+            for i in img_serializer.data:
+                file_type = (i['img_type'].split('/'))[1]
+                try:
+                    with Image.open('C:/IPAuTSoNS/backend/IPAutSoNsAPI'+str(i['path'])) as image_file_temp:
+                        percentage = 0.1
+                        width, height = image_file_temp.size
+                        resized_dimensions = (
+                            int(width * percentage), int(height * percentage))
+                        resized_image = image_file_temp.resize(
+                            resized_dimensions)
+                        buffer = BytesIO()
+                        resized_image.save(buffer, format=file_type)
+                        image_data = base64.b64encode(buffer.getvalue())
 
+                        temp_img_data = {
+                            'img_id': i['img_id'],
+                            'user_id': i['user_id'],
+                            'img_type': i['img_type'],
+                            'img_folder': i['img_folder'],
+                            'path': i['path'],
+                            'img_size': i['img_size'],
+                            'img_data': image_data
+                        }
+                        temp_respond.append(temp_img_data)
 
-            except BaseException as error:
-                print(error)
+                except BaseException as error:
+                    print(error)
 
-        return Response(temp_respond)
+            return Response(temp_respond)
+        elif (type == 'once'):
+            temp_respond = []
+            token = request.META['HTTP_JWT']
+            payload = Authentication(token)
+            img_serializer = ImageSerializer(
+                Image_file.objects.all().filter(img_id=folder_id), many=True)
+            for i in img_serializer.data:
+                file_type = (i['img_type'].split('/'))[1]
+                try:
+                    with Image.open('C:/IPAuTSoNS/backend/IPAutSoNsAPI'+str(i['path'])) as image_file_temp:
+                        percentage = 1
+                        width, height = image_file_temp.size
+                        resized_dimensions = (
+                            int(width * percentage), int(height * percentage))
+                        resized_image = image_file_temp.resize(
+                            resized_dimensions)
+                        buffer = BytesIO()
+                        resized_image.save(buffer, format=file_type)
+                        image_data = base64.b64encode(buffer.getvalue())
 
-    #add image
+                        temp_img_data = {
+                            'img_id': i['img_id'],
+                            'user_id': i['user_id'],
+                            'img_type': i['img_type'],
+                            'img_folder': i['img_folder'],
+                            'path': i['path'],
+                            'img_size': i['img_size'],
+                            'img_data': image_data
+                        }
+                        temp_respond.append(temp_img_data)
+
+                except BaseException as error:
+                    print(error)
+
+            return Response(temp_respond)
+
+    # add image
+
     def post(self, request):
         token = request.data['jwt']
         folder = request.data['folder']
@@ -181,14 +231,14 @@ class ImageView(APIView):
 
         return Response({"status": "Upload done!"})
 
-    #delete image
+    # delete image
     def delete(self, request, folder_id):
         token = request.META['HTTP_JWT']
         payload = Authentication(token)
         img_id = folder_id
-        image = Image.objects.get(img_id=img_id)
+        image = Image_file.objects.get(img_id=img_id)
         try:
-            os.remove('C:/IPAuTSoNS/backend/IPAutSoNsAPI/media/'+os.path.join(str(image.path)))
+            os.remove('C:/IPAuTSoNS/backend/IPAutSoNsAPI/media/'+str(image.path))
         except BaseException as error:
             print(error)
             return Response({"status": "Delete fail ! try again"})
@@ -196,16 +246,13 @@ class ImageView(APIView):
             image.delete()
             return Response({"status": "Delete done!"})
 
-        
-
-        
 
 class AllImageView(APIView):
     def get(self, request):
         token = request.META['HTTP_JWT']
         payload = Authentication(token)
         serializer = ImageSerializer(
-            Image.objects.all().filter(user_id=payload['id']), many=True)
+            Image_file.objects.all().filter(user_id=payload['id']), many=True)
         return Response(serializer.data)
 
 
@@ -234,7 +281,7 @@ class FolderView(APIView):
             serializer.save()
             return Response({'status': '!!! Create new folder complete !!!'})
 
-    #send image folder
+    # send image folder
     def get(self, request):
         token = request.META['HTTP_JWT']
         payload = Authentication(token)
@@ -242,7 +289,7 @@ class FolderView(APIView):
             Folder_img.objects.all().filter(user_id=payload['id']), many=True)
         return Response(serializer.data)
 
-    #delete image folder
+    # delete image folder
     def delete(self, request, folder_id):
         token = request.META['HTTP_JWT']
         payload = Authentication(token)
@@ -254,13 +301,11 @@ class FolderView(APIView):
             return Response({"status": "Delete fail ! try again"})
         else:
             print(folder_img.folder_name)
-            del_img = Image.objects.all().filter(img_folder = folder_img.folder_name)
+            del_img = Image_file.objects.all().filter(img_folder=folder_img.folder_name)
             folder_img.delete()
             del_img.delete()
-            
 
             return Response({"status": "Delete done !"})
-
 
 
 class MakeDockerFile(APIView):

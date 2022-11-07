@@ -10,7 +10,7 @@ def upload_path(instance,filename):
         return os.path.join("%s" % instance.user_id,"root","%s" % instance.img_folder,filename)
 
 
-class Image(models.Model):
+class Image_file(models.Model):
     img_id = models.CharField(max_length=100, primary_key=True)
     user_id = models.CharField(max_length=100 , null=False)
     img_type = models.CharField(max_length=20, null=False)

@@ -3,6 +3,16 @@
         <SlideBar></SlideBar>
         <div class="main-home">
             <div class="loading" v-if="this.isLoading">Loading&#8230;</div>
+            <div class="full-img" v-if="this.fullShow">
+                <img style='display:block; 
+                                        width:1000px;
+                                        height:900px;
+                                        object-fit: scale-down; 
+                                        border: 1px; 
+                                        image-rendering: auto;' :src="`data:image/jpeg;base64,${this.fullImage.img_data}`"
+                                alt="{{ this.fullImage.img_id }}">
+                <button  @click="this.fullShow=false">close</button>
+            </div>
             <h1>Image Folder page</h1>
             <h2 v-if="this.files.length == 0">Folder name : Untitle</h2>
             <h2 v-if="this.files.length != 0">Folder name : {{ this.files[0].folder_name }}</h2>
@@ -19,7 +29,7 @@
             <div class="row">
                 <div class="column" v-for="image in this.images" v-bind:key="image.img_id">
                     <div class="content">
-                        <div class="card">
+                        <div class="card" >
 
 
                             <img style='display:block; 
@@ -28,7 +38,8 @@
                                         object-fit: scale-down; 
                                         border: 1px; 
                                         image-rendering: auto;' :src="`data:image/jpeg;base64,${image.img_data}`"
-                                alt="{{ image.img_id }}">
+                                alt="{{ image.img_id }}"
+                                @click="fullImageView(image.img_id)">
 
 
                             <div class="container"
@@ -81,8 +92,10 @@ export default {
             token_url: "",
             files: [],
             images: [],
+            fullImage : null,
             owner: 0,
             isLoading: true,
+            fullShow: false
         }
     },
     methods: {
@@ -130,6 +143,17 @@ export default {
                 this.isLoading=false
                 alert(err)
             })
+        },
+
+        fullImageView(img_id){
+            this.fullImage = null
+            this.fullShow=true
+            axios.defaults.headers.get['jwt'] = this.cookies.get('jwt');
+            axios.get(URL_GET_IMG + "/once/" + img_id)
+                            .then(res => {
+                                this.fullImage = res.data[0]
+                                console.log(this.fullImage)
+                            })
         },
 
         deleteImage(img_id) {
@@ -188,8 +212,9 @@ export default {
                         alert("You can not access this folder");
                         router.push('/drive')
                     } else {
-                        axios.get(URL_GET_IMG + "/" + this.$route.params.folder_id)
+                        axios.get(URL_GET_IMG + "/all/" + this.$route.params.folder_id)
                             .then(res => {
+                                console.log(res.data)
                                 this.isLoading=false
                                 this.images = res.data
                             })

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Folder_img, Job, User, Image
+from .models import Folder_img, Job, User, Image_file
 
 
 class JobSerializer(serializers.ModelSerializer):
@@ -53,7 +53,7 @@ class ImageSerializer(serializers.ModelSerializer):
             'img_size',
             'img_folder'
         )
-        model = Image
+        model = Image_file
 
 
 class FolderImageSerializer(serializers.ModelSerializer):
