@@ -1,0 +1,43 @@
+title การใช้งาน Marketplace สำหรับขาย Weight ที่ผู้ใช้ได้ทำการ Train
+
+participant ผู้ใช้
+participant Front-End
+participant Back-End
+participant Database
+participant Server
+
+
+activate ผู้ใช้
+ผู้ใช้->Front-End: เข้าใช้งานหน้า Marketplace ในส่วนของการโพสต์งาน
+activate Front-End
+Front-End->Back-End: ขอข้อมูลการโพสต์งานของผู้ใช้
+activate Back-End
+Back-End->Database: ขอข้อมูลการโพสต์งานของผู้ใช้
+activate Database
+Database-->Back-End: ข้อมูลโพสต์งานของผู้ใช้
+deactivate Database
+Back-End-->Front-End: ข้อมูลโพสต์งานของผู้ใช้
+deactivate Back-End
+Front-End-->ผู้ใช้: แสดงโพสต์งานของผู้ใช้
+ผู้ใช้->Front-End: สร้างโพสต์งานใหม่
+
+
+Front-End->Back-End: อัพโหลดไฟล์ Weight และ เลือก Model ที่ใช้งาน
+activate Back-End
+Back-End-->Front-End: ตรวจสอบการใช้งาน Weight คู่กับ Model
+Front-End-->ผู้ใช้: แสดงผลการตรวจสอบการใช้งาน Weight คู่กับ Model
+ผู้ใช้-->Front-End: กรอกข้อมูลของ Weight เพิ่มเติม และ รูปตัวอย่างการใช้งาน
+Front-End->Back-End: จัดเก็บข้อมูลลงฐานข้อมูล
+Back-End->Database: จัดเก็บข้อมูลของโพสต์การขาย Weight ของผู้ใช้
+activate Database
+
+Database-->Server: จัดเก็บไฟล์ Weight และ ภาพตัวอย่างการใช้งาน
+deactivate Database
+activate Server
+Server-->Back-End: จัดเก็บเสร็จสิ้น
+deactivate Server
+Back-End-->Front-End: โพสต์งาน Weight เสร็จสิ้น
+deactivate Back-End
+Front-End-->ผู้ใช้: โพสต์งานเสร็จสิ้น
+deactivate Front-End
+deactivate ผู้ใช้

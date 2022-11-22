@@ -1,0 +1,38 @@
+title การจัดเก็บไฟล์ Weight ที่ผู้ใช้ได้ทำการ Train
+
+participant ผู้ใช้
+participant Front-End
+participant Back-End
+participant Database
+participant Server
+
+
+activate ผู้ใช้
+ผู้ใช้->Front-End: เข้าใช้งานหน้า Drive จัดเก็บไฟล์
+activate Front-End
+Front-End->Back-End: ขอข้อมูลการจัดเก็บไฟล์ภาพของผู้ใช้
+activate Back-End
+Back-End->Database: ขอข้อมูลการจัดเก็บไฟล์ภาพของผู้ใช้
+activate Database
+Database-->Back-End: ข้อมูลไฟล์ภาพของผู้ใช้
+deactivate Database
+Back-End-->Front-End: ข้อมูลไฟล์ภาพของผู้ใช้
+deactivate Back-End
+Front-End-->ผู้ใช้: แสดงไฟล์ภาพของผู้ใช้
+ผู้ใช้->Front-End: อัพโหลดไฟล์ภาพ
+
+
+Front-End->Back-End: อัพโหลดไฟล์ภาพ และ ข้อมูลผู้ใช้
+activate Back-End
+Back-End->Database: จัดเก็บไฟล์ภาพ และ ข้อมูลผู้ใช้
+activate Database
+Database->Server: ส่งข้อมูลจัดเก็บไฟล์ภาพ
+deactivate Database
+activate Server
+Server-->Back-End: ส่งข้อมูลการจัดเก็บไฟล์ภาพของผู้ใช้
+deactivate Server
+Back-End-->Front-End: ส่งข้อมูลไฟล์ภาพของผู้ใช้
+deactivate Back-End
+Front-End->ผู้ใช้: แสดงไฟล์ภาพของผู้ใช้ที่เก็บไว้ในระบบที่จัดเก็บเสร็จสิ้น
+deactivate Front-End
+deactivate ผู้ใช้
