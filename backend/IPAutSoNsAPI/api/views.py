@@ -267,7 +267,7 @@ class FolderView(APIView):
         except OSError as error:
             print(error)
             return Response({'status': '!!! Somthing is wrong try again !!!'})
-        else:
+        finally:
             folder_data = {
                 'folder_id': request.data['folder_id'],
                 'user_id': payload['id'],
