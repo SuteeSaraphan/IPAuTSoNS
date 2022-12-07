@@ -3,15 +3,15 @@
     <SlideBar></SlideBar>
 
     <div class="main-content">
-		<header style="color: #000;">
+		<header>
 			<div class="menu-toggle">
 				<label for="sidebar-toggle">
-					<span class="las la-bars"></span>
+					<span style="color:#000 ;" class="las la-bars"></span>
 				</label>
 			</div>
 			<span class="bars"></span>
 
-			<div style="color: #000;">
+			<div style="color:#000 ;">
 				asd
 			</div>
 		</header>

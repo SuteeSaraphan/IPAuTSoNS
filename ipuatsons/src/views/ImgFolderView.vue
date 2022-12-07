@@ -1,7 +1,20 @@
 <template>
     <div>
         <SlideBar></SlideBar>
-        <div class="main-home">
+        <div class="main-content">
+            <header>
+			<div class="menu-toggle">
+				<label for="sidebar-toggle">
+					<span style="color:#000 ;" class="las la-bars"></span>
+				</label>
+			</div>
+			<span class="bars"></span>
+
+			<div style="color:#000 ;">
+				asd
+			</div>
+		</header>
+        <main>
             <div class="loading" v-if="this.isLoading">Loading&#8230;</div>
             <div class="full-img" v-if="this.fullShow">
                 <img style='display:block; 
@@ -30,8 +43,6 @@
                 <div class="column" v-for="image in this.images" v-bind:key="image.img_id">
                     <div class="content">
                         <div class="card" >
-
-
                             <img style='display:block; 
                                         width:200px;
                                         height:200px;
@@ -41,10 +52,8 @@
                                 alt="{{ image.img_id }}"
                                 @click="fullImageView(image.img_id)">
 
-
                             <div class="container"
                                 style="display:flex; flex-direction: row;justify-content:space-between;align-items:center;">
-
                                 <div style="padding:2px; 
                                             text-overflow: ellipsis; 
                                             overflow: hidden; 
@@ -62,7 +71,7 @@
                     </div>
                 </div>
             </div>
-
+        </main>
         </div>
     </div>
 </template>

@@ -40,7 +40,7 @@ class Job(models.Model):
     img_selected = models.CharField(max_length=500)
     persent = models.IntegerField(default=0)
     job_status = models.CharField(max_length=100,default=0)
-    create_time = models.DateTimeField(editable=False, auto_now_add=True)
+    create_time = models.DateTimeField(editable=False, auto_now_add=False)
 
     def __str__(self):
         return self.job_id

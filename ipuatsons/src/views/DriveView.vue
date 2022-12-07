@@ -1,8 +1,27 @@
-<template> 
+<template>
 
     <div>
         <SlideBar></SlideBar>
-        <div class="main-home">
+
+
+
+        <div class="main-content">
+
+            <header>
+                <div class="menu-toggle">
+                    <label for="sidebar-toggle">
+                        <span style="color:#000 ;" class="las la-bars"></span>
+                    </label>
+                </div>
+                <span class="bars"></span>
+
+                <div style="color:#000 ;">
+                    asd
+                </div>
+            </header>
+
+
+            <main>
             <div class="loading" v-if="this.isLoading">Loading&#8230;</div>
             <h1>Drive page</h1>
 
@@ -34,13 +53,14 @@
             <div style="background:#e7e5e6">
                 <ul style="padding:5px;">
                     <li v-for="file in files" v-bind:key="file.id" style="margin-top: 5px;margin-bottom: 5px;">
-                    
+
                         <div style="display : flex; 
                              flex-direction : row;
                              justify-content: space-between;
                              align-items : center;">
 
-                            <div style="color:black;padding:10px" @click="enterFolder(file.folder_id)">{{file.folder_name}}</div>
+                            <div style="color:black;padding:10px" @click="enterFolder(file.folder_id)">
+                                {{ file.folder_name }}</div>
 
                             <!-- dropUp list here  -->
                             <div class="dropup">
@@ -60,7 +80,7 @@
             </div>
 
 
-
+        </main>
         </div>
     </div>
 </template>
@@ -99,7 +119,7 @@ export default {
 
         },
         onUploadFile() {
-            this.isLoading=true
+            this.isLoading = true
             if (this.selectedFile.length > 0) {
                 const URL = 'http://127.0.0.1:8000/api/upload_image';
                 let data = new FormData();
@@ -125,15 +145,15 @@ export default {
                     config
                 ).then(
                     async (response) => {
-                        this.isLoading=false
+                        this.isLoading = false
                         alert('image upload response >' + response.data['status'])
                         location.reload();
                     }
                 ).catch(err => {
-                    this.isLoading=false
+                    this.isLoading = false
                     alert(err)
                 }
-                    
+
                 )
             } else {
                 this.isLoading = false
@@ -203,7 +223,8 @@ export default {
                 })
                 .catch(err => {
                     this.isLoading = false
-                    alert(err.data)})
+                    alert(err.data)
+                })
 
         }
     }

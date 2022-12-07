@@ -267,7 +267,7 @@ class FolderView(APIView):
         except OSError as error:
             print(error)
             return Response({'status': '!!! Somthing is wrong try again !!!'})
-        finally:
+        finally :
             folder_data = {
                 'folder_id': request.data['folder_id'],
                 'user_id': payload['id'],
@@ -316,7 +316,8 @@ class MakeDockerFile(APIView):
         path = request.data['path']
         num_img = request.data['num_img']
         img_selected = request.data['img_selected']
-
+        create_time = datetime.datetime.now()
+        print(create_time)
         payload = Authentication(token)
 
         user = User.objects.get(user_id=payload['id'])
@@ -325,9 +326,6 @@ class MakeDockerFile(APIView):
 kind: Job
 metadata:
     name: """+job_id+"""
-    namespace: jobdemonamespace
-    labels:
-        job_name: """+job_id+"""
 spec:
     template:
         metadata:
