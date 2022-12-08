@@ -54,9 +54,10 @@ class RegisterView(APIView):
 
 class LoginView(APIView):
     def post(self, reqest):
+        print(reqest.data)
         email = reqest.data['email']
         password = reqest.data['password']
-        user = User.objects.filter(email=email).first()
+        user = User.objects.get(email=email)
 
         if user is None:
             raise AuthenticationFailed("Email not found!")
@@ -267,7 +268,7 @@ class FolderView(APIView):
         except OSError as error:
             print(error)
             return Response({'status': '!!! Somthing is wrong try again !!!'})
-        finally :
+        else:
             folder_data = {
                 'folder_id': request.data['folder_id'],
                 'user_id': payload['id'],

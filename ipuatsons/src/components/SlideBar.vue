@@ -60,7 +60,7 @@
           <li>
             <a href="">
               <span class="ri-settings-line"></span>
-              User Setting
+              <router-link to="/setting">User Setting</router-link>
             </a>
           </li>
         </ul>
@@ -71,7 +71,7 @@
           <li>
             <a href="">
               <span class="ri-camera-lens-fill"></span>
-              ImageProcessing App
+              <router-link to="/img_app">ImageProcessing App</router-link>
             </a>
           </li>
           <li>

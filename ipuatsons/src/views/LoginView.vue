@@ -1,12 +1,12 @@
 <template>
     <div class="login-regis">
         <div class="menu">
-            <form style="width:25%" >
+            <form style="width:25%">
                 <img src="@/img/logo.png" style="width:250px" alt="">
                 <div style="text-align: left">
                     <label style="font-size: 15px">Email :</label>
                     <p>
-                        <input type="text" @change="(e) => setUser({ ...user, email: e.target.value })"
+                        <input id="email" type="text" @change="(e) => setUser({ ...user, email: e.target.value })"
                             style="color:black" />
                     </p>
                 </div>
@@ -14,14 +14,15 @@
                 <div style="text-align: left">
                     <label style="font-size: 15px">Password :</label>
                     <p>
-                        <input type="password" @change="(e) => setUser({ ...user, password: e.target.value })"
+                        <input id="password" type="password" @change="(e) => setUser({ ...user, password: e.target.value })"
                             style="color:black" />
                     </p>
                 </div>
 
                 <div style="padding: 7px">
-                    <input type="button" value="Login" @click="login()"/>
-                    <input type="button" value="Register" style="color: white;background-color: #5294e2;" @click="go_register()" />
+                    <input type="button" value="Login" @click="login()" />
+                    <input type="button" value="Register" style="color: white;background-color: #5294e2;"
+                        @click="go_register()" />
                 </div>
             </form>
         </div>
@@ -51,7 +52,12 @@ export default {
     },
     methods: {
         login() {
-            axios.post('http://127.0.0.1:8000/api/login',
+            if(document.getElementById('email').value.length == 0){
+                alert('Email is empty')
+            }else if(document.getElementById('password').value.length == 0){
+                alert('Password is empty')
+            }else{
+                axios.post('http://127.0.0.1:8000/api/login',
                 {
                     'email': this.user.email,
                     'password': this.user.password
@@ -59,15 +65,13 @@ export default {
             )
                 .then(async response => {
                     this.cookies.set('jwt', response.data.jwt, '1h')
-                    axios.defaults.headers.get['jwt'] = this.cookies.get('jwt');
-                    axios.get('http://127.0.0.1:8000/api/user')
-                        .then(async res => {
-                            res
-                            router.push('/home')
-                        }).catch(error => {
-                            alert(error);
-                        })
+                    router.push('/home');
+                }).catch(async error=>{
+                    alert(error.response.data['detail'])
                 })
+            }
+
+                
         },
         go_register() {
             router.push('/register')

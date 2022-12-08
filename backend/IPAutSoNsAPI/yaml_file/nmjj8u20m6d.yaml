@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+    name: nmjj8u20m6d
+spec:
+    template:
+        metadata:
+            labels:
+                app: my-job-pod-id
+            name: my-job-pod-id
+        spec:
+            containers:
+                - image: "shuffler:latest"
+                imagePullPolicy: Never
+                name: "shuffler"
+                command:
+                    - python3
+                    - -u
+                    - ./test.py i6r6mvxzco nmjj8u20m6d 456456 123 123
+                args:
+                    - "Kubernetes"
+            restartPolicy: Never

@@ -1,11 +1,23 @@
 <template>
   <div>
     <SlideBar></SlideBar>
-    <div class="main-home">
+    <div class="main-content">
+      <header>
+			<div class="menu-toggle">
+				<label for="sidebar-toggle">
+					<span style="color:#000 ;" class="las la-bars"></span>
+				</label>
+			</div>
+			<span class="bars"></span>
+
+			<div style="color:#000 ;">
+				asd
+			</div>
+		</header>
+    <main>
       <h1>Image Application page</h1>
 
       <form style="padding:15px">
-
         <div>
           <label>app_id :</label>
           <p>
@@ -50,10 +62,11 @@
         <p>status : {{ job.job_status }}</p>
 
         <hr>
+        
       </div>
 
 
-
+      </main>
     </div>
   </div>
 </template>
@@ -91,6 +104,8 @@ export default {
       ).then(async (respond) => {
         alert(respond.data.status)
         //console.log(respond)
+      }).catch(async error =>{
+        alert(error)
       })
     }
   },
@@ -99,7 +114,8 @@ export default {
       alert("You are not login yet , please login fisrt")
       router.push('/login')
     } else {
-      axios.get('http://127.0.0.1:8000/api/jobs',).then(async (respond) => this.jobs = respond.data)
+      axios.get('http://127.0.0.1:8000/api/jobs',)
+      .then(async (respond) => this.jobs = respond.data)
     }
 
   },

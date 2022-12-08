@@ -1,44 +1,59 @@
 <template>
     <div>
         <SlideBar></SlideBar>
-        <div class="main-home">
-            <div class="login-regis">
-                <div class="menu">
-
-                    <form style="padding:15px">
-                        <h1>Profile setting Page</h1>
-                        <div style="text-align: left">
-                            <label style="font-size: 15px">Email :</label>
-                            <p>
-                                <input id="email" type="email" style="color:black" disabled="True" />
-                            </p>
-                        </div>
-                        <div style="text-align: left">
-                            <label style="font-size: 15px">Firstname :</label>
-                            <p>
-                                <input id="first_name" type="text" style="color:black" />
-                            </p>
-                        </div>
-                        <div style="text-align: left">
-                            <label style="font-size: 15px">Lastname :</label>
-                            <p>
-                                <input id="last_name" type="text" style="color:black" />
-                            </p>
-                        </div>
-
-
-
-
-                        <div style="padding: 10px">
-                            <input type="button" value="Submit" style="color:black" @click="edit_profile()" />
-                            <input type="button" value="Clear" style="color:black" @click="clear()" />
-                            <input type="button" value="Change password" style="width:85%" @click="change_password()">
-                        </div>
-                    </form>
+        <div class="main-content">
+            <header>
+                <div class="menu-toggle">
+                    <label for="sidebar-toggle">
+                        <span style="color:#000 ;" class="las la-bars"></span>
+                    </label>
                 </div>
+                <span class="bars"></span>
+
+                <div style="color:#000 ;">
+                    asd
+                </div>
+            </header>
+            <main>
+                <div class="setting">
+                    <div class="menu">
+
+                        <form style="padding:15px">
+                            <h1>Profile setting Page</h1>
+                            <div style="text-align: left">
+                                <label style="font-size: 15px">Email :</label>
+                                <p>
+                                    <input id="email" type="email" style="color:black" disabled="True" />
+                                </p>
+                            </div>
+                            <div style="text-align: left">
+                                <label style="font-size: 15px">Firstname :</label>
+                                <p>
+                                    <input id="first_name" type="text" style="color:black" />
+                                </p>
+                            </div>
+                            <div style="text-align: left">
+                                <label style="font-size: 15px">Lastname :</label>
+                                <p>
+                                    <input id="last_name" type="text" style="color:black" />
+                                </p>
+                            </div>
 
 
-            </div>
+
+
+                            <div style="padding: 10px">
+                                <input type="button" value="Submit" style="color:black" @click="edit_profile()" />
+                                <input type="button" value="Clear" style="color:black" @click="clear()" />
+                                <input type="button" value="Change password" style="width:85%"
+                                    @click="change_password()">
+                            </div>
+                        </form>
+                    </div>
+
+
+                </div>
+            </main>
         </div>
     </div>
 

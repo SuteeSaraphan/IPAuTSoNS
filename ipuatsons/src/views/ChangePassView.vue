@@ -2,7 +2,7 @@
     <div>
         <SlideBar></SlideBar>
         <div class="main-home">
-            <div class="login-regis">
+            <div class="setting">
                 <div class="menu">
 
                     <form style="padding:15px">
