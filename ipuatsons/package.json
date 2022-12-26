@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "serve": "vue-cli-service serve --port 80",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint"
   },
@@ -12,6 +12,7 @@
     "core-js": "^3.8.3",
     "vue": "^3.2.13",
     "vue-cookies": "^1.8.1",
+    "vue-radial-progress": "^0.3.2",
     "vue-router": "^4.0.3",
     "vue3-cookies": "^1.0.6",
     "vuex": "^4.0.0"

@@ -68,12 +68,26 @@
           <span>Applications</span>
         </div>
         <ul>
-          <li>
+
+          <!-- Real -->
+          <!-- <li>
             <a href="">
               <span class="ri-camera-lens-fill"></span>
               <router-link to="/img_app">ImageProcessing App</router-link>
             </a>
-          </li>
+          </li> -->
+          <!-- Real -->
+
+          <!-- Demo -->
+          <li>
+            <a href="">
+              <span class="ri-camera-lens-fill"></span>
+              <router-link to="/demo">ImageProcessing App</router-link>
+            </a>
+          </li>  
+          <!-- Demo -->
+
+
           <li>
             <a href="">
               <span class="ri-store-line"></span>

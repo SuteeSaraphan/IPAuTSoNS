@@ -19,14 +19,14 @@
 		<main>
 			<div class="page-header">
 				<div>
-					<h1>Ana</h1>
-					<small>asdasdsafasf</small>
+					<h1>Feed page</h1>
+					<small>ข่าวสาร</small>
 				</div>
 
 				<div class="header-actions">
 					<button>
 						<span class="las la-file-export"></span>
-						ปุ่มอะไรสักอย่าง
+						Coming Soon
 					</button>
 				</div>
 			</div>
@@ -36,40 +36,16 @@
 					<div class="card-flex">
 						<div class="card-info">
 							<div class="card-head">
-								<span style="color: #000;">อิอิย์เร็ว</span>
-								<small style="color: #000;">asdgggg</small>
+								<span style="color: #000;">Coming Soon</span>
+								<small style="color: #000;">Coming Soon</small>
 							</div>
-							<h2 style="color: #000;">1123123</h2>
-							<small style="color: #000;">2%</small>
+							<h2 style="color: #000;">Coming Soon</h2>
+							<small style="color: #000;">Coming Soon</small>
 						</div>
 					</div>
 				</div>
 
-				<div class="card-single"> 
-					<div class="card-flex">
-						<div class="card-info">
-							<div class="card-head">
-								<span style="color: #000;">ไอ้โอมมันเลว</span>
-								<small style="color: #000;">asEEEEEdgggg</small>
-							</div>
-							<h2 style="color: #000;">1123123</h2>
-							<small style="color: #000;">2%</small>
-						</div>
-					</div>
-				</div>
-
-				<div class="card-single"> 
-					<div class="card-flex">
-						<div class="card-info">
-							<div class="card-head">
-								<span style="color: #000;">EIE</span>
-								<small style="color: #000;">asdgggg</small>
-							</div>
-							<h2 style="color: #000;">1123123</h2>
-							<small style="color: #000;">2%</small>
-						</div>
-					</div>
-				</div>
+				
 
 			</div>
 		</main>

@@ -1,7 +1,6 @@
 from ctypes import sizeof
 from io import BytesIO, StringIO
 from lib2to3.pgen2 import token
-from msilib.schema import Error
 from operator import length_hint
 import random
 import shutil
@@ -54,7 +53,6 @@ class RegisterView(APIView):
 
 class LoginView(APIView):
     def post(self, reqest):
-        print(reqest.data)
         email = reqest.data['email']
         password = reqest.data['password']
         user = User.objects.get(email=email)
