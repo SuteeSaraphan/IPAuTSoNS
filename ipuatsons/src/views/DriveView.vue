@@ -22,65 +22,68 @@
 
 
             <main>
-            <div class="loading" v-if="this.isLoading">Loading&#8230;</div>
-            <h1>Drive page</h1>
+                <div class="loading" v-if="this.isLoading">Loading&#8230;</div>
+                <h1>Drive page</h1>
 
-            <!-- upload image here  -->
-            <form style="padding:5px;">
-                <input type="file" accept="image/*" @change="uploadImage($event)" id="file-input" multiple="multiple">
-                <hr>
-                <label>Folder : </label>
-                <button type="button" @click="onUploadFile" style="color:black">Upload</button>
-                <form>
-                    <select id="folder">
-                        <option v-for="file in files" v-bind:key="file.id" style="color:black">{{ file.folder_name }}
-                        </option>
-                    </select>
-                </form>
-            </form>
-
-            <!--Add new folder image here  -->
-            <div>
+                <!-- upload image here  -->
                 <form style="padding:5px;">
-                    <label>Add new folder : </label>
-                    <input type="text" id="new_folder">
-                    <button type="button" @click="addNewFolder" style="color:black">Add new folder</button>
+                    <input type="file" accept="image/*" @change="uploadImage($event)" id="file-input"
+                        multiple="multiple">
+                    <hr>
+                    <label>Folder : </label>
+                    <button type="button" @click="onUploadFile" style="color:black">Upload</button>
+                    <form>
+                        <select id="folder">
+                            <option v-for="file in files" v-bind:key="file.id" style="color:black">{{
+                                file.folder_name
+                            }}
+                            </option>
+                        </select>
+                    </form>
                 </form>
-            </div>
+
+                <!--Add new folder image here  -->
+                <div>
+                    <form style="padding:5px;">
+                        <label>Add new folder : </label>
+                        <input type="text" id="new_folder">
+                        <button type="button" @click="addNewFolder" style="color:black">Add new folder</button>
+                    </form>
+                </div>
 
 
-            <!-- folder image list show here  -->
-            <div style="background:#e7e5e6">
-                <ul style="padding:5px;">
-                    <li v-for="file in files" v-bind:key="file.id" style="margin-top: 5px;margin-bottom: 5px;">
+                <!-- folder image list show here  -->
+                <div style="background:#e7e5e6">
+                    <ul style="padding:5px;">
+                        <li v-for="file in files" v-bind:key="file.id" style="margin-top: 5px;margin-bottom: 5px;">
 
-                        <div style="display : flex; 
+                            <div style="display : flex; 
                              flex-direction : row;
                              justify-content: space-between;
                              align-items : center;">
 
-                            <div style="color:black;padding:10px" @click="enterFolder(file.folder_id)">
-                                {{ file.folder_name }}</div>
+                                <div style="color:black;padding:10px" @click="enterFolder(file.folder_id)">
+                                    {{ file.folder_name }}</div>
 
-                            <!-- dropUp list here  -->
-                            <div class="dropup">
-                                <button class="dropbtn">Option</button>
-                                <div class="dropup-content">
-                                    <a @click="deleteFolder(file.folder_id)">Delete</a>
-                                    <a href="#">Edit name</a>
+                                <!-- dropUp list here  -->
+                                <div class="dropup">
+                                    <button class="dropbtn">Option</button>
+                                    <div class="dropup-content">
+                                        <a @click="deleteFolder(file.folder_id)">Delete</a>
+                                        <a href="#">Edit name</a>
+                                    </div>
                                 </div>
+
+
                             </div>
+                            <hr>
+                        </li>
+
+                    </ul>
+                </div>
 
 
-                        </div>
-                        <hr>
-                    </li>
-
-                </ul>
-            </div>
-
-
-        </main>
+            </main>
         </div>
     </div>
 </template>

@@ -84,7 +84,7 @@
               <span class="ri-camera-lens-fill"></span>
               <router-link to="/demo">ImageProcessing App</router-link>
             </a>
-          </li>  
+          </li>
           <!-- Demo -->
 
 

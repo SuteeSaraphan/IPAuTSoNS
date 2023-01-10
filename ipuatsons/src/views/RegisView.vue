@@ -45,7 +45,8 @@
 
 
                 <div style="padding: 15px">
-                    <input type="button" value="Regis" style="color:white;background-color: #5294e2;" @click="register()" />
+                    <input type="button" value="Regis" style="color:white;background-color: #5294e2;"
+                        @click="register()" />
                     <input type="button" value="Clear" style="color:black" @click="clear()" />
                 </div>
             </form>

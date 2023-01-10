@@ -3,67 +3,67 @@
     <SlideBar></SlideBar>
     <div class="main-content">
       <header>
-			<div class="menu-toggle">
-				<label for="sidebar-toggle">
-					<span style="color:#000 ;" class="las la-bars"></span>
-				</label>
-			</div>
-			<span class="bars"></span>
-
-			<div style="color:#000 ;">
-				asd
-			</div>
-		</header>
-    <main>
-      <h1>Image Application page</h1>
-
-      <form style="padding:15px">
-        <div>
-          <label>app_id :</label>
-          <p>
-            <input id="app_id" type="text" style="color:black" />
-          </p>
+        <div class="menu-toggle">
+          <label for="sidebar-toggle">
+            <span style="color:#000 ;" class="las la-bars"></span>
+          </label>
         </div>
+        <span class="bars"></span>
 
-
-        <div>
-          <label>path :</label>
-          <p>
-            <input id="path" type="text" style="color:black" />
-          </p>
+        <div style="color:#000 ;">
+          asd
         </div>
+      </header>
+      <main>
+        <h1>Image Application page</h1>
 
-        <div>
-          <label>num_img :</label>
-          <p>
-            <input id="num_img" type="text" style="color:black" />
-          </p>
+        <form style="padding:15px">
+          <div>
+            <label>app_id :</label>
+            <p>
+              <input id="app_id" type="text" style="color:black" />
+            </p>
+          </div>
+
+
+          <div>
+            <label>path :</label>
+            <p>
+              <input id="path" type="text" style="color:black" />
+            </p>
+          </div>
+
+          <div>
+            <label>num_img :</label>
+            <p>
+              <input id="num_img" type="text" style="color:black" />
+            </p>
+          </div>
+
+          <div>
+            <label>img_selected :</label>
+            <p>
+              <input id="img_selected" type="text" style="color:black" />
+            </p>
+          </div>
+
+
+          <input @click="add_job()" type="button" value="Add new Job" style="color:black" />
+
+
+
+        </form>
+        <div v-for="job in jobs" v-bind:key="job.job_id" style="padding : 15px">
+          <h2>job_id : {{ job.job_id }}</h2>
+          <p>user_id : {{ job.user_id }}</p>
+          <p>path : {{ job.path }}</p>
+          <p>num_img : {{ job.num_img }}</p>
+          <p>persent : {{ job.persent }}</p>
+          <p>status : {{ job.job_status }}</p>
+
+          <hr>
+
         </div>
-
-        <div>
-          <label>img_selected :</label>
-          <p>
-            <input id="img_selected" type="text" style="color:black" />
-          </p>
-        </div>
-
-
-        <input @click="add_job()" type="button" value="Add new Job" style="color:black" />
-
-
-
-      </form>
-      <div v-for="job in jobs" v-bind:key="job.job_id" style="padding : 15px">
-        <h2>job_id : {{ job.job_id }}</h2>
-        <p>user_id : {{ job.user_id }}</p>
-        <p>path : {{ job.path }}</p>
-        <p>num_img : {{ job.num_img }}</p>
-        <p>persent : {{ job.persent }}</p>
-        <p>status : {{ job.job_status }}</p>
-
-        <hr>
-        
-      </div>
 
 
       </main>
@@ -104,7 +104,7 @@ export default {
       ).then(async (respond) => {
         alert(respond.data.status)
         //console.log(respond)
-      }).catch(async error =>{
+      }).catch(async error => {
         alert(error)
       })
     }
@@ -115,7 +115,7 @@ export default {
       router.push('/login')
     } else {
       axios.get('http://127.0.0.1:8000/api/jobs',)
-      .then(async (respond) => this.jobs = respond.data)
+        .then(async (respond) => this.jobs = respond.data)
     }
 
   },

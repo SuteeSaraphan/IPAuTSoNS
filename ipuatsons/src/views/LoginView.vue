@@ -14,8 +14,8 @@
                 <div style="text-align: left">
                     <label style="font-size: 15px">Password :</label>
                     <p>
-                        <input id="password" type="password" @change="(e) => setUser({ ...user, password: e.target.value })"
-                            style="color:black" />
+                        <input id="password" type="password"
+                            @change="(e) => setUser({ ...user, password: e.target.value })" style="color:black" />
                     </p>
                 </div>
 
@@ -52,26 +52,26 @@ export default {
     },
     methods: {
         login() {
-            if(document.getElementById('email').value.length == 0){
+            if (document.getElementById('email').value.length == 0) {
                 alert('Email is empty')
-            }else if(document.getElementById('password').value.length == 0){
+            } else if (document.getElementById('password').value.length == 0) {
                 alert('Password is empty')
-            }else{
+            } else {
                 axios.post('http://127.0.0.1:8000/api/login',
-                {
-                    'email': this.user.email,
-                    'password': this.user.password
-                }
-            )
-                .then(async response => {
-                    this.cookies.set('jwt', response.data.jwt, '1h')
-                    router.push('/home');
-                }).catch(async error=>{
-                    alert(error.response.data['detail'])
-                })
+                    {
+                        'email': this.user.email,
+                        'password': this.user.password
+                    }
+                )
+                    .then(async response => {
+                        this.cookies.set('jwt', response.data.jwt, '1h')
+                        router.push('/home');
+                    }).catch(async error => {
+                        alert(error.response.data['detail'])
+                    })
             }
 
-                
+
         },
         go_register() {
             router.push('/register')

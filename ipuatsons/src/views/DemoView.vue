@@ -119,7 +119,7 @@
 
                         </div>
 
-                    <div style="
+                        <div style="
                         display: flex;
                         flex-direction: row;
                         justify-content: flex-end;
@@ -128,10 +128,10 @@
                                 font-weight: bold;
 
                                 color: #000;
-                                padding: 10px;"> 
+                                padding: 10px;">
                                 Export
                             </button>
-                    </div>
+                        </div>
 
 
 
@@ -186,31 +186,31 @@ export default {
             this.waitFewSec()
             this.imgShowSrc = require('@/img/for_demo/DSC01577-pixie-watermark.png')
 
-           
+
         },
 
-        changePhoto(img_id){
-            if (img_id==1){
+        changePhoto(img_id) {
+            if (img_id == 1) {
                 this.imgShowSrc = require('@/img/for_demo/DSC01507.jpg')
-            }if (img_id==2){
+            } if (img_id == 2) {
                 this.imgShowSrc = require('@/img/for_demo/DSC01535.jpg')
-            }if (img_id==3){
+            } if (img_id == 3) {
                 this.imgShowSrc = require('@/img/for_demo/DSC01540.jpg')
-            }if (img_id==4){
+            } if (img_id == 4) {
                 this.imgShowSrc = require('@/img/for_demo/DSC01550.jpg')
-            }if (img_id==5){
+            } if (img_id == 5) {
                 this.imgShowSrc = require('@/img/for_demo/DSC01574.jpg')
-            }if (img_id==6){
+            } if (img_id == 6) {
                 this.imgShowSrc = require('@/img/for_demo/DSC01577.jpg')
-            }if (img_id==7){
+            } if (img_id == 7) {
                 this.imgShowSrc = require('@/img/for_demo/DSC01583.jpg')
-            }if (img_id==8){
+            } if (img_id == 8) {
                 this.imgShowSrc = require('@/img/for_demo/DSC01608.jpg')
             }
 
         },
 
-        exportImg(){
+        exportImg() {
             router.push('/demoexport')
         }
 
@@ -229,7 +229,7 @@ export default {
             alert("You are not login yet , please login fisrt")
             router.push('/login')
         }
-        
+
     }
 };
 </script>
