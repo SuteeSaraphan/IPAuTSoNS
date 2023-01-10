@@ -188,7 +188,7 @@ export default {
 
         enterFolder(folder_id) {
             console.log(folder_id)
-            let path = "/img_folder/" + folder_id
+            let path = "/img_folder/" + folder_id + "/1"
             router.push({ path })
         },
 

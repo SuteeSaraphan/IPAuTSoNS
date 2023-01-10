@@ -16,6 +16,8 @@
             </header>
             <main>
                 <div class="loading" v-if="this.isLoading">Loading&#8230;</div>
+
+                <!-- show full image here  -->
                 <div class="full-img" v-if="this.fullShow">
                     <img style='display:block; 
                                         width:1000px;
@@ -26,6 +28,8 @@
                         :src="`data:image/jpeg;base64,${this.fullImage.img_data}`" alt="{{ this.fullImage.img_id }}">
                     <button @click="this.fullShow = false">close</button>
                 </div>
+
+
                 <h1>Image Folder page</h1>
                 <h2 v-if="this.files.length == 0">Folder name : Untitle</h2>
                 <h2 v-if="this.files.length != 0">Folder name : {{ this.files[0].folder_name }}</h2>
@@ -39,7 +43,7 @@
 
                 <hr>
 
-                <!-- show image here  -->
+                <!-- show image array here  -->
                 <div class="row">
                     <div class="column" v-for="image in this.images" v-bind:key="image.img_id">
                         <div class="content">
@@ -70,6 +74,25 @@
                             </div>
                         </div>
                     </div>
+                </div>
+                <!-- page select here  -->
+                <div style="
+                    display: flex;
+                    margin: auto;
+                    width: 35%;
+                    height: 50px;
+                    justify-content: space-between;
+                    text-align: center;
+                    ">
+                    <button style="width: 50px;color:#000 ;"> Last </button>
+                    <a style="align-self: center;width: 350px;">Page : 
+                        <select name="page" id="page" style="color:#000 ;">
+                            <option v-for="page in this.pages" :key="page" style="color:#000 ;" value="{{ page }}" @select="goToPage">
+                                {{ page }}
+                            </option>
+                        </select>
+                    </a>
+                    <button style="width: 50px;color:#000 ;"> Next </button>
                 </div>
             </main>
         </div>
@@ -102,14 +125,15 @@ export default {
             files: [],
             images: [],
             fullImage: null,
-            owner: 0,
+            owner: false,
             isLoading: true,
-            fullShow: false
+            fullShow: false,
+            pages: 1
         }
     },
     methods: {
 
-
+        // choose image to upload
         uploadImage(event) {
             this.selectedFile = []
             for (let i = 0; i < event.target.files.length; i++) {
@@ -119,6 +143,7 @@ export default {
 
 
         },
+        //upload image to server
         onUploadFile() {
             this.isLoading = true
             let data = new FormData();
@@ -154,6 +179,7 @@ export default {
             })
         },
 
+        //view full resolution image
         fullImageView(img_id) {
             this.fullImage = null
             this.fullShow = true
@@ -165,6 +191,7 @@ export default {
                 })
         },
 
+        //delete image 
         deleteImage(img_id) {
             if (confirm("Are you sure to delete this image ?")) {
                 axios.defaults.headers.delete['jwt'] = this.cookies.get('jwt');
@@ -176,7 +203,7 @@ export default {
             }
         },
 
-
+        // edit image name
         editImgName() {
             let text;
             let person = prompt("Please enter your name:", "Harry Potter");
@@ -188,10 +215,27 @@ export default {
             document.getElementById("demo").innerHTML = text;
         },
 
+        // for show image name by cut it out from path
         showImgName(path) {
             let temp = path.split("/");
             return temp[5]
+        },
+
+        goToPage(){
+            let path = "/img_folder/" + this.$route.params.folder_id + "/" + this.document.getElementById('page').value
+            router.push({ path })
+        },
+
+        getImageOnPage(page){
+            // get image data from data base
+            axios.get(URL_GET_IMG + "/"+page+"/" + this.$route.params.folder_id)
+                            .then(res => {
+                                console.log(res.data)
+                                this.isLoading = false
+                                this.images = res.data
+                            })
         }
+
 
 
 
@@ -202,6 +246,7 @@ export default {
     },
     created() {
 
+        //cookie checker
         if (this.cookies.get('jwt') == null) {
             alert("You are not login yet , please login fisrt")
             router.push('/login')
@@ -213,20 +258,23 @@ export default {
                     this.files = res.data
                     for (let i in this.files) {
                         if (this.$route.params.folder_id == this.files[i].folder_id) {
-                            this.owner += 1
+                            this.owner = true
                         }
                     }
 
-                    if (this.owner != 1) {
+                    if (this.owner == false) {
                         alert("You can not access this folder");
                         router.push('/drive')
                     } else {
-                        axios.get(URL_GET_IMG + "/all/" + this.$route.params.folder_id)
+                        // count image in from data base
+                        axios.get(URL_GET_IMG + "/count/" + this.$route.params.folder_id)
                             .then(res => {
-                                console.log(res.data)
-                                this.isLoading = false
-                                this.images = res.data
+                                console.log('image : ' + res.data)
+                                this.pages = res.data / 25
+                                this.pages = Math.ceil(this.pages)
+                                console.log('pages count : ' + this.pages)
                             })
+                        this.getImageOnPage(this.$route.params.page);
                     }
 
 

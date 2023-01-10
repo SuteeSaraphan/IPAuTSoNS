@@ -124,13 +124,14 @@ class PasswordView(APIView):
 
 class ImageView(APIView):
 
-    # send image to api
+    # send image to web
     def get(self, request, type, folder_id):
-        if (type == "all"):
-            temp_respond = []
-            token = request.META['HTTP_JWT']
-            payload = Authentication(token)
+        temp_respond = []
+        token = request.META['HTTP_JWT']
+        payload = Authentication(token)
 
+        # send compact data of all image to web
+        if (type == "all"):
             folder_serializer = FolderImageSerializer(
                 Folder_img.objects.get(folder_id=folder_id)
             )
@@ -166,10 +167,9 @@ class ImageView(APIView):
                     print(error)
 
             return Response(temp_respond)
+
+        # send full data of one image to web
         elif (type == 'once'):
-            temp_respond = []
-            token = request.META['HTTP_JWT']
-            payload = Authentication(token)
             img_serializer = ImageSerializer(
                 Image_file.objects.all().filter(img_id=folder_id), many=True)
             for i in img_serializer.data:
@@ -202,8 +202,71 @@ class ImageView(APIView):
 
             return Response(temp_respond)
 
-    # add image
+        # count image to create page list in web
+        elif (type == 'count'):
+            folder_serializer = FolderImageSerializer(
+                Folder_img.objects.get(folder_id=folder_id)
+            )
 
+            img_serializer = ImageSerializer(
+                Image_file.objects.all().filter(user_id=payload['id'], img_folder=folder_serializer.data['folder_name']), many=True)
+
+            temp_respond.append(len(img_serializer.data))
+            return Response(temp_respond)
+
+        # send compact data of chosen image to web
+        else:
+            try:
+                page = int(type)
+            except BaseException as error:
+                print(error)
+            else:
+                folder_serializer = FolderImageSerializer(
+                    Folder_img.objects.get(folder_id=folder_id)
+                )
+
+                img_serializer = ImageSerializer(
+                    Image_file.objects.all().filter(user_id=payload['id'], img_folder=folder_serializer.data['folder_name']), many=True)
+
+                chosen_range_min = (page-1) * 25
+                chosen_range_max = page * 25
+ 
+                for i in range(chosen_range_min,chosen_range_max):
+                    file_type = (img_serializer.data[i]['img_type'].split('/'))[1]
+                    try:
+                        with Image.open('C:/IPAuTSoNS/backend/IPAutSoNsAPI'+str(img_serializer.data[i]['path'])) as image_file_temp:
+                            percentage = 0.1
+                            width, height = image_file_temp.size
+                            resized_dimensions = (
+                                int(width * percentage), int(height * percentage))
+                            resized_image = image_file_temp.resize(
+                                resized_dimensions)
+                            buffer = BytesIO()
+                            resized_image.save(buffer, format=file_type)
+                            image_data = base64.b64encode(buffer.getvalue())
+
+                            temp_img_data = {
+                                'img_id': img_serializer.data[i]['img_id'],
+                                'user_id': img_serializer.data[i]['user_id'],
+                                'img_type': img_serializer.data[i]['img_type'],
+                                'img_folder': img_serializer.data[i]['img_folder'],
+                                'path': img_serializer.data[i]['path'],
+                                'img_size': img_serializer.data[i]['img_size'],
+                                'img_data': image_data
+                            }
+                            
+                            temp_respond.append(temp_img_data)
+
+                    except BaseException as error:
+                        print(error)
+
+            return Response(temp_respond)
+                    
+
+
+
+
+    # add image
     def post(self, request):
         token = request.data['jwt']
         folder = request.data['folder']
