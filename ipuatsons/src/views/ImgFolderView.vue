@@ -86,9 +86,9 @@
                     ">
                     <button style="width: 50px;color:#000 ;"> Last </button>
                     <a style="align-self: center;width: 350px;">Page : 
-                        <select name="page" id="page" style="color:#000 ;">
-                            <option v-for="page in this.pages" :key="page" style="color:#000 ;" value="{{ page }}" @select="goToPage">
-                                {{ page }}
+                        <select id="page_sel" style="color:#000 ;" @change ="goToPage">
+                            <option v-for="i in this.pages" :key="i" style="color:#000 ;">
+                                {{ i }}
                             </option>
                         </select>
                     </a>
@@ -222,8 +222,9 @@ export default {
         },
 
         goToPage(){
-            let path = "/img_folder/" + this.$route.params.folder_id + "/" + this.document.getElementById('page').value
-            router.push({ path })
+            console.log(document.getElementById("page_sel").value)
+            let path = "/img_folder/" + this.$route.params.folder_id + "/" + document.getElementById("page_sel").value
+            router.push({ path });
         },
 
         getImageOnPage(page){
