@@ -36,9 +36,9 @@ def test():
         image = Image.open(All_files[x])
         imageinput = All_files[x]
         output = All_files[x]
-        kernel_size = 10
+        kernel_size = 8
         pixel_size = 16
-        edge_thresh = 100
+        edge_thresh = 70
 
         img_input = Image.open(imageinput)
         img_pt_input = convert_image_to_tensor(img_input)

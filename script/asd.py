@@ -1,10 +1,10 @@
-import sys
-from glob import glob
+import time 
+t = 0.027
 
-
-
-folder = sys.argv[1]
-folder = folder+"/*"
-All_files = glob(folder)
-
-print(All_files)
+print("Image Processing PixelArt")
+print("UserID: 1")
+time.sleep(0.5)
+for x in range(101):
+	time.sleep(t)
+	print(x,"%")
+print("Success")
