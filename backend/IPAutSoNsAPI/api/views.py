@@ -232,8 +232,8 @@ class ImageView(APIView):
                 chosen_range_max = page * 25
  
                 for i in range(chosen_range_min,chosen_range_max):
-                    file_type = (img_serializer.data[i]['img_type'].split('/'))[1]
                     try:
+                        file_type = (img_serializer.data[i]['img_type'].split('/'))[1]
                         with Image.open('C:/IPAuTSoNS/backend/IPAutSoNsAPI'+str(img_serializer.data[i]['path'])) as image_file_temp:
                             percentage = 0.1
                             width, height = image_file_temp.size

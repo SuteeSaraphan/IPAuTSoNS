@@ -647,7 +647,7 @@ input[type=password], select {
 input[type=button], select {
   color:black;
   width: 40%;
-  padding: 10px;
+  padding: 15px;
   margin-left: 15px;
   margin-top: 15px;
   display: inline-block;

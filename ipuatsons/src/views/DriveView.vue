@@ -25,44 +25,35 @@
                 <div class="loading" v-if="this.isLoading">Loading&#8230;</div>
                 <h1>Drive page</h1>
 
-                <!-- upload image here  -->
-                <form style="padding:5px;">
-                    <input type="file" accept="image/*" @change="uploadImage($event)" id="file-input"
-                        multiple="multiple">
-                    <hr>
-                    <label>Folder : </label>
-                    <button type="button" @click="onUploadFile" style="color:black">Upload</button>
-                    <form>
-                        <select id="folder">
-                            <option v-for="file in files" v-bind:key="file.id" style="color:black">{{
-                                file.folder_name
-                            }}
-                            </option>
-                        </select>
-                    </form>
-                </form>
-
+                
                 <!--Add new folder image here  -->
-                <div>
-                    <form style="padding:5px;">
-                        <label>Add new folder : </label>
-                        <input type="text" id="new_folder">
-                        <button type="button" @click="addNewFolder" style="color:black">Add new folder</button>
-                    </form>
+                <div style="padding:5px;">
+                    <button class="dropbtn" type="button" @click="addNewFolder" >Add new folder</button>
                 </div>
+                
+                
 
 
                 <!-- folder image list show here  -->
                 <div style="background:#e7e5e6">
+                    
                     <ul style="padding:5px;">
-                        <li v-for="file in files" v-bind:key="file.id" style="margin-top: 5px;margin-bottom: 5px;">
+                        <div v-if="files < 1" 
+                        style="text-align: center;
+                            align-items: center;
+                            color: #000;
+                            background:#ccc;">!!! You do not have image folder !!!</div>
+
+                        <li v-for="file in files" v-bind:key="file.id" style="margin-top: 5px;margin-bottom: 5px; ">
 
                             <div style="display : flex; 
                              flex-direction : row;
                              justify-content: space-between;
-                             align-items : center;">
+                             align-items : center;
+                             padding-right: 15px;
+                             background:#ccc;">
 
-                                <div style="color:black;padding:10px" @click="enterFolder(file.folder_id)">
+                                <div style="color:black;padding:10px; " @click="enterFolder(file.folder_id)">
                                     {{ file.folder_name }}</div>
 
                                 <!-- dropUp list here  -->
@@ -76,7 +67,6 @@
 
 
                             </div>
-                            <hr>
                         </li>
 
                     </ul>
@@ -106,7 +96,7 @@ export default {
             selectedFile: [],
             token_url: "",
             files: [],
-            isLoading: true,
+            isLoading: true
         }
     },
     methods: {
@@ -167,14 +157,15 @@ export default {
 
 
         addNewFolder() {
-            if (document.getElementById("new_folder").value.length == 0) {
+            let newFolderName = prompt('Enter folder name');
+            if (newFolderName.length == 0) {
                 alert("Folder name is empty")
             } else {
                 axios.post('http://127.0.0.1:8000/api/folder_img',
                     {
                         'jwt': this.cookies.get('jwt'),
                         "folder_id": Math.random().toString(36).slice(2),
-                        "folder_name": document.getElementById("new_folder").value,
+                        "folder_name": newFolderName
                     }
                 ).then(async response => {
                     alert(response.data['status']);
