@@ -75,6 +75,8 @@
                         </div>
                     </div>
                 </div>
+
+
                 <!-- page select here  -->
                 <div style="
                     display: flex;
@@ -90,6 +92,7 @@
                             <option v-for="i in this.pages" :key="i" style="color:#000 ;">
                                 {{ i }}
                             </option>
+                            <option selected style="color:#000 ;" hidden> {{ this.page_sel }}</option>
                         </select>
                     </a>
                     <button style="width: 50px;color:#000 ;"> Next </button>
@@ -128,7 +131,8 @@ export default {
             owner: false,
             isLoading: true,
             fullShow: false,
-            pages: 1
+            pages: 1,
+            page_sel : 0
         }
     },
     methods: {
@@ -224,17 +228,21 @@ export default {
         goToPage(){
             console.log(document.getElementById("page_sel").value)
             let path = "/img_folder/" + this.$route.params.folder_id + "/" + document.getElementById("page_sel").value
-            router.push({ path });
+            window.location.href = path
+
         },
 
         getImageOnPage(page){
             // get image data from data base
+            this.page_sel = page;
+            console.log(this.page_sel)
             axios.get(URL_GET_IMG + "/"+page+"/" + this.$route.params.folder_id)
                             .then(res => {
                                 console.log(res.data)
                                 this.isLoading = false
                                 this.images = res.data
                             })
+            
         }
 
 
