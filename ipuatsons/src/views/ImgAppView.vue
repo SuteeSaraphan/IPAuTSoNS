@@ -84,17 +84,26 @@
                                     <option v-for="folder in this.folders" :key="folder.folder_id" style="color:#000 ;">
                                         {{ folder.folder_name }}
                                     </option>
-                
+
                                 </select>
                             </a>
                         </h2>
-                        <div
-                            style="display: flex;flex-direction: row;  width: 1300px; padding:10px; overflow-x: scroll;">
+                        <div style="display: flex;
+                            flex-direction: row;
+                            width: 1300px;
+                            padding:10px;
+                            overflow-x: scroll;
+                            align-items: center;
+                            ">
 
-                            <div @click="changePhoto(1)">
-                                <img src="../img/for_demo/DSC01507.jpg" width="175" style="padding:10px;">
+                            <div v-for="image in this.images" :key="image.img_id">
+                                <img :src="`data:image/jpeg;base64,${image.img_data}`" style="
+                                padding: 10px;
+                                max-width: 175px;
+                                max-height: 175px;
+                                ">
                             </div>
-                            
+
 
                         </div>
 
@@ -165,8 +174,8 @@ export default {
             filterOnCpu: ['Mosaic', 'PixelArt'],
             isLoading: true,
             imgBarWidth: '175',
-            folders : [],
-            images :[],
+            folders: [],
+            images: [],
 
         }
     },
@@ -174,19 +183,26 @@ export default {
 
 
         goToFolder() {
-            for(let i in this.folders){
-                if(this.folders[i].folder_name == document.getElementById("folder_sel").value){
-                    console.log('founded')
-                    
+
+            for (let i in this.folders) {
+                if (this.folders[i].folder_name == document.getElementById("folder_sel").value) {
+                    console.log('found')
+                    axios.defaults.headers.get['jwt'] = this.cookies.get('jwt');
+                    axios.get(URL_GET_IMG + "/all/" + this.folders[i].folder_id)
+                        .then(res => {
+                            this.images = []
+                            this.isLoading = false
+                            this.images = res.data
+                            console.log(this.images)
+                        })
+
                     break;
-                }else{
-                    console.log('not found')
                 }
             }
 
 
         },
-        
+
         changeFilter() {
             this.imgShowSrc = require('@/img/for_demo/DSC01577-pixie-watermark.png')
 
@@ -245,7 +261,7 @@ export default {
             alert("You are not login yet , please login fisrt")
             router.push('/login')
         }
-        else{
+        else {
             axios.defaults.headers.get['jwt'] = this.cookies.get('jwt');
             axios.get(URL_IMG_FOLDER)
                 .then(res => {

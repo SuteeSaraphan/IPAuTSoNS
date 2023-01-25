@@ -142,12 +142,10 @@ class ImageView(APIView):
                 file_type = (i['img_type'].split('/'))[1]
                 try:
                     with Image.open('C:/IPAuTSoNS/backend/IPAutSoNsAPI'+str(i['path'])) as image_file_temp:
-                        percentage = 0.1
-                        width, height = image_file_temp.size
-                        resized_dimensions = (
-                            int(width * percentage), int(height * percentage))
-                        resized_image = image_file_temp.resize(
-                            resized_dimensions)
+                        fixed_height = 200
+                        height_percent = (fixed_height / float(image_file_temp.size[1]))
+                        width_size = int((float(image_file_temp.size[0]) * float(height_percent)))
+                        resized_image = image_file_temp.resize((width_size, fixed_height))
                         buffer = BytesIO()
                         resized_image.save(buffer, format=file_type)
                         image_data = base64.b64encode(buffer.getvalue())
@@ -177,11 +175,7 @@ class ImageView(APIView):
                 try:
                     with Image.open('C:/IPAuTSoNS/backend/IPAutSoNsAPI'+str(i['path'])) as image_file_temp:
                         percentage = 1
-                        width, height = image_file_temp.size
-                        resized_dimensions = (
-                            int(width * percentage), int(height * percentage))
-                        resized_image = image_file_temp.resize(
-                            resized_dimensions)
+                        resized_image = image_file_temp
                         buffer = BytesIO()
                         resized_image.save(buffer, format=file_type)
                         image_data = base64.b64encode(buffer.getvalue())
