@@ -10,6 +10,8 @@
   "dependencies": {
     "axios": "^0.27.2",
     "core-js": "^3.8.3",
+    "tar": "^6.1.13",
+    "uuid": "^9.0.0",
     "vue": "^3.2.13",
     "vue-cookies": "^1.8.1",
     "vue-radial-progress": "^0.3.2",

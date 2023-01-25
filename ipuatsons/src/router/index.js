@@ -7,7 +7,6 @@ import RegisView from "@/views/RegisView.vue";
 import SettingView from "@/views/SettingView";
 import ChangePassView from "@/views/ChangePassView";
 import ImgFolderView from "@/views/ImgFolderView";
-import DemoView from "@/views/DemoView";
 import DemoExportView from "@/views/DemoExportView";
 
 const routes = [
@@ -65,11 +64,6 @@ const routes = [
     component: ChangePassView,
   },
 
-  {
-    path: "/demo",
-    name: "demo",
-    component: DemoView,
-  },
   {
     path: "/demoexport",
     name: "demoexport",

@@ -178,9 +178,9 @@ export default {
 
 
         enterFolder(folder_id) {
-            console.log(folder_id)
+            //console.log("enter folder :"+folder_id)
             let path = "/img_folder/" + folder_id + "/1"
-            router.push({ path })
+            window.location.href = path
         },
 
 

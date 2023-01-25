@@ -21,9 +21,9 @@
                 <div class="full-img" v-if="this.fullShow">
                     <img style='display:block; 
                                         width:1000px;
-                                        height:900px;
-                                        object-fit: scale-down; 
-                                        border: 1px; 
+                                        height:900px; 
+                                        object-fit: scale-down;
+                                        border: 1px;
                                         image-rendering: auto;'
                         :src="`data:image/jpeg;base64,${this.fullImage.img_data}`" alt="{{ this.fullImage.img_id }}">
                     <button @click="this.fullShow = false">close</button>
@@ -31,8 +31,8 @@
 
 
                 <h1>Image Folder page</h1>
-                <h2 v-if="this.files.length == 0">Folder name : Untitle</h2>
-                <h2 v-if="this.files.length != 0">Folder name : {{ this.files[0].folder_name }}</h2>
+                <h2 v-if="this.folder.length == 0">Folder name : Untitle</h2>
+                <h2 v-if="this.folder.length != 0">Folder name : {{ this.folder.folder_name }}</h2>
 
                 <!-- upload image here  -->
                 <form style="padding:5px;">
@@ -87,8 +87,8 @@
                     text-align: center;
                     ">
                     <button style="width: 50px;color:#000 ;"> Last </button>
-                    <a style="align-self: center;width: 350px;">Page : 
-                        <select id="page_sel" style="color:#000 ;" @change ="goToPage">
+                    <a style="align-self: center;width: 350px;">Page :
+                        <select id="page_sel" style="color:#000 ;" @change="goToPage">
                             <option v-for="i in this.pages" :key="i" style="color:#000 ;">
                                 {{ i }}
                             </option>
@@ -132,7 +132,9 @@ export default {
             isLoading: true,
             fullShow: false,
             pages: 1,
-            page_sel : 0
+            page_sel: 0,
+            folder : null
+
         }
     },
     methods: {
@@ -149,38 +151,44 @@ export default {
         },
         //upload image to server
         onUploadFile() {
-            this.isLoading = true
-            let data = new FormData();
-            data.append('jwt', this.cookies.get('jwt'));
-            data.append('folder', this.files[0].folder_name);
+            console.log(this.folder.folder_name)
+            if (this.selectedFile.length > 0) {
+                this.isLoading = true
+                let data = new FormData();
+                data.append('jwt', this.cookies.get('jwt'));
+                data.append('folder', this.folder.folder_name);
 
-            //console.log(this.selectedFile[0])
+                //console.log(this.selectedFile[0])
 
-            for (let i = 0; i < this.selectedFile.length; i++) {
-                data.append('img_file', this.selectedFile[i]);
-            }
-
-            //console.log(data)
-
-            let config = {
-                header: {
-                    'Content-Type': 'multipart/form-data'
+                for (let i = 0; i < this.selectedFile.length; i++) {
+                    data.append('img_file', this.selectedFile[i]);
                 }
-            }
-            axios.post(
-                URL_IMG_UPLOAD,
-                data,
-                config
-            ).then(
-                async (response) => {
+
+                //console.log(data)
+
+                let config = {
+                    header: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }
+                axios.post(
+                    URL_IMG_UPLOAD,
+                    data,
+                    config
+                ).then(
+                    async (response) => {
+                        this.isLoading = false
+                        alert('image upload response >' + response.data['status'])
+                        location.reload();
+                    }
+                ).catch(err => {
                     this.isLoading = false
-                    alert('image upload response >' + response.data['status'])
-                    location.reload();
-                }
-            ).catch(err => {
-                this.isLoading = false
-                alert(err)
-            })
+                    alert(err)
+                })
+            }else{
+                alert('plese selece file before upload')
+            }
+
         },
 
         //view full resolution image
@@ -225,24 +233,24 @@ export default {
             return temp[5]
         },
 
-        goToPage(){
+        goToPage() {
             console.log(document.getElementById("page_sel").value)
             let path = "/img_folder/" + this.$route.params.folder_id + "/" + document.getElementById("page_sel").value
             window.location.href = path
 
         },
 
-        getImageOnPage(page){
+        getImageOnPage(page) {
             // get image data from data base
             this.page_sel = page;
-            console.log(this.page_sel)
-            axios.get(URL_GET_IMG + "/"+page+"/" + this.$route.params.folder_id)
-                            .then(res => {
-                                console.log(res.data)
-                                this.isLoading = false
-                                this.images = res.data
-                            })
-            
+            //console.log(this.page_sel)
+            axios.get(URL_GET_IMG + "/" + page + "/" + this.$route.params.folder_id)
+                .then(res => {
+                    console.log(res.data)
+                    this.isLoading = false
+                    this.images = res.data
+                })
+
         }
 
 
@@ -254,6 +262,7 @@ export default {
         SlideBar
     },
     created() {
+        console.log(this.$route.params.folder_id)
 
         //cookie checker
         if (this.cookies.get('jwt') == null) {
@@ -262,12 +271,14 @@ export default {
         }
         else {
             axios.defaults.headers.get['jwt'] = this.cookies.get('jwt');
+            //check rights in this folder
             axios.get(URL_IMG_FOLDER)
                 .then(res => {
-                    this.files = res.data
-                    for (let i in this.files) {
-                        if (this.$route.params.folder_id == this.files[i].folder_id) {
+                    for (let i in res.data) {
+                        if (this.$route.params.folder_id == res.data[i].folder_id) {
                             this.owner = true
+                            this.folder = res.data[i]
+                            break;
                         }
                     }
 
@@ -278,10 +289,10 @@ export default {
                         // count image in from data base
                         axios.get(URL_GET_IMG + "/count/" + this.$route.params.folder_id)
                             .then(res => {
-                                console.log('image : ' + res.data)
+                                //console.log('image : ' + res.data)
                                 this.pages = res.data / 25
                                 this.pages = Math.ceil(this.pages)
-                                console.log('pages count : ' + this.pages)
+                                //console.log('pages count : ' + this.pages)
                             })
                         this.getImageOnPage(this.$route.params.page);
                     }

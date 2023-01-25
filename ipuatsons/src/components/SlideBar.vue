@@ -82,7 +82,7 @@
           <li>
             <a href="">
               <span class="ri-camera-lens-fill"></span>
-              <router-link to="/demo">ImageProcessing App</router-link>
+              <router-link to="/img_app">ImageProcessing App</router-link>
             </a>
           </li>
           <!-- Demo -->
