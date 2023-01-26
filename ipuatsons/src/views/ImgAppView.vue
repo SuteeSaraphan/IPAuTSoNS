@@ -69,7 +69,7 @@
                     <!----------------------------------------------------- end of filter bar ----------------------------------------------------->
 
 
-                    <!-- image show -->
+                    <!-- image list show -->
                     <div style="
                   padding-left: 15px;
                   padding-right: 20px;
@@ -101,19 +101,20 @@
                                 padding: 10px;
                                 max-width: 175px;
                                 max-height: 175px;
-                                ">
+                                " @click="changeImg(image.img_id)">
                             </div>
 
 
                         </div>
-
-                        <div style="
-                  display: flex;
-                  flex-direction: column;
-                  justify-content: space-between;
-                  align-items: center;
-                  padding:20px;">
-                            <img :src="this.imgShowSrc" width="700">
+                        <!-- image full show -->
+                        
+                        <div v-if="this.imgShowSrc != null" style="
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: space-between;
+                            align-items: center;
+                            padding:20px;">
+                            <img :src="`data:image/jpeg;base64,${this.imgShowSrc.img_data}`" height="500">
 
                         </div>
 
@@ -176,6 +177,7 @@ export default {
             imgBarWidth: '175',
             folders: [],
             images: [],
+            imgShowSrc : null
 
         }
     },
@@ -209,25 +211,20 @@ export default {
 
         },
 
-        changePhoto(img_id) {
-            if (img_id == 1) {
-                this.imgShowSrc = require('@/img/for_demo/DSC01507.jpg')
-            } if (img_id == 2) {
-                this.imgShowSrc = require('@/img/for_demo/DSC01535.jpg')
-            } if (img_id == 3) {
-                this.imgShowSrc = require('@/img/for_demo/DSC01540.jpg')
-            } if (img_id == 4) {
-                this.imgShowSrc = require('@/img/for_demo/DSC01550.jpg')
-            } if (img_id == 5) {
-                this.imgShowSrc = require('@/img/for_demo/DSC01574.jpg')
-            } if (img_id == 6) {
-                this.imgShowSrc = require('@/img/for_demo/DSC01577.jpg')
-            } if (img_id == 7) {
-                this.imgShowSrc = require('@/img/for_demo/DSC01583.jpg')
-            } if (img_id == 8) {
-                this.imgShowSrc = require('@/img/for_demo/DSC01608.jpg')
-            }
+        changeImg(img_id) {
+            this.imgShowSrc = null
+            console.log(img_id)
+            axios.defaults.headers.get['jwt'] = this.cookies.get('jwt');
+            axios.get(URL_GET_IMG + "/once/" + img_id)
+                .then(res => {
+                    this.imgShowSrc = res.data[0]
+                    console.log(this.imgShowSrc.img_data)
+                }).catch(error =>{
+                    console.log(error)
+                    alert("Something went wrong try again")
 
+                   }
+                )
         },
 
         exportImg() {
