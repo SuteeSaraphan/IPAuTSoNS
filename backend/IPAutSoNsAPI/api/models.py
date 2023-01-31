@@ -3,11 +3,17 @@ import os
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
 
-def upload_path(instance,filename):
+def upload_path_img(instance,filename):
     if(instance.img_folder == "null"):
         return os.path.join("%s" % instance.user_id,"root",filename)
     elif(instance.img_folder != "null"):
         return os.path.join("%s" % instance.user_id,"root","%s" % instance.img_folder,filename)
+
+# def upload_path_weight(instance,filename):
+#     if(instance.img_folder == "null"):
+#         return os.path.join("%s" % instance.user_id,"root",filename)
+#     elif(instance.img_folder != "null"):
+#         return os.path.join("%s" % instance.user_id,"root","%s" % instance.img_folder,filename)
 
 
 class Image_file(models.Model):
@@ -15,7 +21,7 @@ class Image_file(models.Model):
     user_id = models.CharField(max_length=100 , null=False)
     img_type = models.CharField(max_length=20, null=False)
     img_folder = models.CharField(max_length=100)
-    path = models.ImageField(upload_to = upload_path, null=False)
+    path = models.ImageField(upload_to = upload_path_img, null=False)
     img_size = models.CharField(max_length=20, null=False)
     def __str__(self):
         return self.img_id
@@ -61,3 +67,15 @@ class User(AbstractBaseUser):
 
     def __str__(self):
         return self.user_id
+
+
+
+class Image_app(models.Model):
+    app_id = models.CharField(primary_key=True,unique=True,max_length=100)
+    app_name = models.CharField(unique=True,max_length=100)
+    app_type = models.CharField(max_length=50, null=False)
+    parameter = models.IntegerField(default=80)
+    model_type = models.CharField(max_length=50, null=True)
+    #app_path = models.FileField()
+
+

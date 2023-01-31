@@ -16,6 +16,7 @@
     "vue-cookies": "^1.8.1",
     "vue-radial-progress": "^0.3.2",
     "vue-router": "^4.0.3",
+    "vue-slide-bar": "^1.2.0",
     "vue3-cookies": "^1.0.6",
     "vuex": "^4.0.0"
   },

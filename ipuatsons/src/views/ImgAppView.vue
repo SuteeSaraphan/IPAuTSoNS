@@ -41,7 +41,7 @@
                                 </div>
                                 <ul>
                                     <li v-for=" i in this.filterNoneCpu" v-bind:key="i"
-                                        style="background-color: #4B5162;padding: 10px;" @click="changeFilter()">
+                                        style="background-color: #4B5162;padding: 10px;" @click="changeFilter(i)">
                                         <a>
                                             <span class="ri-function-line"></span>
                                             {{ i }}
@@ -54,7 +54,7 @@
                                 </div>
                                 <ul>
                                     <li v-for=" i in this.filterOnCpu" v-bind:key="i"
-                                        style="background-color: #4B5162;padding: 10px;" @click="changeFilter()">
+                                        style="background-color: #4B5162;padding: 10px;" @click="changeFilter(i)">
                                         <a>
                                             <span class="ri-function-line"></span>
                                             {{ i }}
@@ -89,7 +89,7 @@
                             </a>
                         </h2>
                         <div style="display: flex;
-                            flex-direction: row;
+                            flex-direction: row; 
                             width: 1300px;
                             padding:10px;
                             overflow-x: scroll;
@@ -100,14 +100,14 @@
                                 <img :src="`data:image/jpeg;base64,${image.img_data}`" style="
                                 padding: 10px;
                                 max-width: 175px;
-                                max-height: 175px;
+                                max-height: 100px;
                                 " @click="changeImg(image.img_id)">
                             </div>
 
 
                         </div>
                         <!-- image full show -->
-                        
+
                         <div v-if="this.imgShowSrc != null" style="
                             display: flex;
                             flex-direction: column;
@@ -117,6 +117,16 @@
                             <img :src="`data:image/jpeg;base64,${this.imgShowSrc.img_data}`" height="500">
 
                         </div>
+
+                        <!-- sliding bar -->
+                        <div class="slidecontainer">
+                            <input type="range" min="1" max="100" value="80" class="slider" id="myRange"
+                                @change="filterAdjusting" width="500">
+                        </div>
+                        <!-- end of sliding bar -->
+
+
+
 
                         <div style="
                       display: flex;
@@ -151,14 +161,16 @@ import SlideBar from '@/components/SlideBar'
 import { useCookies } from "vue3-cookies";
 import router from '@/router';
 import axios from 'axios';
+//import VueSlideBar from 'vue-slide-bar';
 const URL_IMG_FOLDER = 'http://127.0.0.1:8000/api/folder_img';
 //const URL_IMG_UPLOAD = 'http://127.0.0.1:8000/api/upload_image';
 const URL_GET_IMG = 'http://127.0.0.1:8000/api/image';
 
 
 
-
 export default {
+
+
 
 
     name: "Img_appView",
@@ -177,7 +189,9 @@ export default {
             imgBarWidth: '175',
             folders: [],
             images: [],
-            imgShowSrc : null
+            imgShowSrc: null,
+            filter: null,
+            filter_value: 0
 
         }
     },
@@ -195,7 +209,7 @@ export default {
                             this.images = []
                             this.isLoading = false
                             this.images = res.data
-                            console.log(this.images)
+
                         })
 
                     break;
@@ -205,25 +219,19 @@ export default {
 
         },
 
-        changeFilter() {
-            this.imgShowSrc = require('@/img/for_demo/DSC01577-pixie-watermark.png')
-
-
-        },
+      
 
         changeImg(img_id) {
             this.imgShowSrc = null
-            console.log(img_id)
             axios.defaults.headers.get['jwt'] = this.cookies.get('jwt');
             axios.get(URL_GET_IMG + "/once/" + img_id)
                 .then(res => {
                     this.imgShowSrc = res.data[0]
-                    console.log(this.imgShowSrc.img_data)
-                }).catch(error =>{
+                }).catch(error => {
                     console.log(error)
                     alert("Something went wrong try again")
 
-                   }
+                }
                 )
         },
 
@@ -242,7 +250,21 @@ export default {
                     this.images = res.data
                 })
 
-        }
+        },
+
+        filterAdjusting() {
+            this.filter_value = document.getElementById("myRange").value;
+            console.log(this.filter)
+            console.log(this.filter_value)
+        },
+
+        changeFilter(filter_id) {
+            this.filter = filter_id;
+            document.getElementById("myRange").value = 80
+            console.log(this.filter)
+            console.log(this.filter_value)
+
+        },
 
 
 
@@ -251,7 +273,8 @@ export default {
     }
     ,
     components: {
-        SlideBar
+        SlideBar,
+        //VueSlideBar
     },
     created() {
         if (this.cookies.get('jwt') == null) {
