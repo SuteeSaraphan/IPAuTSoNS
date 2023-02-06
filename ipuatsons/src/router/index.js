@@ -8,6 +8,7 @@ import SettingView from "@/views/SettingView";
 import ChangePassView from "@/views/ChangePassView";
 import ImgFolderView from "@/views/ImgFolderView";
 import DemoExportView from "@/views/DemoExportView";
+import MakeYamlView from "@/views/MakeYamlView";
 
 const routes = [
   {
@@ -68,6 +69,12 @@ const routes = [
     path: "/demoexport",
     name: "demoexport",
     component: DemoExportView,
+  },
+
+  {
+    path: "/makeyaml",
+    name: "makeyaml",
+    component: MakeYamlView,
   },
 
 

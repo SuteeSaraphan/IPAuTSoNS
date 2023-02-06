@@ -364,18 +364,68 @@ class FolderView(APIView):
             return Response({"status": "Delete done !"})
 
 
+# class MakeDockerFile(APIView):
+#     def post(self, request):
+#         token = request.data['jwt']
+#         job_id = request.data['job_id']
+#         app_id = request.data['app_id']
+#         path = request.data['path']
+#         num_img = request.data['num_img']
+#         img_selected = request.data['img_selected']
+#         create_time = datetime.datetime.now()
+#         print(create_time)
+#         payload = Authentication(token)
+
+#         user = User.objects.get(user_id=payload['id'])
+
+#         template = """apiVersion: batch/v1
+# kind: Job
+# metadata:
+#     name: """+job_id+"""
+# spec:
+#     template:
+#         metadata:
+#             labels:
+#                 app: my-job-pod-id
+#             name: my-job-pod-id
+#         spec:
+#             containers:
+#                 - image: "shuffler:latest"
+#                 imagePullPolicy: Never
+#                 name: "shuffler"
+#                 command:
+#                     - python3
+#                     - -u
+#                     - ./test.py """+user.user_id+""" """+job_id+""" """+app_id+""" """+path+""" """+img_selected+"""
+#                 args:
+#                     - "Kubernetes"
+#             restartPolicy: Never"""
+#         with open('yaml_file/'+job_id+'.yaml', 'w') as yfile:
+#             yfile.write(template)
+
+#         job_data = {
+#             'job_id': job_id,
+#             'user_id': user.user_id,
+#             'app_id': app_id,
+#             'path': path,
+#             'num_img': num_img,
+#             'img_selected': img_selected,
+#             'job_status': "1"
+#         }
+
+#         serializer = JobSerializer(data=job_data)
+#         serializer.is_valid(raise_exception=True)
+#         serializer.save()
+#         return Response({"status": "File is made!"})
+
+
 class MakeDockerFile(APIView):
     def post(self, request):
         token = request.data['jwt']
         job_id = request.data['job_id']
-        app_id = request.data['app_id']
-        path = request.data['path']
-        num_img = request.data['num_img']
-        img_selected = request.data['img_selected']
         create_time = datetime.datetime.now()
         print(create_time)
         payload = Authentication(token)
-
         user = User.objects.get(user_id=payload['id'])
 
         template = """apiVersion: batch/v1
@@ -384,36 +434,17 @@ metadata:
     name: """+job_id+"""
 spec:
     template:
-        metadata:
-            labels:
-                app: my-job-pod-id
-            name: my-job-pod-id
         spec:
             containers:
-                - image: "shuffler:latest"
-                imagePullPolicy: Never
-                name: "shuffler"
-                command:
-                    - python3
-                    - -u
-                    - ./test.py """+user.user_id+""" """+job_id+""" """+app_id+""" """+path+""" """+img_selected+"""
-                args:
-                    - "Kubernetes"
-            restartPolicy: Never"""
-        with open('yaml_file/'+job_id+'.yaml', 'w') as yfile:
-            yfile.write(template)
-
-        job_data = {
-            'job_id': job_id,
-            'user_id': user.user_id,
-            'app_id': app_id,
-            'path': path,
-            'num_img': num_img,
-            'img_selected': img_selected,
-            'job_status': "1"
-        }
-
-        serializer = JobSerializer(data=job_data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response({"status": "File is made!"})
+            -   name: """+job_id+"""
+                image: perl:5.34.0
+                command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(2000)"]
+            restartPolicy: Never
+    backoffLimit: 4"""
+        try:
+            with open('yaml_file/'+job_id+'.yaml', 'w') as yfile:
+                yfile.write(template)
+        except(BaseException):
+            return Response({"status": "ERROR create job file fail"})
+        finally:
+            return Response({"status": "File is made!"})
