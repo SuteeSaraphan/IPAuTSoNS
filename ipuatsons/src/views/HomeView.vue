@@ -44,6 +44,54 @@
 							</div>
 						</div>
 					</div>
+					<div class="card-single">
+						<div class="card-flex">
+							<div class="card-info">
+								<div class="card-head">
+									<span style="color: #000;">Coming Soon</span>
+									<small style="color: #000;">Coming Soon</small>
+								</div>
+								<h2 style="color: #000;">Coming Soon</h2>
+								<small style="color: #000;">Coming Soon</small>
+							</div>
+						</div>
+					</div>
+					<div class="card-single">
+						<div class="card-flex">
+							<div class="card-info">
+								<div class="card-head">
+									<span style="color: #000;">Coming Soon</span>
+									<small style="color: #000;">Coming Soon</small>
+								</div>
+								<h2 style="color: #000;">Coming Soon</h2>
+								<small style="color: #000;">Coming Soon</small>
+							</div>
+						</div>
+					</div>
+					<div class="card-single">
+						<div class="card-flex">
+							<div class="card-info">
+								<div class="card-head">
+									<span style="color: #000;">Coming Soon</span>
+									<small style="color: #000;">Coming Soon</small>
+								</div>
+								<h2 style="color: #000;">Coming Soon</h2>
+								<small style="color: #000;">Coming Soon</small>
+							</div>
+						</div>
+					</div>
+					<div class="card-single">
+						<div class="card-flex">
+							<div class="card-info">
+								<div class="card-head">
+									<span style="color: #000;">Coming Soon</span>
+									<small style="color: #000;">Coming Soon</small>
+								</div>
+								<h2 style="color: #000;">Coming Soon</h2>
+								<small style="color: #000;">Coming Soon</small>
+							</div>
+						</div>
+					</div>
 
 
 

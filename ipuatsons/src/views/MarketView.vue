@@ -26,9 +26,9 @@
                     <div class="loading" v-if="this.isLoading">Loading&#8230;</div>
                     <input type="checkbox" name="" id="sidebar-toggle">
                     <!----------------------------------------------------- filter bar ----------------------------------------------------->
-                    <div style="width : 20%;
+                    <div style="width : 18%;
                           padding-right: 10px;
-                          height: 100%;
+                          height: 800px;
                           background-color: #383C4A;
                           overflow-y: scroll;">
 
@@ -74,8 +74,6 @@
                   padding-left: 15px;
                   padding-right: 20px;
                   padding-top: 15px;
-                  width: 80%;
-                  height: 50%;
                   display: flex;
                   flex-direction: column;
                   background-color: #4B5162;">
@@ -92,8 +90,7 @@
                         </h2>
                         <div style="display: flex;
                             flex-direction: row; 
-                            width: 100%;
-                            
+                            width: 1300px;
                             padding:10px;
                             overflow-x: scroll;
                             align-items: center;
@@ -117,35 +114,35 @@
                             justify-content: space-between;
                             align-items: center;
                             padding:20px;">
-                            <img :src="`data:image/jpeg;base64,${this.imgShowSrc.img_data}`" height="350">
+                            <img :src="`data:image/jpeg;base64,${this.imgShowSrc.img_data}`" height="500">
 
                         </div>
-                        <div v-if="this.imgShowSrc != null" style="display: flex; flex-direction: row; justify-items:flex-start; align-items: center;">
 
-                            <div style=" width: 15%; text-align: center;">Filter :</div>
-                            <!-- sliding bar -->
-                            <div class="slidecontainer" style="width: 100%;">
-                                <input type="range" min="1" max="100" value="80" class="slider" id="myRange"
-                                    @change="filterAdjusting">
-                            </div>
-                            <!-- end of sliding bar -->
+                        <!-- sliding bar -->
+                        <div class="slidecontainer">
+                            <input type="range" min="1" max="100" value="80" class="slider" id="myRange"
+                                @change="filterAdjusting" width="500">
+                        </div>
+                        <!-- end of sliding bar -->
 
-                            <!-- Export botton -->
-                            <div style="
-                                display: flex;
-                                flex-direction: row;
-                                justify-content: flex-end;
-                                padding:20px;">
-                                <button type="button" @click="exportImg" style="
+
+
+
+                        <div style="
+                      display: flex;
+                      flex-direction: row;
+                      justify-content: flex-end;
+                      padding:20px;">
+                            <button type="button" @click="exportImg" style="
                               font-weight: bold;
 
                               color: #000;
                               padding: 10px;">
-                                    Export
-                                </button>
-                            </div>
-                            <!-- Export botton -->
+                                Export
+                            </button>
                         </div>
+
+
 
 
 
@@ -176,7 +173,7 @@ export default {
 
 
 
-    name: "Img_appView",
+    name: "MarketView",
     setup() {
         const { cookies } = useCookies();
         return { cookies };
@@ -222,7 +219,7 @@ export default {
 
         },
 
-
+      
 
         changeImg(img_id) {
             this.imgShowSrc = null
