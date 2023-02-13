@@ -157,7 +157,7 @@ export default {
 
 
 
-    name: "MarketView",
+    name: "ProductView",
     setup() {
         const { cookies } = useCookies();
         return { cookies };
