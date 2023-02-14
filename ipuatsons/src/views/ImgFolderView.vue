@@ -26,7 +26,9 @@
                                         border: 1px;
                                         image-rendering: auto;'
                         :src="`data:image/jpeg;base64,${this.fullImage.img_data}`" alt="{{ this.fullImage.img_id }}">
-                    <button @click="this.fullShow = false">close</button>
+                    <button @click="this.fullShow = false">
+                        <span style="font-size: 1.5rem;" class=" las la-times-circle"></span>
+                    </button>
                 </div>
 
 
@@ -44,35 +46,33 @@
                 <hr>
 
                 <!-- show image array here  -->
-                <div class="row">
-                    <div class="column" v-for="image in this.images" v-bind:key="image.img_id">
-                        <div class="content">
-                            <div class="card">
-                                <img style='display:block; 
-                                        width:200px;
-                                        height:200px;
-                                        object-fit: scale-down; 
-                                        border: 1px; 
-                                        image-rendering: auto;' :src="`data:image/jpeg;base64,${image.img_data}`"
-                                    alt="{{ image.img_id }}" @click="fullImageView(image.img_id)">
+                <div class="cards">
+                    <div class="card-single" v-for="image in this.images" v-bind:key="image.img_id" style="background-color:#4b5162;
+                    border-radius: 15px;
 
-                                <div class="container"
-                                    style="display:flex; flex-direction: row;justify-content:space-between;align-items:center;">
-                                    <div style="padding:2px; 
+                         
+;">
+                        <img :src="`data:image/jpeg;base64,${image.img_data}`" alt="{{ image.img_id }}"
+                            @click="fullImageView(image.img_id)">
+                        <div class="container"
+                            style="display:flex; flex-direction: row;justify-content:space-between;align-items:center;">
+                            <div style="padding:2px; 
                                             text-overflow: ellipsis; 
                                             overflow: hidden; 
-                                            width: 130px; 
+                                            
                                             white-space: nowrap;">
-                                        {{ showImgName(image.path) }}
-                                    </div>
-
-                                    <!-- delete image button here  -->
-                                    <button style="background-color: red;
-                                                padding:2px;
-                                                border: none;" @click="deleteImage(image.img_id)">Delete</button>
-                                </div>
+                                {{ showImgName(image.path) }}
                             </div>
+
+                            <!-- delete image button here  -->
+
+                            <button style="background-color: red;
+                                                padding:2px;
+                                                border: none;" @click="deleteImage(image.img_id)">
+                                <span style="font-size: 1.5rem;" class="las la-trash"></span></button>
                         </div>
+
+
                     </div>
                 </div>
 
@@ -81,6 +81,7 @@
                 <div style="
                     display: flex;
                     margin: auto;
+                    padding-top: 1%;
                     width: 35%;
                     height: 50px;
                     justify-content: space-between;
@@ -133,7 +134,7 @@ export default {
             fullShow: false,
             pages: 1,
             page_sel: 0,
-            folder : null
+            folder: null
 
         }
     },
@@ -185,7 +186,7 @@ export default {
                     this.isLoading = false
                     alert(err)
                 })
-            }else{
+            } else {
                 alert('plese selece file before upload')
             }
 
@@ -290,7 +291,7 @@ export default {
                         axios.get(URL_GET_IMG + "/count/" + this.$route.params.folder_id)
                             .then(res => {
                                 //console.log('image : ' + res.data)
-                                this.pages = res.data / 25
+                                this.pages = res.data / 24
                                 this.pages = Math.ceil(this.pages)
                                 //console.log('pages count : ' + this.pages)
                             })

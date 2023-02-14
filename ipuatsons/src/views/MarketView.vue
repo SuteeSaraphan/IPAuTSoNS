@@ -24,6 +24,13 @@
                         <small>ตลาดซื้อ-ขาย</small>
                     </div>
 
+                    <div class="header-actions">
+						<button>
+							<span class="las la-plus"></span>
+							Add product to sell
+						</button>
+					</div>
+
                 </div>
 
 

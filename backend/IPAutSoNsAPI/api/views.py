@@ -222,14 +222,14 @@ class ImageView(APIView):
                 img_serializer = ImageSerializer(
                     Image_file.objects.all().filter(user_id=payload['id'], img_folder=folder_serializer.data['folder_name']), many=True)
 
-                chosen_range_min = (page-1) * 25
-                chosen_range_max = page * 25
+                chosen_range_min = (page-1) * 24
+                chosen_range_max = page * 24
  
                 for i in range(chosen_range_min,chosen_range_max):
                     try:
                         file_type = (img_serializer.data[i]['img_type'].split('/'))[1]
                         with Image.open('C:/IPAuTSoNS/backend/IPAutSoNsAPI'+str(img_serializer.data[i]['path'])) as image_file_temp:
-                            percentage = 0.1
+                            percentage = 0.25
                             width, height = image_file_temp.size
                             resized_dimensions = (
                                 int(width * percentage), int(height * percentage))
