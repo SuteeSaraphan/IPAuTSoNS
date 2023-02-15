@@ -26,7 +26,7 @@
                                         border: 1px;
                                         image-rendering: auto;'
                         :src="`data:image/jpeg;base64,${this.fullImage.img_data}`" alt="{{ this.fullImage.img_id }}">
-                    <button @click="this.fullShow = false">
+                    <button style="border: none;" @click="this.fullShow = false">
                         <span style="font-size: 1.5rem;" class=" las la-times-circle"></span>
                     </button>
                 </div>
@@ -59,7 +59,6 @@
                             <div style="padding:2px; 
                                             text-overflow: ellipsis; 
                                             overflow: hidden; 
-                                            
                                             white-space: nowrap;">
                                 {{ showImgName(image.path) }}
                             </div>

@@ -64,7 +64,7 @@ export default {
                     }
                 )
                     .then(async response => {
-                        this.cookies.set('jwt', response.data.jwt, '1h')
+                        this.cookies.set('jwt', response.data.jwt, '3h')
                         router.push('/home');
                     }).catch(async error => {
                         alert(error.response.data['detail'])

@@ -9,7 +9,7 @@ from time import sleep
 from django.shortcuts import render
 from requests import delete
 from rest_framework import generics
-from .models import Folder_img, Job, User, Image_file
+from .models import Folder_img, Job, User, Image_file , Product , Login_log , Payment 
 from .serializers import JobSerializer, UserSerializer, ImageSerializer, FolderImageSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -64,7 +64,7 @@ class LoginView(APIView):
 
         payload = {
             'id': user.user_id,
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60),
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=180),
             'iat': datetime.datetime.utcnow()
         }
 
@@ -260,7 +260,7 @@ class ImageView(APIView):
 
 
 
-    # add image
+    # add images
     def post(self, request):
         token = request.data['jwt']
         folder = request.data['folder']

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Folder_img, Job, User, Image_file
+from .models import Folder_img, Job, User, Image_file, Product, Image_app, Login_log, Payment
 
 
 class JobSerializer(serializers.ModelSerializer):
@@ -66,3 +66,52 @@ class FolderImageSerializer(serializers.ModelSerializer):
             'is_hidden'
         )
         model = Folder_img
+
+
+class ProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = (
+            'product_id',
+            'user_id',
+            'product_name',
+            'product_type',
+            'model',
+            'price'
+        )
+        model = Product
+
+
+class Image_appSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = (
+            'app_id',
+            'app_name',
+            'app_type',
+            'parameter',
+            'model_type',
+            'app_path'
+        )
+        model = Image_app
+
+
+class Login_logSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = (
+            'login_log_id',
+            'user_id',
+            'login_time'
+        )
+        model = Login_log
+
+
+class PaymentSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = (
+            'payment_id',
+            'user_id',
+            'product_id',
+            'type',
+            'pay_time',
+            'proof'
+        )
+        model = Payment
