@@ -76,7 +76,10 @@ class ProductSerializer(serializers.ModelSerializer):
             'product_name',
             'product_type',
             'model',
-            'price'
+            'price',
+            'path',
+            'product_img',
+            'last_update'
         )
         model = Product
 

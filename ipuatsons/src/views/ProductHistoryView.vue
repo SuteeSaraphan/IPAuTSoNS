@@ -163,7 +163,7 @@ export default {
 
 
 
-    name: "MarketView",
+    name: "ProductHistoryView",
     setup() {
         const { cookies } = useCookies();
         return { cookies };
@@ -187,7 +187,7 @@ export default {
     },
     methods: {
         goToAddProduct(){
-            router.push('/add_product')
+            router.push('/addproduct')
         },
 
 

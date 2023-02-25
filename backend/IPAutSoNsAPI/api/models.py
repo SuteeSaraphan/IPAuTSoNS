@@ -10,16 +10,13 @@ def upload_path_img(instance,filename):
         return os.path.join("%s" % instance.user_id,"root","%s" % instance.img_folder,filename)
 
 def upload_path_weight(instance,filename):
-    if(instance.img_folder == "null"):
-        return os.path.join("%s" % instance.user_id,"root",filename)
-    elif(instance.img_folder != "null"):
-        return os.path.join("%s" % instance.user_id,"root","%s" % instance.img_folder,filename)
+    return os.path.join("%s" % instance.user_id,"weight",instance.product_id,filename)
+
+def upload_product_img(instance,filename):
+    return os.path.join("%s" % instance.user_id,"weight",instance.product_id,filename)
 
 def upload_path_proof(instance,filename):
-    if(instance.img_folder == "null"):
-        return os.path.join("%s" % instance.user_id,"root",filename)
-    elif(instance.img_folder != "null"):
-        return os.path.join("%s" % instance.user_id,"root","%s" % instance.img_folder,filename)
+    return os.path.join("%s" % instance.user_id,"proof","%s",filename)
 
 
 class Image_file(models.Model):
@@ -92,6 +89,8 @@ class Product(models.Model):
     model = models.CharField(max_length=100, null=False)
     price = models.FloatField(max_length=100, null=False)
     path = models.FileField(upload_to = upload_path_weight, null=False)
+    product_img = models.ImageField(upload_to = upload_product_img, null=False)
+    last_update = models.DateTimeField(auto_now_add=True, null=False) 
 
 class Login_log(models.Model):
     login_log_id = models.CharField(primary_key=True,unique=True,max_length=100)

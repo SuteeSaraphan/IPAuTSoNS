@@ -21,6 +21,9 @@ urlpatterns = [
     path('all_images', views.AllImageView.as_view()),
     path('folder_img', views.FolderView.as_view()),
     path('folder_img/<str:folder_id>', views.FolderView.as_view()),
+
+    path('product', views.ProductView.as_view()),
+    path('product/<str:product_id>', views.ProductView.as_view()),
    
 
 ]

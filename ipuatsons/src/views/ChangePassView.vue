@@ -1,8 +1,21 @@
 <template>
     <div>
         <SlideBar></SlideBar>
-        <div class="main-home">
-            <div class="setting">
+        <div class="main-content">
+            <header>
+                <div class="menu-toggle">
+                    <label for="sidebar-toggle">
+                        <span style="color:#000 ;" class="las la-bars"></span>
+                    </label>
+                </div>
+                <span class="bars"></span>
+
+                <div style="color:#000 ;">
+                    asd
+                </div>
+            </header>
+            <main>
+                <div class="setting">
                 <div class="menu">
 
                     <form style="padding:15px">
@@ -39,6 +52,7 @@
 
 
             </div>
+            </main>
         </div>
     </div>
 

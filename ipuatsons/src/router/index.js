@@ -11,8 +11,17 @@ import DemoExportView from "@/views/DemoExportView";
 import MakeYamlView from "@/views/MakeYamlView";
 import MaketView from "@/views/MarketView";
 import ProductView from "@/views/ProductView";
+import AddProductView from "@/views/AddProductView";
+import ProductHistoryView from "@/views/ProductHistoryView";
+import HistoryView from "@/views/HistoryView";
+import AdminView from "@/views/AdminView";
 
 const routes = [
+  {
+    path: "/admin",
+    name: "admin",
+    component: AdminView,
+  },
   {
     path: "/home",
     name: "home",
@@ -32,7 +41,7 @@ const routes = [
   },
 
   {
-    path: "/img_app",
+    path: "/img_app/:product_id",
     name: "img_app",
     component: ImgAppView,
   },
@@ -86,10 +95,31 @@ const routes = [
   },
 
   {
-    path: "/product",
+    path: "/product/:product_id",
     name: "product",
     component: ProductView,  
-  }
+  },
+
+  {
+    path: "/add_product",
+    name: "add_product",
+    component: AddProductView,  
+  },
+
+  {
+    path: "/product_history",
+    name: "product_history",
+    component: ProductHistoryView,  
+  },
+
+  {
+    path: "/history",
+    name: "history",
+    component: HistoryView,  
+  },
+
+
+
 
 
 ];

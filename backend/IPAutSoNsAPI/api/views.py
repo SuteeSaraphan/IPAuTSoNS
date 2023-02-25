@@ -10,7 +10,7 @@ from django.shortcuts import render
 from requests import delete
 from rest_framework import generics
 from .models import Folder_img, Job, User, Image_file , Product , Login_log , Payment 
-from .serializers import JobSerializer, UserSerializer, ImageSerializer, FolderImageSerializer
+from .serializers import JobSerializer, UserSerializer, ImageSerializer, FolderImageSerializer,ProductSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
@@ -313,6 +313,7 @@ class AllImageView(APIView):
 
 
 class FolderView(APIView):
+    #create ,new image folder
     def post(self, request):
         token = request.data['jwt']
         payload = Authentication(token)
@@ -362,6 +363,44 @@ class FolderView(APIView):
             del_img.delete()
 
             return Response({"status": "Delete done !"})
+
+
+
+class ProductView(APIView):
+    def get(self,request,product_id):
+        token = request.META['HTTP_JWT']
+        payload = Authentication(token)
+        return Response({"status" : product_id})
+    
+    def post(self,request):
+        token = request.META['HTTP_JWT']
+        payload = Authentication(token)
+        weight_file = request.FILES.get('weight_file')
+        product_img = request.FILES.get('product_img')
+        product_data = {
+            'product_id' : ''.join(random.choices(string.ascii_lowercase + string.digits, k=6)),
+            'user_id' : payload['id'],
+            'product_name' : request.data['name'],
+            'product_type' : request.data['type'],
+            'model' : request.data['model'],
+            'price' : request.data['price'],
+            'path' : weight_file,
+            'product_img' : product_img,
+            'last_update' : datetime.datetime.utcnow()
+            
+        }
+
+        try:
+            serializer = ProductSerializer(data=product_data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            print("file "+weight_file.name+" upload done")
+        
+        except(BaseException) as error:
+            print(error)
+            return Response({"status" : "Fail to add product try again."})
+        else:
+            return Response({"status" : "Add product successful"})
 
 
 # class MakeDockerFile(APIView):
