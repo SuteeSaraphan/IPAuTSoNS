@@ -16,19 +16,22 @@
                 <span class="bars"></span>
 
                 <div style="color:#000 ;">
-                    asd
+                    Payment history
                 </div>
             </header>
 
 
             <main>
                 <div class="loading" v-if="this.isLoading">Loading&#8230;</div>
-                <h1>Drive page</h1>
+                <h1>Payment history</h1>
 
                 
-                <!--Add new folder image here  -->
+                <!-- filter history here  -->
                 <div style="padding:5px;">
-                    <button class="dropbtn" type="button" @click="addNewFolder" >Add new folder</button>
+                    <button type="button" @click="sort(1)" >sort by newest </button>
+                    <button type="button" @click="sort(2)" >sort by oldest</button>
+                    <button type="button" @click="sort(3)" >sort by oldest</button>
+
                 </div>
                 
                 

@@ -2,7 +2,7 @@
     <div class="login-regis">
         <div class="menu">
             <form style="width:25%">
-                <img src="@/img/logo.png" style="width:250px" alt="">
+                <img src="@/assets/logo.png" style="width:250px" alt="">
                 <div style="text-align: left">
                     <label style="font-size: 15px">Email :</label>
                     <p>
@@ -67,15 +67,23 @@ export default {
                         this.cookies.set('jwt', response.data.jwt, '3h')
                         router.push('/home');
                     }).catch(async error => {
-                        alert(error.response.data['detail'])
+                        alert(error.response.data['detail']);
                     })
             }
 
 
         },
         go_register() {
-            router.push('/register')
+            router.push('/register');
         }
+    },
+    created() {
+        if(this.cookies.get('jwt')!=null){
+            router.push('/home');
+        }
+        
+
+
     }
 }
 </script>

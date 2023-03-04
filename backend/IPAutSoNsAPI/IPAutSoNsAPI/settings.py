@@ -124,9 +124,13 @@ DATABASES = {
 '''
 DATABASES = {
     'default': {
-        'ENGINE': 'djongo',
-        'NAME': 'ipautsons',
-    }
+            'ENGINE': 'djongo',
+            'NAME': 'ipautsons',
+            'ENFORCE_SCHEMA': False,
+            'CLIENT': {
+                'host': 'mongodb+srv://ipautsons:J0iZfrxW49cFOr4U@cluster0.lbe3op6.mongodb.net/?retryWrites=true&w=majority'
+            }  
+        }
 }
 
 

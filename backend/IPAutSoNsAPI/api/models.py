@@ -41,15 +41,15 @@ class Folder_img(models.Model):
     
 
 class Job(models.Model):
-    job_id = models.CharField(max_length=100, primary_key=True)
-    user_id = models.CharField(max_length=20, null=False)
+    job_id = models.CharField(max_length=100, primary_key=True) #sent for check and connect
+    user_id = models.CharField(max_length=20, null=False) #sent for check and connect
     app_id = models.CharField(max_length=100 ,default="00", null=False)
-    path = models.CharField(max_length=200, null=False)
-    num_img = models.IntegerField(default=0, null=False)
-    img_selected = models.CharField(max_length=500, null=False)
-    persent = models.IntegerField(default=0, null=False)
-    job_status = models.CharField(max_length=100,default=0, null=False)
-    create_time = models.DateTimeField(editable=False, auto_now_add=False)
+    path = models.CharField(max_length=200, null=False) #sent for access image folder 
+    num_img = models.IntegerField(default=0, null=False) #sent 
+    img_selected = models.CharField(max_length=500, null=False) #sent path of image file 
+    persent = models.IntegerField(default=0, null=False) #modifi update when process job
+    job_status = models.CharField(max_length=100,default=0, null=False) #modifi update when process job
+    create_time = models.DateTimeField(editable=False, auto_now_add=True) 
 
     def __str__(self):
         return self.job_id

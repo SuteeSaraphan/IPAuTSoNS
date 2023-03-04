@@ -9,8 +9,8 @@ from time import sleep
 from django.shortcuts import render
 from requests import delete
 from rest_framework import generics
-from .models import Folder_img, Job, User, Image_file , Product , Login_log , Payment 
-from .serializers import JobSerializer, UserSerializer, ImageSerializer, FolderImageSerializer,ProductSerializer
+from .models import Folder_img, Job, User, Image_file, Product, Login_log, Payment
+from .serializers import JobSerializer, UserSerializer, ImageSerializer, FolderImageSerializer, ProductSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
@@ -22,6 +22,8 @@ import os
 import base64
 from pathlib import Path
 from PIL import Image
+from yaml_run import YamlRunner
+
 
 
 # for Authentication user with JWT
@@ -75,7 +77,7 @@ class LoginView(APIView):
         respond.data = ({
             'jwt': token
         })
-
+        
         return respond
 
 
@@ -143,9 +145,12 @@ class ImageView(APIView):
                 try:
                     with Image.open('C:/IPAuTSoNS/backend/IPAutSoNsAPI'+str(i['path'])) as image_file_temp:
                         fixed_height = 200
-                        height_percent = (fixed_height / float(image_file_temp.size[1]))
-                        width_size = int((float(image_file_temp.size[0]) * float(height_percent)))
-                        resized_image = image_file_temp.resize((width_size, fixed_height))
+                        height_percent = (
+                            fixed_height / float(image_file_temp.size[1]))
+                        width_size = int(
+                            (float(image_file_temp.size[0]) * float(height_percent)))
+                        resized_image = image_file_temp.resize(
+                            (width_size, fixed_height))
                         buffer = BytesIO()
                         resized_image.save(buffer, format=file_type)
                         image_data = base64.b64encode(buffer.getvalue())
@@ -224,10 +229,11 @@ class ImageView(APIView):
 
                 chosen_range_min = (page-1) * 24
                 chosen_range_max = page * 24
- 
-                for i in range(chosen_range_min,chosen_range_max):
+
+                for i in range(chosen_range_min, chosen_range_max):
                     try:
-                        file_type = (img_serializer.data[i]['img_type'].split('/'))[1]
+                        file_type = (
+                            img_serializer.data[i]['img_type'].split('/'))[1]
                         with Image.open('C:/IPAuTSoNS/backend/IPAutSoNsAPI'+str(img_serializer.data[i]['path'])) as image_file_temp:
                             percentage = 0.25
                             width, height = image_file_temp.size
@@ -248,19 +254,16 @@ class ImageView(APIView):
                                 'img_size': img_serializer.data[i]['img_size'],
                                 'img_data': image_data
                             }
-                            
+
                             temp_respond.append(temp_img_data)
 
                     except BaseException as error:
                         print(error)
 
             return Response(temp_respond)
-                    
-
-
-
 
     # add images
+
     def post(self, request):
         token = request.data['jwt']
         folder = request.data['folder']
@@ -313,14 +316,20 @@ class AllImageView(APIView):
 
 
 class FolderView(APIView):
-    #create ,new image folder
+    # create ,new image folder
     def post(self, request):
         token = request.data['jwt']
         payload = Authentication(token)
-        folder_path = os.path.join(r'C:\IPAuTSoNS\backend\IPAutSoNsAPI\media',
-                                   payload['id'], "root", request.data['folder_name'])
+        main_dir = "..\IPAutSoNsAPI\media"
+        user_id = payload['id']
+        folder_name = request.data['folder_name']
+
+        folder_path = os.path.join(main_dir, user_id,"root", folder_name)
+
+        files = os.listdir("IPAutSoNsAPI")
+        print(files)
         try:
-            os.mkdir(folder_path)
+            os.makedirs(folder_path)
         except OSError as error:
             print(error)
             return Response({'status': '!!! Somthing is wrong try again !!!'})
@@ -460,30 +469,56 @@ class ProductView(APIView):
 
 class MakeDockerFile(APIView):
     def post(self, request):
-        token = request.data['jwt']
         job_id = request.data['job_id']
-        create_time = datetime.datetime.now()
-        print(create_time)
+        token = request.META['HTTP_JWT']
+        path = request.data['path']
+        param1 = request.data['param1']
+        num_img = request.data['num_img']
+        img_selected = request.data['img_selected']
         payload = Authentication(token)
         user = User.objects.get(user_id=payload['id'])
 
         template = """apiVersion: batch/v1
 kind: Job
 metadata:
-    name: """+job_id+"""
+  name:"""+job_id+"""
 spec:
-    template:
-        spec:
-            containers:
-            -   name: """+job_id+"""
-                image: perl:5.34.0
-                command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(2000)"]
-            restartPolicy: Never
-    backoffLimit: 4"""
+  template:
+    spec:
+      containers:
+      - name: testascii2
+        image: """+path+"""
+        volumeMounts:
+            - name: myvolume
+              mountPath: /www
+        command: ["python","ASCII.py","""+param1+""","""+path+"""]
+      restartPolicy: Never
+      volumes:
+      - name: myvolume
+        persistentVolumeClaim: 
+          claimName: mypvc"""
         try:
             with open('yaml_file/'+job_id+'.yaml', 'w') as yfile:
                 yfile.write(template)
-        except(BaseException):
+                yfile.close()
+
+        except(BaseException)as error:
+            print(error)
             return Response({"status": "ERROR create job file fail"})
-        finally:
+        else:
+            #yaml_run = YamlRunner(job_id)
+            #yaml_run.run_yaml()
+            job_data = {
+            'job_id': job_id,
+            'user_id': user.user_id,
+            #'app_id': app_id,
+            'path': path,
+            'num_img': num_img,
+            'img_selected': img_selected,
+            'job_status': "0"
+            }
+
+            serializer = JobSerializer(data=job_data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
             return Response({"status": "File is made!"})

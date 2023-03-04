@@ -4,11 +4,10 @@
   <div class="sidebar">
     <div class="sidebar-brand">
       <div class="brand-flex">
-        <img src="../img/logo.png" width="70px" alt="">
+        <img src="@/assets/logo.png" width="70px" alt="">
 
         <div class="brand-icons">
-          <span class="las la-bell"></span>
-          <span class="las la-user-circle"></span>
+          <span class="las la-history" @click="goToHistory"></span>
         </div>
       </div>
     </div>
@@ -125,6 +124,10 @@ export default {
     logout() {
       this.cookies.remove('jwt')
       router.push('/login')
+    },
+
+    goToHistory(){
+      router.push('/history')
     }
 
   },
