@@ -4,8 +4,7 @@
   <div class="sidebar">
     <div class="sidebar-brand">
       <div class="brand-flex">
-        <img src="@/assets/logo.png" width="70px" alt="">
-
+        <img src="../img/logo.png" width="70" alt="">
         <div class="brand-icons">
           <span class="las la-history" @click="goToHistory"></span>
         </div>
@@ -15,7 +14,7 @@
     <div class="sidebar-main">
       <div class="sidebar-user">
         <img src="../img/profile.jpg" alt="">
-        <div>
+        <div class="info-profile">
           <h3>Peach</h3>
           <span>Credit: 227</span>
           <span>Usage Total: 32GB</span>
@@ -105,6 +104,15 @@
   </div>
   <!----------------------------------------------------- end of side bar ----------------------------------------------------->
 </template>
+
+
+<style>
+.info-profile{
+  display: flex;
+  flex-direction: column;
+
+}
+</style>
 
 <script>
 import { useCookies } from "vue3-cookies";

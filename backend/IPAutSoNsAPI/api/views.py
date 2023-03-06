@@ -40,6 +40,15 @@ def Authentication(token):
 
     return payload
 
+def get_size(file_size, unit='bytes'):
+    exponents_map = {'bytes': 0, 'kb': 1, 'mb': 2, 'gb': 3}
+    if unit not in exponents_map:
+        raise ValueError("Must select from \
+        ['bytes', 'kb', 'mb', 'gb']")
+    else:
+        size = file_size / 1024 ** exponents_map[unit]
+        return round(size, 3)
+
 
 # for doing register new user
 
@@ -207,8 +216,15 @@ class ImageView(APIView):
                 Folder_img.objects.get(folder_id=folder_id)
             )
 
+            folder_size = 0
+
             img_serializer = ImageSerializer(
                 Image_file.objects.all().filter(user_id=payload['id'], img_folder=folder_serializer.data['folder_name']), many=True)
+            
+            for i in img_serializer.data:
+                folder_size += int(i['img_size'])
+            
+            print("folder size = "+str(get_size(folder_size, 'gb'))+" gb")
 
             temp_respond.append(len(img_serializer.data))
             return Response(temp_respond)

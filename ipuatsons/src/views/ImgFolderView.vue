@@ -20,11 +20,11 @@
                 <!-- show full image here  -->
                 <div class="full-img" v-if="this.fullShow">
                     <img style='display:block; 
-                                        width:1000px;
-                                        height:900px; 
-                                        object-fit: scale-down;
-                                        border: 1px;
-                                        image-rendering: auto;'
+                                            width:1000px;
+                                            height:900px; 
+                                            object-fit: scale-down;
+                                            border: 1px;
+                                            image-rendering: auto;'
                         :src="`data:image/jpeg;base64,${this.fullImage.img_data}`" alt="{{ this.fullImage.img_id }}">
                     <button style="border: none;" @click="this.fullShow = false">
                         <span style="font-size: 1.5rem;" class=" las la-times-circle"></span>
@@ -38,8 +38,7 @@
 
                 <!-- upload image here  -->
                 <form style="padding:5px;">
-                    <input type="file" accept="image/*" @change="uploadImage($event)" id="file-input"
-                        multiple="multiple">
+                    <input type="file" accept="image/*" @change="uploadImage($event)" id="file-input" multiple="multiple">
                     <button type="button" @click="onUploadFile" style="color:black">Upload</button>
                 </form>
 
@@ -48,27 +47,31 @@
                 <!-- show image array here  -->
                 <div class="cards">
                     <div class="card-single" v-for="image in this.images" v-bind:key="image.img_id" style="background-color:#4b5162;
-                    border-radius: 15px;
+                        border-radius: 15px;
 
                          
-;">
+    ;">
                         <img :src="`data:image/jpeg;base64,${image.img_data}`" alt="{{ image.img_id }}"
                             @click="fullImageView(image.img_id)">
                         <div class="container"
-                            style="display:flex; flex-direction: row;justify-content:space-between;align-items:center;">
+                            style="width:20rem; display:flex; flex-direction:row; justify-content:space-between; align-items:center;">
                             <div style="padding:2px; 
-                                            text-overflow: ellipsis; 
-                                            overflow: hidden; 
-                                            white-space: nowrap;">
+                                        overflow: hidden;
+                                        text-overflow: ellipsis;
+                                        white-space: nowrap;
+                                        ">
+
                                 {{ showImgName(image.path) }}
                             </div>
 
                             <!-- delete image button here  -->
 
-                            <button style="background-color: red;
-                                                padding:2px;
-                                                border: none;" @click="deleteImage(image.img_id)">
+                            <div>
+                                <button style="background-color: red;
+                                                    padding:2px;
+                                                    border: none;" @click="deleteImage(image.img_id)">
                                 <span style="font-size: 1.5rem;" class="las la-trash"></span></button>
+                            </div>
                         </div>
 
 
@@ -78,14 +81,14 @@
 
                 <!-- page select here  -->
                 <div style="
-                    display: flex;
-                    margin: auto;
-                    padding-top: 1%;
-                    width: 35%;
-                    height: 50px;
-                    justify-content: space-between;
-                    text-align: center;
-                    ">
+                        display: flex;
+                        margin: auto;
+                        padding-top: 1%;
+                        width: 35%;
+                        height: 50px;
+                        justify-content: space-between;
+                        text-align: center;
+                        ">
                     <button style="width: 50px;color:#000 ;"> Last </button>
                     <a style="align-self: center;width: 350px;">Page :
                         <select id="page_sel" style="color:#000 ;" @change="goToPage">
