@@ -1,7 +1,10 @@
 from email.policy import default
 import os
+from pathlib import Path
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
+
+BASE_DIR = (Path(__file__).resolve().parent.parent.parent.parent).joinpath("media")
 
 def upload_path_img(instance,filename):
     if(instance.img_folder == "null"):
@@ -103,6 +106,6 @@ class Payment(models.Model):
     product_id = models.CharField(max_length=100, null=False)
     type = models.CharField(max_length=50, null=False)
     pay_time = models.DateTimeField(editable=False, auto_now_add=True) 
-    proof = models.ImageField(upload_to = upload_path_proof, null=False) 
+    # proof = models.ImageField(upload_to = upload_path_proof, null=False) 
 
 

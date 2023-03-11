@@ -10,7 +10,7 @@ from django.shortcuts import render
 from requests import delete
 from rest_framework import generics
 from .models import Folder_img, Job, User, Image_file, Product, Login_log, Payment
-from .serializers import JobSerializer, UserSerializer, ImageSerializer, FolderImageSerializer, ProductSerializer
+from .serializers import JobSerializer, UserSerializer, ImageSerializer, FolderImageSerializer, ProductSerializer,PaymentSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
@@ -24,7 +24,9 @@ from pathlib import Path
 from PIL import Image
 from yaml_run import YamlRunner
 
+BASE_DIR = (Path(__file__).resolve().parent.parent.parent.parent)
 
+print("base dir : "+str(BASE_DIR))
 
 # for Authentication user with JWT
 
@@ -152,7 +154,7 @@ class ImageView(APIView):
             for i in img_serializer.data:
                 file_type = (i['img_type'].split('/'))[1]
                 try:
-                    with Image.open('C:/IPAuTSoNS/backend/IPAutSoNsAPI'+str(i['path'])) as image_file_temp:
+                    with Image.open(str(BASE_DIR)+str(Path(i['path']))) as image_file_temp:
                         fixed_height = 200
                         height_percent = (
                             fixed_height / float(image_file_temp.size[1]))
@@ -187,7 +189,7 @@ class ImageView(APIView):
             for i in img_serializer.data:
                 file_type = (i['img_type'].split('/'))[1]
                 try:
-                    with Image.open('C:/IPAuTSoNS/backend/IPAutSoNsAPI'+str(i['path'])) as image_file_temp:
+                    with Image.open(str(BASE_DIR)+str(Path(i['path']))) as image_file_temp:
                         percentage = 1
                         resized_image = image_file_temp
                         buffer = BytesIO()
@@ -247,10 +249,12 @@ class ImageView(APIView):
                 chosen_range_max = page * 24
 
                 for i in range(chosen_range_min, chosen_range_max):
-                    try:
-                        file_type = (
-                            img_serializer.data[i]['img_type'].split('/'))[1]
-                        with Image.open('C:/IPAuTSoNS/backend/IPAutSoNsAPI'+str(img_serializer.data[i]['path'])) as image_file_temp:
+                   
+                    try: 
+                        # print("----------base dir : "+str(BASE_DIR))
+                        # print("----------open : "+str(BASE_DIR)+str(Path(img_serializer.data[i]['path'])))
+                        file_type = (img_serializer.data[i]['img_type'].split('/'))[1]
+                        with Image.open(str(BASE_DIR)+str(Path(img_serializer.data[i]['path']))) as image_file_temp:
                             percentage = 0.25
                             width, height = image_file_temp.size
                             resized_dimensions = (
@@ -313,7 +317,7 @@ class ImageView(APIView):
         img_id = folder_id
         image = Image_file.objects.get(img_id=img_id)
         try:
-            os.remove('C:/IPAuTSoNS/backend/IPAutSoNsAPI/media/'+str(image.path))
+            os.remove(BASE_DIR+str(image.path))
         except BaseException as error:
             print(error)
             return Response({"status": "Delete fail ! try again"})
@@ -336,11 +340,10 @@ class FolderView(APIView):
     def post(self, request):
         token = request.data['jwt']
         payload = Authentication(token)
-        main_dir = "..\IPAutSoNsAPI\media"
         user_id = payload['id']
         folder_name = request.data['folder_name']
 
-        folder_path = os.path.join(main_dir, user_id,"root", folder_name)
+        folder_path = os.path.join(BASE_DIR, user_id,"root", folder_name)
 
         files = os.listdir("IPAutSoNsAPI")
         print(files)
@@ -426,6 +429,40 @@ class ProductView(APIView):
             return Response({"status" : "Fail to add product try again."})
         else:
             return Response({"status" : "Add product successful"})
+        
+
+
+class PaymentView(APIView):
+    def get(self,request):
+        token = request.META['HTTP_JWT']
+        payload = Authentication(token)
+        serializer = PaymentSerializer(
+            Payment.objects.all().filter(user_id=payload['id']), many=True)
+        return Response(serializer.data)
+
+
+
+
+    def post(self,request):
+        token = request.META['HTTP_JWT']
+        payload = Authentication(token)
+        payment_data = {
+            'payment_id' : ''.join(random.choices(string.ascii_lowercase + string.digits, k=25)),
+            'product_id' : request.data['product_id'],
+            'user_id' : payload['id'],
+            'type' : request.data['type'],
+            'pay_time' : datetime.datetime.utcnow()
+        }
+        try:
+            serializer = PaymentSerializer(data=payment_data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+        except(BaseException) as error:
+            print(error)
+            return Response({"status" : "Fail to add payment try again."})
+        else:
+            return Response({"status" : "Add payment successful"})
+
 
 
 # class MakeDockerFile(APIView):
