@@ -24,7 +24,7 @@ from pathlib import Path
 from PIL import Image
 from yaml_run import YamlRunner
 
-BASE_DIR = (Path(__file__).resolve().parent.parent.parent.parent)
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 print("base dir : "+str(BASE_DIR))
 

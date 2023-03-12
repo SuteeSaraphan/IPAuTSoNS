@@ -5,6 +5,7 @@ services:
     build: ./backend
     ports:
       - "8000:8000"
+    image: chinglew27/ipautsons:backend
 
 
   frontend:
@@ -14,3 +15,4 @@ services:
      - "80:80"
     volumes:
      - .:/code
+    image: chinglew27/ipautsons:frontend
