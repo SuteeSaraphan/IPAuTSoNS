@@ -1,5 +1,12 @@
-version: '3'
 services:
+
+  backend:
+    # will build ./backend/Dockerfile
+    build: ./backend
+    ports:
+      - "8000:8000"
+
+
   frontend:
     # will build ./ipuatsons/Dockerfile
     build: ./ipuatsons
@@ -7,8 +14,3 @@ services:
      - "80:80"
     volumes:
      - .:/code
-  backend:
-    # will build ./backend/Dockerfile
-    build: ./backend
-    ports:
-      - "8000:8000"

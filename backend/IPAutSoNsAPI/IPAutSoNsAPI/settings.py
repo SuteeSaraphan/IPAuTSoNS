@@ -14,7 +14,7 @@ import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 
 # Quick-start development settings - unsuitable for production
@@ -128,7 +128,7 @@ DATABASES = {
             'NAME': 'ipautsons',
             'ENFORCE_SCHEMA': False,
             'CLIENT': {
-                'host': 'mongodb+srv://ipautsons:J0iZfrxW49cFOr4U@cluster0.lbe3op6.mongodb.net/?retryWrites=true&w=majority'
+                'host': 'mongodb+srv://ipautsons:TaWjpbUzeeQ8cPdN@cluster0.lbe3op6.mongodb.net/?retryWrites=true&w=majority'
             }  
         }
 }

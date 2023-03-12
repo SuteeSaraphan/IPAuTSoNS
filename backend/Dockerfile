@@ -1,5 +1,6 @@
 FROM --platform=$BUILDPLATFORM python:3.10-slim-buster AS backend
 
+
 RUN mkdir /backend
 
 WORKDIR /backend
@@ -16,7 +17,10 @@ RUN pip3 install --upgrade pip
 
 RUN pip3 install -r req.txt 
 
+RUN pip3 install pymongo[srv]
+
 COPY . /backend
+
 
 WORKDIR /backend/IPAutSoNsAPI
 
