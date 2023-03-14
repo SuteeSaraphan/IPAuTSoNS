@@ -46,13 +46,14 @@
 
                 <!-- show image array here  -->
                 <div class="cards">
-                    <div class="card-single" v-for="image in this.images" v-bind:key="image.img_id" style="background-color:#4b5162;
-                        border-radius: 15px;
-
-                         
-    ;">
+                    <div class="card-single" v-for="image in this.images" v-bind:key="image.img_id" 
+                    style="background-color:#4b5162;
+                            border-radius: 15px;
+                            ">
+                        <div style="align-items: flex-end;">
                         <img :src="`data:image/jpeg;base64,${image.img_data}`" alt="{{ image.img_id }}"
                             @click="fullImageView(image.img_id)">
+                        </div>
                         <div class="container"
                             style="width:20rem; display:flex; flex-direction:row; justify-content:space-between; align-items:center;">
                             <div style="padding:2px; 

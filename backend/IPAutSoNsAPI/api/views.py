@@ -317,7 +317,8 @@ class ImageView(APIView):
         img_id = folder_id
         image = Image_file.objects.get(img_id=img_id)
         try:
-            os.remove(BASE_DIR+str(image.path))
+            del_path = os.path.join(BASE_DIR,"media",str(image.path))
+            os.remove(del_path)
         except BaseException as error:
             print(error)
             return Response({"status": "Delete fail ! try again"})
@@ -343,7 +344,7 @@ class FolderView(APIView):
         user_id = payload['id']
         folder_name = request.data['folder_name']
 
-        folder_path = os.path.join(BASE_DIR, user_id,"root", folder_name)
+        folder_path = os.path.join(BASE_DIR,"media",user_id,"root", folder_name)
 
         files = os.listdir("IPAutSoNsAPI")
         print(files)
@@ -380,7 +381,9 @@ class FolderView(APIView):
         payload = Authentication(token)
         folder_img = Folder_img.objects.get(folder_id=folder_id)
         try:
-            shutil.rmtree(os.path.join(str(folder_img.path)))
+            print(str(BASE_DIR))
+            print(str(folder_img.path))
+            shutil.rmtree(os.path.join(BASE_DIR,"media",str(folder_img.path)))
         except BaseException as error:
             print(error)
             return Response({"status": "Delete fail ! try again"})

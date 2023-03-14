@@ -64,8 +64,12 @@ REST_FRAMEWORK = {
 
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:8080',
-    'http://10.66.1.176:8080',
+    'http://127.0.0.1:8000',
+    'http://161.246.5.53:8000',
 ]
+
+
+CORS_ALLOW_CREDENTIALS = True
 
 
 CORS_ALLOW_METHODS = [

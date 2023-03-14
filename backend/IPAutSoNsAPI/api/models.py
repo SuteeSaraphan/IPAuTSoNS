@@ -4,7 +4,7 @@ from pathlib import Path
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
 
-BASE_DIR = (Path(__file__).resolve().parent.parent.parent.parent).joinpath("media")
+BASE_DIR = (Path(__file__).resolve().parent.parent.parent).joinpath("media")
 
 def upload_path_img(instance,filename):
     if(instance.img_folder == "null"):

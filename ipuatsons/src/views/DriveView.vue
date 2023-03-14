@@ -101,61 +101,6 @@ export default {
     },
     methods: {
 
-        uploadImage(event) {
-            this.selectedFile = []
-            for (let i = 0; i < event.target.files.length; i++) {
-                this.selectedFile.push(event.target.files[i])
-            }
-
-
-
-
-        },
-        onUploadFile() {
-            this.isLoading = true
-            if (this.selectedFile.length > 0) {
-                const URL = 'http://127.0.0.1:8000/api/upload_image';
-                let data = new FormData();
-                data.append('jwt', this.cookies.get('jwt'));
-                data.append('folder', document.getElementById("folder").value);
-
-                //console.log(this.selectedFile[0])
-
-                for (let i = 0; i < this.selectedFile.length; i++) {
-                    data.append('img_file', this.selectedFile[i]);
-                }
-
-                //console.log(data)
-
-                let config = {
-                    header: {
-                        'Content-Type': 'multipart/form-data'
-                    }
-                }
-                axios.post(
-                    URL,
-                    data,
-                    config
-                ).then(
-                    async (response) => {
-                        this.isLoading = false
-                        alert('image upload response >' + response.data['status'])
-                        location.reload();
-                    }
-                ).catch(err => {
-                    this.isLoading = false
-                    alert(err)
-                }
-
-                )
-            } else {
-                this.isLoading = false
-                alert('Please selected file before upload')
-            }
-
-        },
-
-
         addNewFolder() {
             let newFolderName = prompt('Enter folder name');
             if (newFolderName.length == 0) {

@@ -135,7 +135,9 @@ export default {
     },
 
     goToHistory(){
-      router.push('/history')
+      let path = "/history/" + "newest"
+      window.location.href = path;
+
     }
 
   },

@@ -107,13 +107,13 @@ const routes = [
   },
 
   {
-    path: "/product_history",
+    path: "/product_history/:type",
     name: "product_history",
     component: ProductHistoryView,  
   },
 
   {
-    path: "/history",
+    path: "/history/:type",
     name: "history",
     component: HistoryView,  
   },

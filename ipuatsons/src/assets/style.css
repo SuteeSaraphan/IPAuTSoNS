@@ -266,13 +266,14 @@ main {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-around;
+  justify-content: space-between;
 }
 
 .card-single img{
   justify-self: center;
   width: auto;
   max-height: 12rem;
+  max-width: 12rem;
   overflow: scale-down;
   display: block;
   margin-left: auto;
