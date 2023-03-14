@@ -10,7 +10,7 @@ from django.shortcuts import render
 from requests import delete
 from rest_framework import generics
 from .models import Folder_img, Job, User, Image_file, Product, Login_log, Payment
-from .serializers import JobSerializer, UserSerializer, ImageSerializer, FolderImageSerializer, ProductSerializer,PaymentSerializer
+from .serializers import JobSerializer, UserSerializer, ImageSerializer, FolderImageSerializer, ProductSerializer, PaymentSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
@@ -41,6 +41,7 @@ def Authentication(token):
         raise AuthenticationFailed('Unauthenticated')
 
     return payload
+
 
 def get_size(file_size, unit='bytes'):
     exponents_map = {'bytes': 0, 'kb': 1, 'mb': 2, 'gb': 3}
@@ -88,7 +89,7 @@ class LoginView(APIView):
         respond.data = ({
             'jwt': token
         })
-        
+
         return respond
 
 
@@ -222,10 +223,10 @@ class ImageView(APIView):
 
             img_serializer = ImageSerializer(
                 Image_file.objects.all().filter(user_id=payload['id'], img_folder=folder_serializer.data['folder_name']), many=True)
-            
+
             for i in img_serializer.data:
                 folder_size += int(i['img_size'])
-            
+
             print("folder size = "+str(get_size(folder_size, 'gb'))+" gb")
 
             temp_respond.append(len(img_serializer.data))
@@ -249,11 +250,12 @@ class ImageView(APIView):
                 chosen_range_max = page * 24
 
                 for i in range(chosen_range_min, chosen_range_max):
-                   
-                    try: 
+
+                    try:
                         # print("----------base dir : "+str(BASE_DIR))
                         # print("----------open : "+str(BASE_DIR)+str(Path(img_serializer.data[i]['path'])))
-                        file_type = (img_serializer.data[i]['img_type'].split('/'))[1]
+                        file_type = (
+                            img_serializer.data[i]['img_type'].split('/'))[1]
                         with Image.open(str(BASE_DIR)+str(Path(img_serializer.data[i]['path']))) as image_file_temp:
                             percentage = 0.25
                             width, height = image_file_temp.size
@@ -317,7 +319,7 @@ class ImageView(APIView):
         img_id = folder_id
         image = Image_file.objects.get(img_id=img_id)
         try:
-            del_path = os.path.join(BASE_DIR,"media",str(image.path))
+            del_path = os.path.join(BASE_DIR, "media", str(image.path))
             os.remove(del_path)
         except BaseException as error:
             print(error)
@@ -344,7 +346,8 @@ class FolderView(APIView):
         user_id = payload['id']
         folder_name = request.data['folder_name']
 
-        folder_path = os.path.join(BASE_DIR,"media",user_id,"root", folder_name)
+        folder_path = os.path.join(
+            BASE_DIR, "media", user_id, "root", folder_name)
 
         files = os.listdir("IPAutSoNsAPI")
         print(files)
@@ -383,7 +386,8 @@ class FolderView(APIView):
         try:
             print(str(BASE_DIR))
             print(str(folder_img.path))
-            shutil.rmtree(os.path.join(BASE_DIR,"media",str(folder_img.path)))
+            shutil.rmtree(os.path.join(
+                BASE_DIR, "media", str(folder_img.path)))
         except BaseException as error:
             print(error)
             return Response({"status": "Delete fail ! try again"})
@@ -396,29 +400,31 @@ class FolderView(APIView):
             return Response({"status": "Delete done !"})
 
 
-
 class ProductView(APIView):
-    def get(self,request,product_id):
+    def get(self, request, product_id):
         token = request.META['HTTP_JWT']
         payload = Authentication(token)
-        return Response({"status" : product_id})
-    
-    def post(self,request):
+        return Response({"status": product_id})
+
+    def post(self, request):
         token = request.META['HTTP_JWT']
+        print(request)
         payload = Authentication(token)
         weight_file = request.FILES.get('weight_file')
         product_img = request.FILES.get('product_img')
+        print(weight_file)
+        print(product_img)
         product_data = {
-            'product_id' : ''.join(random.choices(string.ascii_lowercase + string.digits, k=6)),
-            'user_id' : payload['id'],
-            'product_name' : request.data['name'],
-            'product_type' : request.data['type'],
-            'model' : request.data['model'],
-            'price' : request.data['price'],
-            'path' : weight_file,
-            'product_img' : product_img,
-            'last_update' : datetime.datetime.utcnow()
-            
+            'product_id': ''.join(random.choices(string.ascii_lowercase + string.digits, k=6)),
+            'user_id': payload['id'],
+            'product_name': request.data['name'],
+            'product_type': request.data['type'],
+            'model': request.data['model'],
+            'price': request.data['price'],
+            'path': weight_file,
+            'product_img': product_img,
+            'last_update': datetime.datetime.utcnow()
+
         }
 
         try:
@@ -426,46 +432,41 @@ class ProductView(APIView):
             serializer.is_valid(raise_exception=True)
             serializer.save()
             print("file "+weight_file.name+" upload done")
-        
-        except(BaseException) as error:
+
+        except (BaseException) as error:
             print(error)
-            return Response({"status" : "Fail to add product try again."})
+            return Response({"status": "Fail to add product try again."})
         else:
-            return Response({"status" : "Add product successful"})
-        
+            return Response({"status": "Add product successful"})
 
 
 class PaymentView(APIView):
-    def get(self,request):
+    def get(self, request):
         token = request.META['HTTP_JWT']
         payload = Authentication(token)
         serializer = PaymentSerializer(
             Payment.objects.all().filter(user_id=payload['id']), many=True)
         return Response(serializer.data)
 
-
-
-
-    def post(self,request):
+    def post(self, request):
         token = request.META['HTTP_JWT']
         payload = Authentication(token)
         payment_data = {
-            'payment_id' : ''.join(random.choices(string.ascii_lowercase + string.digits, k=25)),
-            'product_id' : request.data['product_id'],
-            'user_id' : payload['id'],
-            'type' : request.data['type'],
-            'pay_time' : datetime.datetime.utcnow()
+            'payment_id': ''.join(random.choices(string.ascii_lowercase + string.digits, k=25)),
+            'product_id': request.data['product_id'],
+            'user_id': payload['id'],
+            'type': request.data['type'],
+            'pay_time': datetime.datetime.utcnow()
         }
         try:
             serializer = PaymentSerializer(data=payment_data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
-        except(BaseException) as error:
+        except (BaseException) as error:
             print(error)
-            return Response({"status" : "Fail to add payment try again."})
+            return Response({"status": "Fail to add payment try again."})
         else:
-            return Response({"status" : "Add payment successful"})
-
+            return Response({"status": "Add payment successful"})
 
 
 # class MakeDockerFile(APIView):
@@ -533,6 +534,10 @@ class MakeDockerFile(APIView):
         img_selected = request.data['img_selected']
         payload = Authentication(token)
         user = User.objects.get(user_id=payload['id'])
+        path = "/ipautsons/backend/media"+path
+        img_folder_temp = path.split("/")
+        img_folder = img_folder_temp[5]
+        
 
         template = """apiVersion: batch/v1
 kind: Job
@@ -542,12 +547,12 @@ spec:
   template:
     spec:
       containers:
-      - name: testascii2
-        image: """+path+"""
+      - name: """+job_id+"""
+        image: suteesaraphan27/ascii
         volumeMounts:
             - name: myvolume
               mountPath: /www
-        command: ["python","ASCII.py","""+param1+""","""+path+"""]
+        command: ["python","ASCII.py","""+img_folder+""","""+path+"""]
       restartPolicy: Never
       volumes:
       - name: myvolume
@@ -557,24 +562,23 @@ spec:
             with open('yaml_file/'+job_id+'.yaml', 'w') as yfile:
                 yfile.write(template)
                 yfile.close()
-
-        except(BaseException)as error:
-            print(error)
-            return Response({"status": "ERROR create job file fail"})
-        else:
-            #yaml_run = YamlRunner(job_id)
-            #yaml_run.run_yaml()
+                #yaml_run = YamlRunner(job_id)
+            # yaml_run.run_yaml()
             job_data = {
-            'job_id': job_id,
-            'user_id': user.user_id,
-            #'app_id': app_id,
-            'path': path,
-            'num_img': num_img,
-            'img_selected': img_selected,
-            'job_status': "0"
+                'job_id': job_id,
+                'user_id': user.user_id,
+                # 'app_id': app_id,
+                'path': path,
+                'num_img': num_img,
+                'img_selected': img_selected,
+                'job_status': "0"
             }
 
             serializer = JobSerializer(data=job_data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response({"status": "File is made!"})
+
+        except (BaseException)as error:
+            print(error)
+            return Response({"status": "ERROR create job file fail"})

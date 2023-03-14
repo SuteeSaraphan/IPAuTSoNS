@@ -1,17 +1,17 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name:test_02
+  name:test_1
 spec:
   template:
     spec:
       containers:
-      - name: testascii2
-        image: i6r6mvxzco\root\test02
+      - name: test_1
+        image: suteesaraphan27/ascii
         volumeMounts:
             - name: myvolume
               mountPath: /www
-        command: ["python","ASCII.py",5,i6r6mvxzco\root\test02]
+        command: ["python","ASCII.py",test02,/ipautsons/backend/mediai6r6mvxzco/root/test02/test_img.jpg]
       restartPolicy: Never
       volumes:
       - name: myvolume

@@ -15,7 +15,8 @@
       <div class="sidebar-user">
         <img src="../img/profile.jpg" alt="">
         <div class="info-profile">
-          <h3>Peach</h3>
+          <div v-if="fname !=null & lname !=null" style="display: flex; flex-direction: row; justify-content: space-around;"><h3>{{fname}}</h3> <h3>{{lname}}</h3></div>
+          
           <span>Credit: 227</span>
           <span>Usage Total: 32GB</span>
           <span>60 %</span>
@@ -107,7 +108,7 @@
 
 
 <style>
-.info-profile{
+.info-profile {
   display: flex;
   flex-direction: column;
 
@@ -117,28 +118,55 @@
 <script>
 import { useCookies } from "vue3-cookies";
 import router from '@/router';
+import axios from 'axios';
+const URL_GET_USER = "http://127.0.0.1:8000/api/user"
 export default {
+
+  
   name: 'SlideBar',
   setup() {
     const { cookies } = useCookies();
-    return { cookies };
+    return {
+      cookies
+    };
   },
+
+  data(){
+    return{
+      fname:null,
+      lname:null
+    }
+  },
+
   created() {
     if (this.cookies.get('jwt') == null) {
       router.push('/login')
+    } else {
+      axios.defaults.headers.get['jwt'] = this.cookies.get('jwt');
+      axios.get(URL_GET_USER)
+        .then(async respond => {
+          this.fname = respond.data['first_name'];
+          this.lname = respond.data['last_name'];
+        })
     }
+    
+
+
   },
   methods: {
+    
+
+    
     logout() {
       this.cookies.remove('jwt')
       router.push('/login')
     },
 
-    goToHistory(){
+    goToHistory() {
       let path = "/history/" + "newest"
       window.location.href = path;
 
-    }
+    },
 
   },
 }
