@@ -136,16 +136,9 @@ import { useCookies } from "vue3-cookies";
 import router from '@/router';
 import axios from 'axios';
 
-const URL_GET_PRODUCT = 'http://127.0.0.1:8000/api/product';
-const URL_GET_IMG = 'http://127.0.0.1:8000/api/image';
-
-
+const URL_GET_PRODUCT = 'product';
 
 export default {
-
-
-
-
     name: "ProductView",
     setup() {
         const { cookies } = useCookies();
@@ -164,19 +157,7 @@ export default {
     methods: {
 
 
-        changeImg(img_id) {
-            this.imgShowSrc = null
-            axios.defaults.headers.get['jwt'] = this.cookies.get('jwt');
-            axios.get(URL_GET_IMG + "/once/" + img_id)
-                .then(res => {
-                    this.imgShowSrc = res.data[0]
-                }).catch(error => {
-                    console.log(error)
-                    alert("Something went wrong try again")
-
-                }
-                )
-        },
+       
 
 
     }

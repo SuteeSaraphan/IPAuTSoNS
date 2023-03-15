@@ -115,6 +115,6 @@ class PaymentSerializer(serializers.ModelSerializer):
             'product_id',
             'type',
             'pay_time',
-            #'proof'
+            # 'proof'
         )
         model = Payment

@@ -150,11 +150,10 @@
 import SlideBar from '@/components/SlideBar'
 import { useCookies } from "vue3-cookies";
 import router from '@/router';
-import axios from 'axios';
-//import VueSlideBar from 'vue-slide-bar';
-const URL_IMG_FOLDER = 'http://127.0.0.1:8000/api/folder_img';
-//const URL_IMG_UPLOAD = 'http://127.0.0.1:8000/api/upload_image';
-const URL_GET_IMG = 'http://127.0.0.1:8000/api/image';
+//import axios from 'axios';
+
+
+
 
 
 
@@ -173,15 +172,7 @@ export default {
     },
     data() {
         return {
-            filterNoneCpu: ['Black and White', 'ASCII'],
-            filterOnCpu: ['Mosaic', 'PixelArt'],
-            isLoading: true,
-            imgBarWidth: '175',
-            folders: [],
-            images: [],
-            imgShowSrc: null,
-            filter: null,
-            filter_value: 0
+         
 
         }
     },
@@ -190,27 +181,6 @@ export default {
             router.push('/add_product')
         },
 
-
-        goToFolder() {
-
-            for (let i in this.folders) {
-                if (this.folders[i].folder_name == document.getElementById("folder_sel").value) {
-                    console.log('found')
-                    axios.defaults.headers.get['jwt'] = this.cookies.get('jwt');
-                    axios.get(URL_GET_IMG + "/all/" + this.folders[i].folder_id)
-                        .then(res => {
-                            this.images = []
-                            this.isLoading = false
-                            this.images = res.data
-
-                        })
-
-                    break;
-                }
-            }
-
-
-        },
         goToProduct(product_id) {
             //console.log("enter folder :"+folder_id)
             let path = "/product/" + product_id
@@ -240,16 +210,7 @@ export default {
             router.push('/login')
         }
         else {
-            axios.defaults.headers.get['jwt'] = this.cookies.get('jwt');
-            axios.get(URL_IMG_FOLDER)
-                .then(res => {
-                    this.folders = res.data;
-                    this.isLoading = false
-                })
-                .catch(err => {
-                    this.isLoading = false
-                    alert(err.data)
-                })
+           console.log("go on")
         }
 
     }

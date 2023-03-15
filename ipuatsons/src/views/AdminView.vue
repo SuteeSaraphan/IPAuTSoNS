@@ -152,9 +152,9 @@ import { useCookies } from "vue3-cookies";
 import router from '@/router';
 import axios from 'axios';
 //import VueSlideBar from 'vue-slide-bar';
-const URL_IMG_FOLDER = 'http://127.0.0.1:8000/api/folder_img';
+const URL_IMG_FOLDER = 'folder_img';
 //const URL_IMG_UPLOAD = 'http://127.0.0.1:8000/api/upload_image';
-const URL_GET_IMG = 'http://127.0.0.1:8000/api/image';
+const URL_GET_IMG = 'image';
 
 
 

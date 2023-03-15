@@ -71,11 +71,7 @@ import SlideBar from '@/components/SlideBar'
 import { useCookies } from "vue3-cookies";
 import router from '@/router';
 import axios from 'axios';
-
-const URL_ADD_PRODUCT = 'http://127.0.0.1:8000/api/product';
-//const URL_GET_IMG = 'http://127.0.0.1:8000/api/image';
-
-
+const URL_ADD_PRODUCT = 'product';
 
 export default {
 

@@ -7,7 +7,7 @@ services:
       - "8000:8000"
     volumes:
      - ipautsons-volume:/IPAuTSoNS
-    image: chinglew27/ipautsons:backend
+    image: chinglew27/ipautsons-backend:lastest
 
 
   frontend:
@@ -17,7 +17,7 @@ services:
      - "80:80"
     volumes:
      - ipautsons-volume:/IPAuTSoNS
-    image: chinglew27/ipautsons:frontend
+    image: chinglew27/ipautsons-frontend:lastest
 
 volumes:
   ipautsons-volume:

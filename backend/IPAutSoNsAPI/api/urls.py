@@ -15,7 +15,7 @@ urlpatterns = [
     path('user', views.UserView.as_view()),
     path('password', views.PasswordView.as_view()),
 
-    path('upload_image', views.ImageView.as_view()),
+    path('image', views.ImageView.as_view()),
     path('image/<str:folder_id>', views.ImageView.as_view()),
     path('image/<str:type>/<str:folder_id>', views.ImageView.as_view()),
     path('all_images', views.AllImageView.as_view()),
@@ -24,7 +24,7 @@ urlpatterns = [
 
     path('product', views.ProductView.as_view()),
     path('product/<str:product_id>', views.ProductView.as_view()),
-    
+
     path('payment', views.PaymentView.as_view()),
 
 ]

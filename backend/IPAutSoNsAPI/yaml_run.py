@@ -1,11 +1,10 @@
 from kubernetes import client, config, utils
 import os
 
-class YamlRunner:
-    absolute_path = os.path.dirname(os.path.abspath(__file__))
 
-    def __init__(self,job_id):
-    #def __init__(self,user_id,job_id,path,img_selected,param1,param2,param3):
+class YamlRunner:
+    def __init__(self, job_id):
+        # def __init__(self,user_id,job_id,path,img_selected,param1,param2,param3):
         # self.user_id = user_id
         self.job_id = job_id
         self.yaml_file = open('yaml_file/'+self.job_id+'.yaml', 'r')
@@ -21,9 +20,10 @@ class YamlRunner:
     def __self__():
         print("runner")
 
-
     def run_yaml(self):
         print("run yaml file")
         config.load_incluster_config()
         k8s_client = client.ApiClient()
+        print("hh")
         utils.create_from_yaml(k8s_client, self.yaml_file)
+        print("succ")

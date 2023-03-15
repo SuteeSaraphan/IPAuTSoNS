@@ -91,7 +91,7 @@ export default {
                 alert("Lastname is empty")
             } else {
                 if (this.user.password == document.getElementById("password_confirm").value) {
-                    axios.post('http://127.0.0.1:8000/api/register',
+                    axios.post('register',
                         {
                             'user_id': Math.random().toString(36).slice(2),
                             'email': this.user.email,

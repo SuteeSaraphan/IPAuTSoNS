@@ -125,7 +125,7 @@ import { useCookies } from "vue3-cookies";
 import router from '@/router';
 import axios from 'axios';
 //import VueSlideBar from 'vue-slide-bar';
-const URL_PAYMENT = "http://127.0.0.1:8000/api/payment"
+const URL_PAYMENT = "payment"
 
 
 

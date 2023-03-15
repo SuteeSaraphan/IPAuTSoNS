@@ -16,7 +16,6 @@
         <img src="../img/profile.jpg" alt="">
         <div class="info-profile">
           <div v-if="fname !=null & lname !=null" style="display: flex; flex-direction: row; justify-content: space-around;"><h3>{{fname}}</h3> <h3>{{lname}}</h3></div>
-          
           <span>Credit: 227</span>
           <span>Usage Total: 32GB</span>
           <span>60 %</span>
@@ -119,7 +118,7 @@
 import { useCookies } from "vue3-cookies";
 import router from '@/router';
 import axios from 'axios';
-const URL_GET_USER = "http://127.0.0.1:8000/api/user"
+// const URL_GET_USER = "http://127.0.0.1:8000/api/user"
 export default {
 
   
@@ -143,7 +142,7 @@ export default {
       router.push('/login')
     } else {
       axios.defaults.headers.get['jwt'] = this.cookies.get('jwt');
-      axios.get(URL_GET_USER)
+      axios.get("user")
         .then(async respond => {
           this.fname = respond.data['first_name'];
           this.lname = respond.data['last_name'];

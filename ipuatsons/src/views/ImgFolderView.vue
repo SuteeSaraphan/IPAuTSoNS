@@ -111,9 +111,8 @@ import SlideBar from '@/components/SlideBar'
 import { useCookies } from "vue3-cookies";
 import router from '@/router';
 import axios from 'axios';
-const URL_IMG_FOLDER = 'http://127.0.0.1:8000/api/folder_img';
-const URL_IMG_UPLOAD = 'http://127.0.0.1:8000/api/upload_image';
-const URL_GET_IMG = 'http://127.0.0.1:8000/api/image';
+const URL_IMG_FOLDER = 'folder_img';
+const URL_IMG = 'image';
 
 
 
@@ -176,7 +175,7 @@ export default {
                     }
                 }
                 axios.post(
-                    URL_IMG_UPLOAD,
+                    URL_IMG,
                     data,
                     config
                 ).then(
@@ -200,7 +199,7 @@ export default {
             this.fullImage = null
             this.fullShow = true
             axios.defaults.headers.get['jwt'] = this.cookies.get('jwt');
-            axios.get(URL_GET_IMG + "/once/" + img_id)
+            axios.get(URL_IMG + "/once/" + img_id)
                 .then(res => {
                     this.fullImage = res.data[0]
                     console.log(this.fullImage)
@@ -211,7 +210,7 @@ export default {
         deleteImage(img_id) {
             if (confirm("Are you sure to delete this image ?")) {
                 axios.defaults.headers.delete['jwt'] = this.cookies.get('jwt');
-                axios.delete(URL_GET_IMG + "/" + img_id)
+                axios.delete(URL_IMG + "/" + img_id)
                     .then(async res => {
                         alert(res.data['status']);
                         location.reload();
@@ -248,7 +247,7 @@ export default {
             // get image data from data base
             this.page_sel = page;
             //console.log(this.page_sel)
-            axios.get(URL_GET_IMG + "/" + page + "/" + this.$route.params.folder_id)
+            axios.get(URL_IMG + "/" + page + "/" + this.$route.params.folder_id)
                 .then(res => {
                     console.log(res.data)
                     this.isLoading = false
@@ -291,7 +290,7 @@ export default {
                         router.push('/drive')
                     } else {
                         // count image in from data base
-                        axios.get(URL_GET_IMG + "/count/" + this.$route.params.folder_id)
+                        axios.get(URL_IMG + "/count/" + this.$route.params.folder_id)
                             .then(res => {
                                 //console.log('image : ' + res.data)
                                 this.pages = res.data / 24

@@ -26,11 +26,8 @@ from yaml_run import YamlRunner
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
-print("base dir : "+str(BASE_DIR))
 
 # for Authentication user with JWT
-
-
 def Authentication(token):
     if not token:
         raise AuthenticationFailed('Unauthenticated')
@@ -469,116 +466,133 @@ class PaymentView(APIView):
             return Response({"status": "Add payment successful"})
 
 
-# class MakeDockerFile(APIView):
-#     def post(self, request):
-#         token = request.data['jwt']
-#         job_id = request.data['job_id']
-#         app_id = request.data['app_id']
-#         path = request.data['path']
-#         num_img = request.data['num_img']
-#         img_selected = request.data['img_selected']
-#         create_time = datetime.datetime.now()
-#         print(create_time)
-#         payload = Authentication(token)
-
-#         user = User.objects.get(user_id=payload['id'])
-
-#         template = """apiVersion: batch/v1
-# kind: Job
-# metadata:
-#     name: """+job_id+"""
-# spec:
-#     template:
-#         metadata:
-#             labels:
-#                 app: my-job-pod-id
-#             name: my-job-pod-id
-#         spec:
-#             containers:
-#                 - image: "shuffler:latest"
-#                 imagePullPolicy: Never
-#                 name: "shuffler"
-#                 command:
-#                     - python3
-#                     - -u
-#                     - ./test.py """+user.user_id+""" """+job_id+""" """+app_id+""" """+path+""" """+img_selected+"""
-#                 args:
-#                     - "Kubernetes"
-#             restartPolicy: Never"""
-#         with open('yaml_file/'+job_id+'.yaml', 'w') as yfile:
-#             yfile.write(template)
-
-#         job_data = {
-#             'job_id': job_id,
-#             'user_id': user.user_id,
-#             'app_id': app_id,
-#             'path': path,
-#             'num_img': num_img,
-#             'img_selected': img_selected,
-#             'job_status': "1"
-#         }
-
-#         serializer = JobSerializer(data=job_data)
-#         serializer.is_valid(raise_exception=True)
-#         serializer.save()
-#         return Response({"status": "File is made!"})
-
-
 class MakeDockerFile(APIView):
     def post(self, request):
-        job_id = request.data['job_id']
-        token = request.META['HTTP_JWT']
-        path = request.data['path']
-        param1 = request.data['param1']
-        num_img = request.data['num_img']
-        img_selected = request.data['img_selected']
-        payload = Authentication(token)
-        user = User.objects.get(user_id=payload['id'])
-        path = "/ipautsons/backend/media"+path
-        img_folder_temp = path.split("/")
-        img_folder = img_folder_temp[5]
-        
+        # job_id = request.data['job_id']
+        # token = request.META['HTTP_JWT']
+        # path = request.data['path']
+        # param1 = request.data['param1']
+        # num_img = request.data['num_img']
+        # img_selected = request.data['img_selected']
+        # payload = Authentication(token)
+        # user = User.objects.get(user_id=payload['id'])
+        # path = "/ipautsons/backend/media"+path
+        # img_folder_temp = path.split("/")
+        # img_folder = img_folder_temp[5]
 
         template = """apiVersion: batch/v1
+
 kind: Job
+
 metadata:
-  name:"""+job_id+"""
+
+  name: test123
+
 spec:
+
   template:
+
     spec:
+
       containers:
-      - name: """+job_id+"""
+
+      - name: test123
+
         image: suteesaraphan27/ascii
         volumeMounts:
-            - name: myvolume
-              mountPath: /www
-        command: ["python","ASCII.py","""+img_folder+""","""+path+"""]
+            - name: nfs-share
+              mountPath: /ipautsons
+
+        command: ["python","ASCII.py","test123","/ipautsons/img"]
+
       restartPolicy: Never
       volumes:
-      - name: myvolume
+      - name: nfs-share
         persistentVolumeClaim: 
-          claimName: mypvc"""
+          claimName: example"""
+#         
+#             job_data = {
+#                 'job_id': job_id,
+#                 'user_id': user.user_id,
+#                 # 'app_id': app_id,
+#                 'path': path,
+#                 'num_img': num_img,
+#                 'img_selected': img_selected,
+#                 'job_status': "0"
+#             }
+
+#             serializer = JobSerializer(data=job_data)
+#             serializer.is_valid(raise_exception=True)
+#             serializer.save()
         try:
-            with open('yaml_file/'+job_id+'.yaml', 'w') as yfile:
+            with open('yaml_file/'+"test123"+'.yaml', 'w') as yfile:
                 yfile.write(template)
                 yfile.close()
-                #yaml_run = YamlRunner(job_id)
-            # yaml_run.run_yaml()
-            job_data = {
-                'job_id': job_id,
-                'user_id': user.user_id,
-                # 'app_id': app_id,
-                'path': path,
-                'num_img': num_img,
-                'img_selected': img_selected,
-                'job_status': "0"
-            }
-
-            serializer = JobSerializer(data=job_data)
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
+                print("call yaml runner")
+                yaml_run = YamlRunner("test123")
+                yaml_run.run_yaml()
             return Response({"status": "File is made!"})
 
         except (BaseException)as error:
             print(error)
-            return Response({"status": "ERROR create job file fail"})
+            return Response({"status": error})
+
+
+# class MakeDockerFile(APIView):
+#     def post(self, request):
+#         job_id = request.data['job_id']
+#         token = request.META['HTTP_JWT']
+#         path = request.data['path']
+#         param1 = request.data['param1']
+#         num_img = request.data['num_img']
+#         img_selected = request.data['img_selected']
+#         payload = Authentication(token)
+#         user = User.objects.get(user_id=payload['id'])
+#         path = "/ipautsons/backend/media"+path
+#         img_folder_temp = path.split("/")
+#         img_folder = img_folder_temp[5]
+
+#         template = """apiVersion: batch/v1
+# kind: Job
+# metadata:
+#   name:"""+job_id+"""
+# spec:
+#   template:
+#     spec:
+#       containers:
+#       - name: """+job_id+"""
+#         image: suteesaraphan27/ascii
+#         volumeMounts:
+#             - name: myvolume
+#               mountPath: /www
+#         command: ["python","ASCII.py","""+img_folder+""","""+path+"""]
+#       restartPolicy: Never
+#       volumes:
+#       - name: myvolume
+#         persistentVolumeClaim: 
+#           claimName: mypvc"""
+#         try:
+#             job_data = {
+#                 'job_id': job_id,
+#                 'user_id': user.user_id,
+#                 # 'app_id': app_id,
+#                 'path': path,
+#                 'num_img': num_img,
+#                 'img_selected': img_selected,
+#                 'job_status': "0"
+#             }
+
+#             serializer = JobSerializer(data=job_data)
+#             serializer.is_valid(raise_exception=True)
+#             serializer.save()
+
+#             with open('yaml_file/'+job_id+'.yaml', 'w') as yfile:
+#                 yfile.write(template)
+#                 yfile.close()
+#                 yaml_run = YamlRunner(job_id)
+#                 yaml_run.run_yaml()
+#             return Response({"status": "File is made!"})
+
+#         except (BaseException)as error:
+#             print(error)
+#             return Response({"status": "ERROR create job file fail"})

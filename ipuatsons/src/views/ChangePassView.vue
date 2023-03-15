@@ -77,7 +77,7 @@ export default {
     },
     methods: {
         edit_password() {
-            axios.put('http://127.0.0.1:8000/api/password',
+            axios.put('password',
                 {
                     'jwt': this.cookies.get('jwt'),
                     'old_password': document.getElementById("old_password").value,
@@ -108,8 +108,7 @@ export default {
         }
         else {
             axios.defaults.headers.get['jwt'] = this.cookies.get('jwt');
-            const URL = 'http://127.0.0.1:8000/api/user';
-            axios.get(URL)
+            axios.get('user')
                 .then(res => res)
                 .catch(err => {
                     alert('Can not change password now try again later')

@@ -78,7 +78,7 @@ export default {
     },
     methods: {
         edit_profile() {
-            axios.put('http://127.0.0.1:8000/api/user',
+            axios.put('/user',
                 {
                     'jwt': this.cookies.get('jwt'),
                     'first_name': document.getElementById("first_name").value,

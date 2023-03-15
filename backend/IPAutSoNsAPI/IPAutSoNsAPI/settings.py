@@ -45,9 +45,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',  # new
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',  # new
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -61,12 +61,17 @@ REST_FRAMEWORK = {
         # 'rest_framework_simplejwt.authentication.JWTAuthentication',
     ]
 }
+ALLOWED_HOSTS= ['*']
 
-CORS_ORIGIN_WHITELIST = [
-    'http://localhost:8080',
-    'http://127.0.0.1:8000',
-    'http://161.246.5.53:8000',
-]
+CORS_ORIGIN_ALLOW_ALL = True
+
+# CORS_ORIGIN_WHITELIST = [
+#     'http://localhost:8080',
+#     'http://localhost:8000',
+#     'http://127.0.0.1:8000',
+#     'http://161.246.5.53:8000',
+    
+# ]
 
 
 CORS_ALLOW_CREDENTIALS = True
@@ -82,16 +87,16 @@ CORS_ALLOW_METHODS = [
 ]
 
 CORS_ALLOW_HEADERS = [
-'accept',
-'accept-encoding',
-'authorization',
-'content-type',
-'dnt',
-'origin',
-'user-agent',
-'x-csrftoken',
-'x-requested-with',
-'jwt'
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+    'jwt'
 ]
 
 
@@ -128,13 +133,13 @@ DATABASES = {
 '''
 DATABASES = {
     'default': {
-            'ENGINE': 'djongo',
-            'NAME': 'ipautsons',
-            'ENFORCE_SCHEMA': False,
-            'CLIENT': {
+        'ENGINE': 'djongo',
+        'NAME': 'ipautsons',
+        'ENFORCE_SCHEMA': False,
+        'CLIENT': {
                 'host': 'mongodb+srv://ipautsons:J0iZfrxW49cFOr4U@cluster0.lbe3op6.mongodb.net/?retryWrites=true&w=majority'
-            }  
         }
+    }
 }
 
 
@@ -189,6 +194,3 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUHT_USER_MODEL = 'api.User'
-
-CORS_ORIGIN_ALLOW_ALL = True
-CORS_ALLOW_CREDENTIALS = True

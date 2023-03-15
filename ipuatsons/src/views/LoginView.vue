@@ -57,7 +57,7 @@ export default {
             } else if (document.getElementById('password').value.length == 0) {
                 alert('Password is empty')
             } else {
-                axios.post('http://127.0.0.1:8000/api/login',
+                axios.post('login',
                     {
                         'email': this.user.email,
                         'password': this.user.password

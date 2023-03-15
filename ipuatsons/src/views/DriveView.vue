@@ -106,7 +106,7 @@ export default {
             if (newFolderName.length == 0) {
                 alert("Folder name is empty")
             } else {
-                axios.post('http://127.0.0.1:8000/api/folder_img',
+                axios.post('folder_img',
                     {
                         'jwt': this.cookies.get('jwt'),
                         "folder_id": Math.random().toString(36).slice(2),
@@ -132,7 +132,7 @@ export default {
         deleteFolder(folder_id) {
             if (confirm("Are you sure to delete this folder ?")) {
                 axios.defaults.headers.delete['jwt'] = this.cookies.get('jwt');
-                axios.delete("http://127.0.0.1:8000/api/folder_img/" + folder_id)
+                axios.delete("folder_img/" + folder_id)
                     .then(async res => {
                         alert(res.data['status']);
                         location.reload();
@@ -154,7 +154,7 @@ export default {
         }
         else {
             axios.defaults.headers.get['jwt'] = this.cookies.get('jwt');
-            const URL = 'http://127.0.0.1:8000/api/folder_img';
+            const URL = 'folder_img';
             axios.get(URL)
                 .then(res => {
                     this.files = res.data;
