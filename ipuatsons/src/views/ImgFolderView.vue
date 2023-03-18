@@ -46,15 +46,22 @@
 
                 <!-- show image array here  -->
                 <div class="cards">
-                    <div class="card-single" v-for="image in this.images" v-bind:key="image.img_id" style="background-color:#4b5162;
-                                    border-radius: 15px;
-                                    ">
-                        <div style="align-items: flex-end;">
+                    <div class="card-single" v-for="image in this.images" v-bind:key="image.img_id" 
+                    style="background-color:#4b5162;
+                            border-radius: 15px;
+                            ">
+                        <div class="card-img">
                             <img :src="`data:image/jpeg;base64,${image.img_data}`" alt="{{ image.img_id }}"
                                 @click="fullImageView(image.img_id)">
                         </div>
                         <div class="container"
-                            style="width:20rem; display:flex; flex-direction:row; justify-content:space-between; align-items:center;">
+                            style="width:70%;
+                            margin-left: 5%; 
+                            margin-right: 5%; 
+                            display:flex; 
+                            flex-direction:row; 
+                            justify-content:space-between; 
+                            align-items:center;">
                             <div style="padding:2px; 
                                                 overflow: hidden;
                                                 text-overflow: ellipsis;
@@ -104,6 +111,21 @@
         </div>
     </div>
 </template>
+
+<style>
+.card-img{
+    padding: 2.5%;
+    align-items: center;
+    justify-content: center;
+    justify-items: center;
+}
+
+.card-img img{
+    vertical-align: middle;
+    max-width: 24rem;
+    max-height: 12rem;
+}
+</style>
 
 <script>
 import SlideBar from '@/components/SlideBar'
@@ -155,7 +177,7 @@ export default {
             if (this.selectedFile.length > 0) {
                 this.isLoading = true
                 let data = new FormData();
-                data.append('jwt', this.cookies.get('jwt'));
+                data.append('jwt', this.$store.state.jwt);
                 data.append('folder', this.folder.folder_name);
 
                 //console.log(this.selectedFile[0])
@@ -195,7 +217,7 @@ export default {
         fullImageView(img_id) {
             this.fullImage = null
             this.fullShow = true
-            axios.defaults.headers.get['jwt'] = this.cookies.get('jwt');
+            axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
             axios.get(URL_IMG + "/once/" + img_id)
                 .then(res => {
                     this.fullImage = res.data[0]
@@ -206,7 +228,7 @@ export default {
         //delete image 
         deleteImage(img_id) {
             if (confirm("Are you sure to delete this image ?")) {
-                axios.defaults.headers.delete['jwt'] = this.cookies.get('jwt');
+                axios.defaults.headers.delete['jwt'] = this.$store.state.jwt;
                 axios.delete(URL_IMG + "/" + img_id)
                     .then(async res => {
                         alert(res.data['status']);
@@ -230,7 +252,7 @@ export default {
         // for show image name by cut it out from path
         showImgName(path) {
             let temp = path.split("/");
-            return temp[5]
+            return temp[6]
         },
 
         goToPage() {

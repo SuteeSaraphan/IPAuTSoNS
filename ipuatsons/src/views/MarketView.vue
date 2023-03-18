@@ -45,7 +45,9 @@
                                     <span style="color: #000;">Seller - </span>
                                     <small style="color: #000;">Peachi_27</small>
                                 </div>
-                                <img src="https://live.staticflickr.com/65535/52639909358_84b98cc68f_o_d.jpg">
+                                <div class="card-img">
+                                    <img src="https://live.staticflickr.com/65535/52639909358_84b98cc68f_o_d.jpg">
+                                </div>
                                 <h2 style="color: #000;">Yha tub sean gun</h2>
                                 <small style="color: #000;">object detection</small>
                             </div>
@@ -53,89 +55,6 @@
                     </div>
                     <!-- end of show each product info here -->
 
-
-                    <!-- show each product info here -->
-                    <div class="card-single">
-                        <div class="card-flex">
-                            <div class="card-info">
-                                <div class="card-head">
-                                    <span style="color: #000;">Seller - </span>
-                                    <small style="color: #000;">Peachi_27</small>
-                                </div>
-                                <img src="https://live.staticflickr.com/65535/52282498076_acc417f003_o_d.jpg">
-                                <h2 style="color: #000;">Yha tub sean gun</h2>
-                                <small style="color: #000;">object detection</small>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- end of show each product info here -->
-
-                    <!-- show each product info here -->
-                    <div class="card-single">
-                        <div class="card-flex">
-                            <div class="card-info">
-                                <div class="card-head">
-                                    <span style="color: #000;">Seller - </span>
-                                    <small style="color: #000;">Peachi_27</small>
-                                </div>
-                                <img src="https://live.staticflickr.com/65535/52282495158_e31d45500c_o_d.jpg" style="">
-                                <h2 style="color: #000;">Yha tub sean gun</h2>
-                                <small style="color: #000;">object detection</small>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- end of show each product info here -->
-
-
-
-                    <div class="card-single">
-                        <div class="card-flex">
-                            <div class="card-info">
-                                <div class="card-head">
-                                    <span style="color: #000;">Coming Soon</span>
-                                    <small style="color: #000;">Coming Soon</small>
-                                </div>
-                                <h2 style="color: #000;">Coming Soon</h2>
-                                <small style="color: #000;">Coming Soon</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-single">
-                        <div class="card-flex">
-                            <div class="card-info">
-                                <div class="card-head">
-                                    <span style="color: #000;">Coming Soon</span>
-                                    <small style="color: #000;">Coming Soon</small>
-                                </div>
-                                <h2 style="color: #000;">Coming Soon</h2>
-                                <small style="color: #000;">Coming Soon</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-single">
-                        <div class="card-flex">
-                            <div class="card-info">
-                                <div class="card-head">
-                                    <span style="color: #000;">Coming Soon</span>
-                                    <small style="color: #000;">Coming Soon</small>
-                                </div>
-                                <h2 style="color: #000;">Coming Soon</h2>
-                                <small style="color: #000;">Coming Soon</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-single">
-                        <div class="card-flex">
-                            <div class="card-info">
-                                <div class="card-head">
-                                    <span style="color: #000;">Coming Soon</span>
-                                    <small style="color: #000;">Coming Soon</small>
-                                </div>
-                                <h2 style="color: #000;">Coming Soon</h2>
-                                <small style="color: #000;">Coming Soon</small>
-                            </div>
-                        </div>
-                    </div>
 
 
 
@@ -145,6 +64,19 @@
         <label for="sidebar-toggle" class="body-label"></label>
     </div>
 </template>
+<style>
+.card-img {
+    display: flex;
+    justify-content: center;
+    margin-left: 20%;
+    margin-right: 20%;
+}
+
+.card-img img {
+    max-width: 12rem;
+    background-color: aqua;
+}
+</style>
 
 <script>
 import SlideBar from '@/components/SlideBar'
@@ -163,18 +95,18 @@ export default {
 
     name: "MarketView",
     setup() {
-       
+
 
 
     },
     data() {
         return {
-         
+
 
         }
     },
     methods: {
-        goToAddProduct(){
+        goToAddProduct() {
             router.push('/add_product')
         },
 
@@ -202,7 +134,7 @@ export default {
         //VueSlideBar
     },
     created() {
-        
+
 
     }
 };

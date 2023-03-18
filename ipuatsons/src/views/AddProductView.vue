@@ -38,6 +38,9 @@
                         <label for="pmodel">Product model :</label>
                         <input id="pmodel" name="pmodel" type="text" required>
 
+                        <label for="pdetail">Product detail :</label>
+                        <textarea id="pdetail" name="pdetail" type="text" required></textarea>
+
                         <label for="price">Product price :</label>
                         <input id="price" name="price" type="text" required>
 
@@ -63,6 +66,19 @@
     width: 80%;
     padding: 2%;
     background-color: brown;
+}
+
+textarea {
+  width: 100%;
+  height: 150px;
+  padding: 12px 20px;
+  box-sizing: border-box;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  background-color: #f8f8f8;
+  font-size: 13px;
+  resize: none;
+  color: black;
 }
 @media (max-width: 800px) {}
 </style>
@@ -123,6 +139,7 @@ export default {
                 data.append('name', document.getElementById("pname").value);
                 data.append('type', document.getElementById("ptype").value);
                 data.append('model', document.getElementById("pmodel").value);
+                data.append('detail', document.getElementById("pdetail").value);
                 data.append('price', document.getElementById("price").value);
                 
 
@@ -133,7 +150,7 @@ export default {
                         'Content-Type': 'multipart/form-data'
                     }
                 }
-                axios.defaults.headers.post['jwt'] = this.cookies.get('jwt');
+                axios.defaults.headers.post['jwt'] = this.$store.state.jwt;
                 axios.post(
                     URL_ADD_PRODUCT,
                     data,

@@ -283,7 +283,7 @@ export default {
     },
     created() {
 
-        axios.defaults.headers.post['jwt'] = this.$store.state.jwt;
+        axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
         axios.get(URL_IMG_FOLDER)
             .then(res => {
                 this.folders = res.data;

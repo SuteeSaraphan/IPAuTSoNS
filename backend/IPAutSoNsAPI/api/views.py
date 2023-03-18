@@ -26,7 +26,8 @@ from yaml_run import YamlRunner
 import logging
 
 logger = logging.getLogger(__name__)
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+
 
 class VersionCheck(APIView):
     def get(self,request):
@@ -255,10 +256,8 @@ class ImageView(APIView):
                 for i in range(chosen_range_min, chosen_range_max):
 
                     try:
-                        # print("----------base dir : "+str(BASE_DIR))
-                        # print("----------open : "+str(BASE_DIR)+str(Path(img_serializer.data[i]['path'])))
-                        file_type = (
-                            img_serializer.data[i]['img_type'].split('/'))[1]
+                        print('send img from here')
+                        file_type = (img_serializer.data[i]['img_type'].split('/'))[1]
                         with Image.open(str(BASE_DIR)+str(Path(img_serializer.data[i]['path']))) as image_file_temp:
                             percentage = 0.25
                             width, height = image_file_temp.size
@@ -322,7 +321,7 @@ class ImageView(APIView):
         img_id = folder_id
         image = Image_file.objects.get(img_id=img_id)
         try:
-            del_path = os.path.join(BASE_DIR, "ipautsons", str(image.path))
+            del_path = os.path.join(BASE_DIR, "nas_sim/ipautsons", str(image.path))
             os.remove(del_path)
         except BaseException as error:
             print(error)
@@ -344,16 +343,14 @@ class AllImageView(APIView):
 class FolderView(APIView):
     # create ,new image folder
     def post(self, request):
+        print(BASE_DIR)
         token = request.data['jwt']
         payload = Authentication(token)
         user_id = payload['id']
         folder_name = request.data['folder_name']
-
         folder_path = os.path.join(
-            BASE_DIR, "ipautsons", user_id, "root", folder_name)
+            BASE_DIR, "nas_sim/ipautsons", user_id, "root", folder_name)
 
-        files = os.listdir("IPAutSoNsAPI")
-        print(files)
         try:
             os.makedirs(folder_path)
         except OSError as error:
@@ -421,6 +418,7 @@ class ProductView(APIView):
             'product_type': request.data['type'],
             'model': request.data['model'],
             'price': request.data['price'],
+            'detail':request.data['detail'],
             'path': weight_file,
             'product_img': product_img,
             'last_update': datetime.datetime.utcnow()

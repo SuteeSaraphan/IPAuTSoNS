@@ -102,9 +102,10 @@ export default {
             if (newFolderName.length == 0) {
                 alert("Folder name is empty")
             } else {
+                axios.defaults.headers.post['jwt'] = this.$store.state.jwt;
                 axios.post('folder_img',
                     {
-                        'jwt': this.cookies.get('jwt'),
+                        'jwt': this.$store.state.jwt,
                         "folder_id": Math.random().toString(36).slice(2),
                         "folder_name": newFolderName
                     }
