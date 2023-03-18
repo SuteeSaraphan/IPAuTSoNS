@@ -67,10 +67,9 @@ export default {
                     .then(response => {
                         this.$store.commit('setToken',response.data.jwt)
                         this.$store.commit('setName',[response.data.fname,response.data.lname])
-                        axios.defaults.headers.get['jwt'] = this.cookies.get('jwt');
                         router.push('/home');
                     }).catch(error => {
-                        alert(error.response.data['status']);
+                        console.log(error.data);
                     })
             }
 
