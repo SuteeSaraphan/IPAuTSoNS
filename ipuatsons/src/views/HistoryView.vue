@@ -121,8 +121,7 @@
 
 <script>
 import SlideBar from '@/components/SlideBar'
-import { useCookies } from "vue3-cookies";
-import router from '@/router';
+//import router from '@/router';
 import axios from 'axios';
 //import VueSlideBar from 'vue-slide-bar';
 const URL_PAYMENT = "payment"
@@ -133,8 +132,6 @@ const URL_PAYMENT = "payment"
 export default {
     name: "HistoryView",
     setup() {
-        const { cookies } = useCookies();
-        return { cookies };
 
 
 
@@ -211,16 +208,8 @@ export default {
         //VueSlideBar
     },
     created() {
-
-        if (this.cookies.get('jwt') == null) {
-            alert("You are not login yet , please login fisrt")
-            router.push('/login')
-        }
-        else {
             console.log(typeof this.$route.params.type);
-            
-
-            axios.defaults.headers.get['jwt'] = this.cookies.get('jwt');
+            axios.defaults.headers.get['jwt'] = this.$store.state.jwt
             axios.get(URL_PAYMENT)
                 .then(res => {
                     console.log(res.data[0].pay_time.substring(0,10)) 
@@ -231,7 +220,7 @@ export default {
                     this.isLoading = false
                     alert(err.data)
                 })
-        }
+        
 
     }
 };

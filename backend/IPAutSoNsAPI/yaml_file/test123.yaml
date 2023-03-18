@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+
+kind: Job
+
+metadata:
+
+  name: test123
+
+spec:
+
+  template:
+
+    spec:
+
+      containers:
+
+      - name: test123
+
+        image: suteesaraphan27/ascii
+        volumeMounts:
+            - name: nfs-share
+              mountPath: /ipautsons
+
+        command: ["python","ASCII.py","test123","/ipautsons/img"]
+
+      restartPolicy: Never
+      volumes:
+      - name: nfs-share
+        persistentVolumeClaim: 
+          claimName: example

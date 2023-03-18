@@ -148,7 +148,6 @@
 
 <script>
 import SlideBar from '@/components/SlideBar'
-import { useCookies } from "vue3-cookies";
 import router from '@/router';
 //import axios from 'axios';
 
@@ -164,9 +163,7 @@ export default {
 
     name: "MarketView",
     setup() {
-        const { cookies } = useCookies();
-        return { cookies };
-
+       
 
 
     },
@@ -205,13 +202,7 @@ export default {
         //VueSlideBar
     },
     created() {
-        if (this.cookies.get('jwt') == null) {
-            alert("You are not login yet , please login fisrt")
-            router.push('/login')
-        }
-        else {
-           console.log("go on")
-        }
+        
 
     }
 };

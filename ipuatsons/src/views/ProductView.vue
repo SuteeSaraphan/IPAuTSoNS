@@ -132,8 +132,7 @@
 </style>
 <script>
 import SlideBar from '@/components/SlideBar'
-import { useCookies } from "vue3-cookies";
-import router from '@/router';
+//import router from '@/router';
 import axios from 'axios';
 
 const URL_GET_PRODUCT = 'product';
@@ -141,8 +140,7 @@ const URL_GET_PRODUCT = 'product';
 export default {
     name: "ProductView",
     setup() {
-        const { cookies } = useCookies();
-        return { cookies };
+     
 
 
 
@@ -151,13 +149,13 @@ export default {
         return {
             isLoading: true,
             products: []
-            
+
         }
     },
     methods: {
 
 
-       
+
 
 
     }
@@ -168,24 +166,16 @@ export default {
     },
     created() {
         console.log(this.$route.params.product_id)
-
-        //cookie checker
-        if (this.cookies.get('jwt') == null) {
-            alert("You are not login yet , please login fisrt")
-            router.push('/login')
-        }
-        else {
-
-            // count image in from data base
-            axios.defaults.headers.get['jwt'] = this.cookies.get('jwt');
-            axios.get(URL_GET_PRODUCT +'/'+ this.$route.params.product_id)
-                .then(res => {
-                    //console.log('image : ' + res.data)
-                    console.log(res.data);
-                }).catch(err => {
-                    alert(err);
-                })
-        }
+        // count image in from data base
+        axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
+        axios.get(URL_GET_PRODUCT + '/' + this.$route.params.product_id)
+            .then(res => {
+                //console.log('image : ' + res.data)
+                console.log(res.data);
+            }).catch(err => {
+                alert(err);
+            })
     }
+
 };
 </script>

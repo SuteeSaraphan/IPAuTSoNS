@@ -1,5 +1,4 @@
 <template>
-
     <div>
         <SlideBar></SlideBar>
 
@@ -25,33 +24,32 @@
                 <div class="loading" v-if="this.isLoading">Loading&#8230;</div>
                 <h1>Drive page</h1>
 
-                
+
                 <!--Add new folder image here  -->
                 <div style="padding:5px;">
-                    <button class="dropbtn" type="button" @click="addNewFolder" >Add new folder</button>
+                    <button class="dropbtn" type="button" @click="addNewFolder">Add new folder</button>
                 </div>
-                
-                
+
+
 
 
                 <!-- folder image list show here  -->
                 <div style="background:#e7e5e6">
-                    
+
                     <ul style="padding:5px;">
-                        <div v-if="files < 1" 
-                        style="text-align: center;
-                            align-items: center;
-                            color: #000;
-                            background:#ccc;">!!! You do not have image folder !!!</div>
+                        <div v-if="files < 1" style="text-align: center;
+                                align-items: center;
+                                color: #000;
+                                background:#ccc;">!!! You do not have image folder !!!</div>
 
                         <li v-for="file in files" v-bind:key="file.id" style="margin-top: 5px;margin-bottom: 5px; ">
 
                             <div style="display : flex; 
-                             flex-direction : row;
-                             justify-content: space-between;
-                             align-items : center;
-                             padding-right: 15px;
-                             background:#ccc;">
+                                 flex-direction : row;
+                                 justify-content: space-between;
+                                 align-items : center;
+                                 padding-right: 15px;
+                                 background:#ccc;">
 
                                 <div style="color:black;padding:10px; " @click="enterFolder(file.folder_id)">
                                     {{ file.folder_name }}</div>
@@ -80,16 +78,14 @@
 
 <script>
 import SlideBar from '@/components/SlideBar'
-import { useCookies } from "vue3-cookies";
-import router from '@/router';
+//import router from '@/router';
 import axios from 'axios';
 
 export default {
 
     name: "DriveView",
     setup() {
-        const { cookies } = useCookies();
-        return { cookies };
+
     },
     data() {
         return {
@@ -131,7 +127,7 @@ export default {
 
         deleteFolder(folder_id) {
             if (confirm("Are you sure to delete this folder ?")) {
-                axios.defaults.headers.delete['jwt'] = this.cookies.get('jwt');
+                axios.defaults.headers.delete['jwt'] = this.$store.state.jwt;
                 axios.delete("folder_img/" + folder_id)
                     .then(async res => {
                         alert(res.data['status']);
@@ -148,24 +144,19 @@ export default {
         SlideBar
     },
     created() {
-        if (this.cookies.get('jwt') == null) {
-            alert("You are not login yet , please login fisrt")
-            router.push('/login')
-        }
-        else {
-            axios.defaults.headers.get['jwt'] = this.cookies.get('jwt');
-            const URL = 'folder_img';
-            axios.get(URL)
-                .then(res => {
-                    this.files = res.data;
-                    this.isLoading = false
-                })
-                .catch(err => {
-                    this.isLoading = false
-                    alert(err.data)
-                })
+        axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
+        const URL = 'folder_img';
+        axios.get(URL)
+            .then(res => {
+                this.files = res.data;
+                this.isLoading = false
+            })
+            .catch(err => {
+                this.isLoading = false
+                alert(err.data)
+            })
 
-        }
+
     }
 };
 </script>

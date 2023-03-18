@@ -101,9 +101,8 @@ export default {
         }
     },
     created() {
-        axios.defaults.headers.get['jwt'] = this.cookies.get('jwt');
-        const URL = 'http://127.0.0.1:8000/api/user';
-        axios.get(URL).then(async res => {
+        axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
+        axios.get('user').then(async res => {
             document.getElementById("email").value = res.data.email
             document.getElementById("first_name").value = res.data.first_name
             document.getElementById("last_name").value = res.data.last_name

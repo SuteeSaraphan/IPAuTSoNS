@@ -117,8 +117,6 @@
 <script>
 import { useCookies } from "vue3-cookies";
 import router from '@/router';
-import axios from 'axios';
-// const URL_GET_USER = "http://127.0.0.1:8000/api/user"
 export default {
 
   
@@ -138,26 +136,23 @@ export default {
   },
 
   created() {
-    if (this.cookies.get('jwt') == null) {
+    if (this.$store.state.isAuthenticated == false) {
+      alert("You are not login yet , please login fisrt")
       router.push('/login')
     } else {
-      axios.defaults.headers.get['jwt'] = this.cookies.get('jwt');
-      axios.get("user")
-        .then(async respond => {
-          this.fname = respond.data['first_name'];
-          this.lname = respond.data['last_name'];
-        })
+      this.fname = this.$store.state.first_name
+      this.lname = this.$store.state.last_name
     }
     
 
 
   },
   methods: {
-    
 
     
     logout() {
       this.cookies.remove('jwt')
+      this.$store.commit('logout')
       router.push('/login')
     },
 

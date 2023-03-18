@@ -9,6 +9,7 @@ from . import views
 
 urlpatterns = [
     path('make_docker_file', views.MakeDockerFile.as_view()),
+    path('version',views.VersionCheck.as_view()),
 
     path('register', views.RegisterView.as_view()),
     path('login', views.LoginView.as_view()),

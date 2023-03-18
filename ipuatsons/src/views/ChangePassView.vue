@@ -16,51 +16,49 @@
             </header>
             <main>
                 <div class="setting">
-                <div class="menu">
+                    <div class="menu">
 
-                    <form style="padding:15px">
-                        <h1>Change password Page</h1>
-                        <div style="text-align: left">
-                            <label style="font-size: 15px">Old password :</label>
-                            <p>
-                                <input id="old_password" type="password" style="color:black" />
-                            </p>
-                        </div>
-                        <div style="text-align: left">
-                            <label style="font-size: 15px">New password :</label>
-                            <p>
-                                <input id="new_password" type="password" style="color:black" />
-                            </p>
-                        </div>
-                        <div style="text-align: left">
-                            <label style="font-size: 15px">New password confirm :</label>
-                            <p>
-                                <input id="new_password_confirm" type="password" style="color:black" />
-                            </p>
-                        </div>
-
-
+                        <form style="padding:15px">
+                            <h1>Change password Page</h1>
+                            <div style="text-align: left">
+                                <label style="font-size: 15px">Old password :</label>
+                                <p>
+                                    <input id="old_password" type="password" style="color:black" />
+                                </p>
+                            </div>
+                            <div style="text-align: left">
+                                <label style="font-size: 15px">New password :</label>
+                                <p>
+                                    <input id="new_password" type="password" style="color:black" />
+                                </p>
+                            </div>
+                            <div style="text-align: left">
+                                <label style="font-size: 15px">New password confirm :</label>
+                                <p>
+                                    <input id="new_password_confirm" type="password" style="color:black" />
+                                </p>
+                            </div>
 
 
-                        <div style="padding: 15px">
-                            <input type="button" value="Submit" style="color:black" @click="edit_password()" />
-                            <input type="button" value="Clear" style="color:black" @click="clear()" />
-                            <input type="button" value="Back" style="width:85%" @click="back()">
-                        </div>
-                    </form>
+
+
+                            <div style="padding: 15px">
+                                <input type="button" value="Submit" style="color:black" @click="edit_password()" />
+                                <input type="button" value="Clear" style="color:black" @click="clear()" />
+                                <input type="button" value="Back" style="width:85%" @click="back()">
+                            </div>
+                        </form>
+                    </div>
+
+
                 </div>
-
-
-            </div>
             </main>
         </div>
     </div>
-
 </template>
 
 <script>
 import SlideBar from '@/components/SlideBar';
-import { useCookies } from "vue3-cookies";
 import router from '@/router';
 const axios = require('axios').default;
 export default {
@@ -69,8 +67,7 @@ export default {
         SlideBar
     },
     setup() {
-        const { cookies } = useCookies();
-        return { cookies };
+
     },
     data() {
 
@@ -79,7 +76,7 @@ export default {
         edit_password() {
             axios.put('password',
                 {
-                    'jwt': this.cookies.get('jwt'),
+                    'jwt': this.$store.state.jwt,
                     'old_password': document.getElementById("old_password").value,
                     'new_password': document.getElementById("new_password").value
                 }
@@ -102,20 +99,15 @@ export default {
 
     },
     created() {
-        if (this.cookies.get('jwt') == null) {
-            alert("You are not login yet , please login fisrt")
-            router.push('/login')
-        }
-        else {
-            axios.defaults.headers.get['jwt'] = this.cookies.get('jwt');
-            axios.get('user')
-                .then(res => res)
-                .catch(err => {
-                    alert('Can not change password now try again later')
-                    console.log(err.data)
-                })
 
-        }
+        axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
+        axios.get('user')
+            .then(res => res)
+            .catch(err => {
+                alert('Can not change password now try again later')
+                console.log(err.data)
+            })
+
     }
 
 }

@@ -68,8 +68,7 @@
 </style>
 <script>
 import SlideBar from '@/components/SlideBar'
-import { useCookies } from "vue3-cookies";
-import router from '@/router';
+//import router from '@/router';
 import axios from 'axios';
 const URL_ADD_PRODUCT = 'product';
 
@@ -80,10 +79,6 @@ export default {
 
     name: "AddProductView",
     setup() {
-        const { cookies } = useCookies();
-        return { cookies };
-
-
 
     },
     data() {
@@ -166,12 +161,6 @@ export default {
     created() {
         console.log(this.$route.params.product_id)
 
-        //cookie checker
-        if (this.cookies.get('jwt') == null) {
-            alert("You are not login yet , please login fisrt")
-            router.push('/login')
-        }
-       
     }
 };
 </script>

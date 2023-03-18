@@ -20,11 +20,11 @@
                 <!-- show full image here  -->
                 <div class="full-img" v-if="this.fullShow">
                     <img style='display:block; 
-                                            width:1000px;
-                                            height:900px; 
-                                            object-fit: scale-down;
-                                            border: 1px;
-                                            image-rendering: auto;'
+                                                    width:1000px;
+                                                    height:900px; 
+                                                    object-fit: scale-down;
+                                                    border: 1px;
+                                                    image-rendering: auto;'
                         :src="`data:image/jpeg;base64,${this.fullImage.img_data}`" alt="{{ this.fullImage.img_id }}">
                     <button style="border: none;" @click="this.fullShow = false">
                         <span style="font-size: 1.5rem;" class=" las la-times-circle"></span>
@@ -46,21 +46,20 @@
 
                 <!-- show image array here  -->
                 <div class="cards">
-                    <div class="card-single" v-for="image in this.images" v-bind:key="image.img_id" 
-                    style="background-color:#4b5162;
-                            border-radius: 15px;
-                            ">
+                    <div class="card-single" v-for="image in this.images" v-bind:key="image.img_id" style="background-color:#4b5162;
+                                    border-radius: 15px;
+                                    ">
                         <div style="align-items: flex-end;">
-                        <img :src="`data:image/jpeg;base64,${image.img_data}`" alt="{{ image.img_id }}"
-                            @click="fullImageView(image.img_id)">
+                            <img :src="`data:image/jpeg;base64,${image.img_data}`" alt="{{ image.img_id }}"
+                                @click="fullImageView(image.img_id)">
                         </div>
                         <div class="container"
                             style="width:20rem; display:flex; flex-direction:row; justify-content:space-between; align-items:center;">
                             <div style="padding:2px; 
-                                        overflow: hidden;
-                                        text-overflow: ellipsis;
-                                        white-space: nowrap;
-                                        ">
+                                                overflow: hidden;
+                                                text-overflow: ellipsis;
+                                                white-space: nowrap;
+                                                ">
 
                                 {{ showImgName(image.path) }}
                             </div>
@@ -69,9 +68,9 @@
 
                             <div>
                                 <button style="background-color: red;
-                                                    padding:2px;
-                                                    border: none;" @click="deleteImage(image.img_id)">
-                                <span style="font-size: 1.5rem;" class="las la-trash"></span></button>
+                                                            padding:2px;
+                                                            border: none;" @click="deleteImage(image.img_id)">
+                                    <span style="font-size: 1.5rem;" class="las la-trash"></span></button>
                             </div>
                         </div>
 
@@ -82,14 +81,14 @@
 
                 <!-- page select here  -->
                 <div style="
-                        display: flex;
-                        margin: auto;
-                        padding-top: 1%;
-                        width: 35%;
-                        height: 50px;
-                        justify-content: space-between;
-                        text-align: center;
-                        ">
+                                display: flex;
+                                margin: auto;
+                                padding-top: 1%;
+                                width: 35%;
+                                height: 50px;
+                                justify-content: space-between;
+                                text-align: center;
+                                ">
                     <button style="width: 50px;color:#000 ;"> Last </button>
                     <a style="align-self: center;width: 350px;">Page :
                         <select id="page_sel" style="color:#000 ;" @change="goToPage">
@@ -108,7 +107,6 @@
 
 <script>
 import SlideBar from '@/components/SlideBar'
-import { useCookies } from "vue3-cookies";
 import router from '@/router';
 import axios from 'axios';
 const URL_IMG_FOLDER = 'folder_img';
@@ -121,8 +119,7 @@ export default {
 
     name: "ImgFolderView",
     setup() {
-        const { cookies } = useCookies();
-        return { cookies };
+       
     },
     data() {
         return {
@@ -266,46 +263,39 @@ export default {
     },
     created() {
         console.log(this.$route.params.folder_id)
-
-        //cookie checker
-        if (this.cookies.get('jwt') == null) {
-            alert("You are not login yet , please login fisrt")
-            router.push('/login')
-        }
-        else {
-            axios.defaults.headers.get['jwt'] = this.cookies.get('jwt');
-            //check rights in this folder
-            axios.get(URL_IMG_FOLDER)
-                .then(res => {
-                    for (let i in res.data) {
-                        if (this.$route.params.folder_id == res.data[i].folder_id) {
-                            this.owner = true
-                            this.folder = res.data[i]
-                            break;
-                        }
+        axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
+        //check rights in this folder
+        axios.get(URL_IMG_FOLDER)
+            .then(res => {
+                for (let i in res.data) {
+                    if (this.$route.params.folder_id == res.data[i].folder_id) {
+                        this.owner = true
+                        this.folder = res.data[i]
+                        break;
                     }
+                }
 
-                    if (this.owner == false) {
-                        alert("You can not access this folder");
-                        router.push('/drive')
-                    } else {
-                        // count image in from data base
-                        axios.get(URL_IMG + "/count/" + this.$route.params.folder_id)
-                            .then(res => {
-                                //console.log('image : ' + res.data)
-                                this.pages = res.data / 24
-                                this.pages = Math.ceil(this.pages)
-                                //console.log('pages count : ' + this.pages)
-                            })
-                        this.getImageOnPage(this.$route.params.page);
-                    }
-
-
-                })
-                .catch(err => console.log(err))
+                if (this.owner == false) {
+                    alert("You can not access this folder");
+                    router.push('/drive')
+                } else {
+                    // count image in from data base
+                    axios.get(URL_IMG + "/count/" + this.$route.params.folder_id)
+                        .then(res => {
+                            //console.log('image : ' + res.data)
+                            this.pages = res.data / 24
+                            this.pages = Math.ceil(this.pages)
+                            //console.log('pages count : ' + this.pages)
+                        })
+                    this.getImageOnPage(this.$route.params.page);
+                }
 
 
-        }
+            })
+            .catch(err => console.log(err))
+
+
+
     }
 };
 </script>

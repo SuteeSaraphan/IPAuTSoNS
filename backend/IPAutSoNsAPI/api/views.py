@@ -23,9 +23,14 @@ import base64
 from pathlib import Path
 from PIL import Image
 from yaml_run import YamlRunner
+import logging
 
+logger = logging.getLogger(__name__)
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
+class VersionCheck(APIView):
+    def get(self,request):
+        return Response({"version":"1.2:1521"})
 
 # for Authentication user with JWT
 def Authentication(token):
@@ -70,24 +75,25 @@ class LoginView(APIView):
 
         if user is None:
             raise AuthenticationFailed("Email not found!")
-        if not user.check_password(password):
+        elif not user.check_password(password):
             raise AuthenticationFailed("Password is not match!")
+        else:
+            payload = {
+                'id': user.user_id,
+                'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=180),
+                'iat': datetime.datetime.utcnow()
+            }
 
-        payload = {
-            'id': user.user_id,
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=180),
-            'iat': datetime.datetime.utcnow()
-        }
+            token = jwt.encode(payload, 'IPAutSoNs', algorithm='HS256')
 
-        token = jwt.encode(payload, 'IPAutSoNs', algorithm='HS256')
-
-        respond = Response()
-        # respond.set_cookie(key='jwt',value=token,httponly=True)
-        respond.data = ({
-            'jwt': token
-        })
-
-        return respond
+            respond = Response()
+            # respond.set_cookie(key='jwt',value=token,httponly=True)
+            respond.data = ({
+                'jwt': token,
+                'fname':user.first_name,
+                'lname':user.last_name
+            })
+            return respond
 
 
 class UserView(APIView):
@@ -316,11 +322,11 @@ class ImageView(APIView):
         img_id = folder_id
         image = Image_file.objects.get(img_id=img_id)
         try:
-            del_path = os.path.join(BASE_DIR, "media", str(image.path))
+            del_path = os.path.join(BASE_DIR, "ipautsons", str(image.path))
             os.remove(del_path)
         except BaseException as error:
             print(error)
-            return Response({"status": "Delete fail ! try again"})
+            return Response({"status": "Delete fail !!! try again"})
         else:
             image.delete()
             return Response({"status": "Delete done!"})
@@ -344,7 +350,7 @@ class FolderView(APIView):
         folder_name = request.data['folder_name']
 
         folder_path = os.path.join(
-            BASE_DIR, "media", user_id, "root", folder_name)
+            BASE_DIR, "ipautsons", user_id, "root", folder_name)
 
         files = os.listdir("IPAutSoNsAPI")
         print(files)
@@ -352,7 +358,7 @@ class FolderView(APIView):
             os.makedirs(folder_path)
         except OSError as error:
             print(error)
-            return Response({'status': '!!! Somthing is wrong try again !!!'})
+            return Response({'status': '!!! Something is wrong try again !!!'})
         else:
             folder_data = {
                 'folder_id': request.data['folder_id'],
@@ -381,10 +387,7 @@ class FolderView(APIView):
         payload = Authentication(token)
         folder_img = Folder_img.objects.get(folder_id=folder_id)
         try:
-            print(str(BASE_DIR))
-            print(str(folder_img.path))
-            shutil.rmtree(os.path.join(
-                BASE_DIR, "media", str(folder_img.path)))
+            shutil.rmtree(folder_img.path)
         except BaseException as error:
             print(error)
             return Response({"status": "Delete fail ! try again"})
@@ -468,6 +471,7 @@ class PaymentView(APIView):
 
 class MakeDockerFile(APIView):
     def post(self, request):
+        logger.info('Running YAMLRunner at '+str(datetime.datetime.now()))
         # job_id = request.data['job_id']
         # token = request.META['HTTP_JWT']
         # path = request.data['path']
@@ -528,14 +532,14 @@ spec:
             with open('yaml_file/'+"test123"+'.yaml', 'w') as yfile:
                 yfile.write(template)
                 yfile.close()
-                print("call yaml runner")
-                yaml_run = YamlRunner("test123")
+                logger.error('Calling run_yaml functions')
+                yaml_run = YamlRunner()
                 yaml_run.run_yaml()
             return Response({"status": "File is made!"})
 
         except (BaseException)as error:
             print(error)
-            return Response({"status": error})
+            return Response({"status": "something is not right"})
 
 
 # class MakeDockerFile(APIView):
