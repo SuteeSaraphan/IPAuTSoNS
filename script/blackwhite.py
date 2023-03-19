@@ -1,6 +1,7 @@
 import sys
 import json
 import datetime
+import pymongo
 from glob import glob
 from PIL import Image, ImageDraw, ImageFont
 
@@ -32,10 +33,34 @@ def saveLog():
 
     
 #command in cmd
-iduser = sys.argv[1] 
+job_id = sys.argv[1] 
+job = None
 folder = sys.argv[2]
 folder = folder+"/*"
 All_files = glob(folder)
 
-saveLog()
-BlackWhite()
+
+client = pymongo.MongoClient("mongodb+srv://ipautsons:J0iZfrxW49cFOr4U@cluster0.lbe3op6.mongodb.net/?retryWrites=true&w=majority")
+db = client.ipautsons
+try:
+    job = db.api_job.find_one({'job_id' : job_id})
+except NameError as error:
+    job = None
+
+try:
+  BlackWhite()
+  print("done")
+  if job != None and type(job) == dict:
+    job = db.api_job.find_one_and_update({'job_id' : job_id},
+                                                    {"$set":
+                                                        {'job_status' : 99
+                                                        }
+                                                    },upsert=True)
+except:
+  print("An exception occurred")
+  if job != None and type(job) == dict:
+    job = db.api_job.find_one_and_update({'job_id' : job_id},
+                                                    {"$set":
+                                                        {'job_status' : 2
+                                                        }
+                                                    },upsert=True)

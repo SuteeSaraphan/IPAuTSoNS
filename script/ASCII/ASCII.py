@@ -4,16 +4,19 @@ import numpy as np
 import os
 import json
 import datetime
+import pymongo
 
 from glob import glob
 from numpy import load
 from numpy import expand_dims
 from PIL import Image, ImageDraw, ImageFont
-from keras.preprocessing import image
+
 
 def ASCII():
     for x in range(len(All_files)):
-        SC = 0.1    # pixel sampling rate in width
+        print("haha")
+        print(x)
+        SC = 0.1
         GCF= 2 
         color1='black'
         color2='blue'
@@ -76,10 +79,36 @@ def saveLog():
 
     
 #command in cmd
-iduser = sys.argv[1] 
+job_id = sys.argv[1]
+job = None
 folder = sys.argv[2]
 folder = folder+"/*"
 All_files = glob(folder)
 
-saveLog()
-ASCII()
+print("haha")
+print(All_files)
+
+client = pymongo.MongoClient("mongodb+srv://ipautsons:J0iZfrxW49cFOr4U@cluster0.lbe3op6.mongodb.net/?retryWrites=true&w=majority")
+db = client.ipautsons
+try:
+    job = db.api_job.find_one({'job_id' : job_id})
+except NameError as error:
+    job = None
+try:
+    ASCII()
+    if job != None and type(job) == dict:
+        job = db.api_job.find_one_and_update({'job_id' : job_id},
+                                                        {"$set":
+                                                            {'job_status' : 1
+                                                            }
+                                                        },upsert=True)
+except:
+  print("An exception asd")
+  if job != None and type(job) == dict:
+    job = db.api_job.find_one_and_update({'job_id' : job_id},
+                                                    {"$set":
+                                                        {'job_status' : 2
+                                                        }
+                                                    },upsert=True)
+
+
