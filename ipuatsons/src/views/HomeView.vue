@@ -105,22 +105,16 @@
 <script>
 // @ is an alias to /src
 import SlideBar from '@/components/SlideBar'
-import { useCookies } from "vue3-cookies";
-import router from '@/router';
+// import router from '@/router';
 export default {
 	name: 'HomeView',
 	setup() {
-		const { cookies } = useCookies();
-		return { cookies };
 	},
 	components: {
 		SlideBar
 	},
 	created() {
-		if (this.cookies.get('jwt') == null) {
-			alert("You are not login yet , please login fisrt")
-			router.push('login')
-		}
+		
 	}
 }
 </script>

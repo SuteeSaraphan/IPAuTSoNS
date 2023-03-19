@@ -79,7 +79,8 @@ class ProductSerializer(serializers.ModelSerializer):
             'price',
             'path',
             'product_img',
-            'last_update'
+            'last_update',
+            'detail'
         )
         model = Product
 
@@ -115,6 +116,6 @@ class PaymentSerializer(serializers.ModelSerializer):
             'product_id',
             'type',
             'pay_time',
-            #'proof'
+            # 'proof'
         )
         model = Payment

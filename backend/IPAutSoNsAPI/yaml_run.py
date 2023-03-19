@@ -1,14 +1,17 @@
 from kubernetes import client, config, utils
 import os
+import logging
+logger = logging.getLogger(__name__)
+
 
 class YamlRunner:
-    absolute_path = os.path.dirname(os.path.abspath(__file__))
-
-    def __init__(self,job_id):
-    #def __init__(self,user_id,job_id,path,img_selected,param1,param2,param3):
+    def __init__(self):
+        # def __init__(self,user_id,job_id,path,img_selected,param1,param2,param3):
         # self.user_id = user_id
-        self.job_id = job_id
-        self.yaml_file = open('yaml_file/'+self.job_id+'.yaml', 'r')
+        # self.yaml_file = 'yaml_file/test123.yaml' # 1423
+        # self.yaml_file = './test123.yaml' # 1443
+        # self.yaml_file = 'yaml_file/test123.yaml' # 1520
+        self.yaml_file = './test123.yaml' # 1521
         # self.path = path
         # self.img_selected = img_selected
         # if param1 != None:
@@ -21,9 +24,16 @@ class YamlRunner:
     def __self__():
         print("runner")
 
-
     def run_yaml(self):
-        print("run yaml file")
-        config.load_incluster_config()
-        k8s_client = client.ApiClient()
-        utils.create_from_yaml(k8s_client, self.yaml_file)
+        logger.error('Called run_yaml functions')
+        try:
+            logger.error('1')
+            config.load_incluster_config()
+            logger.error('2')
+            k8s_client = client.ApiClient()
+            logger.error('3')
+            utils.create_from_yaml(k8s_client, self.yaml_file)
+            logger.error('runed run_yaml functions')
+        except (config.ConfigException,BaseException,utils.FailToCreateError,Exception) as error:
+            logger.error('Fail to run yaml because : ' + str(error))
+

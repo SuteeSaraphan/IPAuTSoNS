@@ -15,7 +15,7 @@
       <div class="sidebar-user">
         <img src="../img/profile.jpg" alt="">
         <div class="info-profile">
-          <h3>Peach</h3>
+          <div v-if="fname !=null & lname !=null" style="display: flex; flex-direction: row; justify-content: space-around;"><h3>{{fname}}</h3> <h3>{{lname}}</h3></div>
           <span>Credit: 227</span>
           <span>Usage Total: 32GB</span>
           <span>60 %</span>
@@ -107,7 +107,7 @@
 
 
 <style>
-.info-profile{
+.info-profile {
   display: flex;
   flex-direction: column;
 
@@ -118,25 +118,49 @@
 import { useCookies } from "vue3-cookies";
 import router from '@/router';
 export default {
+
+  
   name: 'SlideBar',
   setup() {
     const { cookies } = useCookies();
-    return { cookies };
+    return {
+      cookies
+    };
   },
-  created() {
-    if (this.cookies.get('jwt') == null) {
-      router.push('/login')
+
+  data(){
+    return{
+      fname:null,
+      lname:null
     }
   },
+
+  created() {
+    if (this.$store.state.isAuthenticated == false) {
+      alert("You are not login yet , please login fisrt")
+      router.push('/login')
+    } else {
+      this.fname = this.$store.state.first_name
+      this.lname = this.$store.state.last_name
+    }
+    
+
+
+  },
   methods: {
+
+    
     logout() {
       this.cookies.remove('jwt')
+      this.$store.commit('logout')
       router.push('/login')
     },
 
-    goToHistory(){
-      router.push('/history')
-    }
+    goToHistory() {
+      let path = "/history/" + "newest"
+      window.location.href = path;
+
+    },
 
   },
 }

@@ -5,7 +5,9 @@ services:
     build: ./backend
     ports:
       - "8000:8000"
-    image: chinglew27/ipautsons:backend
+    volumes:
+     - ipautsons-volume:/IPAuTSoNS
+    image: chinglew27/ipautsons-backend:v1.3.1245
 
 
   frontend:
@@ -14,5 +16,9 @@ services:
     ports:
      - "80:80"
     volumes:
-     - .:/code
-    image: chinglew27/ipautsons:frontend
+     - ipautsons-volume:/IPAuTSoNS
+    image: chinglew27/ipautsons-frontend:v1.2
+
+volumes:
+  ipautsons-volume:
+     driver: local

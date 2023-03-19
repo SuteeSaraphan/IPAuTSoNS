@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name:test_1
+spec:
+  template:
+    spec:
+      containers:
+      - name: test_1
+        image: suteesaraphan27/ascii
+        volumeMounts:
+            - name: myvolume
+              mountPath: /www
+        command: ["python","ASCII.py",test02,/ipautsons/backend/mediai6r6mvxzco/root/test02/test_img.jpg]
+      restartPolicy: Never
+      volumes:
+      - name: myvolume
+        persistentVolumeClaim: 
+          claimName: mypvc

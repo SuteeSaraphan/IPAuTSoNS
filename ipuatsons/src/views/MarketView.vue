@@ -45,7 +45,9 @@
                                     <span style="color: #000;">Seller - </span>
                                     <small style="color: #000;">Peachi_27</small>
                                 </div>
-                                <img src="https://live.staticflickr.com/65535/52639909358_84b98cc68f_o_d.jpg">
+                                <div class="card-img">
+                                    <img src="https://live.staticflickr.com/65535/52639909358_84b98cc68f_o_d.jpg">
+                                </div>
                                 <h2 style="color: #000;">Yha tub sean gun</h2>
                                 <small style="color: #000;">object detection</small>
                             </div>
@@ -53,89 +55,6 @@
                     </div>
                     <!-- end of show each product info here -->
 
-
-                    <!-- show each product info here -->
-                    <div class="card-single">
-                        <div class="card-flex">
-                            <div class="card-info">
-                                <div class="card-head">
-                                    <span style="color: #000;">Seller - </span>
-                                    <small style="color: #000;">Peachi_27</small>
-                                </div>
-                                <img src="https://live.staticflickr.com/65535/52282498076_acc417f003_o_d.jpg">
-                                <h2 style="color: #000;">Yha tub sean gun</h2>
-                                <small style="color: #000;">object detection</small>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- end of show each product info here -->
-
-                    <!-- show each product info here -->
-                    <div class="card-single">
-                        <div class="card-flex">
-                            <div class="card-info">
-                                <div class="card-head">
-                                    <span style="color: #000;">Seller - </span>
-                                    <small style="color: #000;">Peachi_27</small>
-                                </div>
-                                <img src="https://live.staticflickr.com/65535/52282495158_e31d45500c_o_d.jpg" style="">
-                                <h2 style="color: #000;">Yha tub sean gun</h2>
-                                <small style="color: #000;">object detection</small>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- end of show each product info here -->
-
-
-
-                    <div class="card-single">
-                        <div class="card-flex">
-                            <div class="card-info">
-                                <div class="card-head">
-                                    <span style="color: #000;">Coming Soon</span>
-                                    <small style="color: #000;">Coming Soon</small>
-                                </div>
-                                <h2 style="color: #000;">Coming Soon</h2>
-                                <small style="color: #000;">Coming Soon</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-single">
-                        <div class="card-flex">
-                            <div class="card-info">
-                                <div class="card-head">
-                                    <span style="color: #000;">Coming Soon</span>
-                                    <small style="color: #000;">Coming Soon</small>
-                                </div>
-                                <h2 style="color: #000;">Coming Soon</h2>
-                                <small style="color: #000;">Coming Soon</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-single">
-                        <div class="card-flex">
-                            <div class="card-info">
-                                <div class="card-head">
-                                    <span style="color: #000;">Coming Soon</span>
-                                    <small style="color: #000;">Coming Soon</small>
-                                </div>
-                                <h2 style="color: #000;">Coming Soon</h2>
-                                <small style="color: #000;">Coming Soon</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-single">
-                        <div class="card-flex">
-                            <div class="card-info">
-                                <div class="card-head">
-                                    <span style="color: #000;">Coming Soon</span>
-                                    <small style="color: #000;">Coming Soon</small>
-                                </div>
-                                <h2 style="color: #000;">Coming Soon</h2>
-                                <small style="color: #000;">Coming Soon</small>
-                            </div>
-                        </div>
-                    </div>
 
 
 
@@ -145,16 +64,27 @@
         <label for="sidebar-toggle" class="body-label"></label>
     </div>
 </template>
+<style>
+.card-img {
+    display: flex;
+    justify-content: center;
+    margin-left: 20%;
+    margin-right: 20%;
+}
+
+.card-img img {
+    max-width: 12rem;
+    background-color: aqua;
+}
+</style>
 
 <script>
 import SlideBar from '@/components/SlideBar'
-import { useCookies } from "vue3-cookies";
 import router from '@/router';
-import axios from 'axios';
-//import VueSlideBar from 'vue-slide-bar';
-const URL_IMG_FOLDER = 'http://127.0.0.1:8000/api/folder_img';
-//const URL_IMG_UPLOAD = 'http://127.0.0.1:8000/api/upload_image';
-const URL_GET_IMG = 'http://127.0.0.1:8000/api/image';
+//import axios from 'axios';
+
+
+
 
 
 
@@ -165,52 +95,21 @@ export default {
 
     name: "MarketView",
     setup() {
-        const { cookies } = useCookies();
-        return { cookies };
 
 
 
     },
     data() {
         return {
-            filterNoneCpu: ['Black and White', 'ASCII'],
-            filterOnCpu: ['Mosaic', 'PixelArt'],
-            isLoading: true,
-            imgBarWidth: '175',
-            folders: [],
-            images: [],
-            imgShowSrc: null,
-            filter: null,
-            filter_value: 0
+
 
         }
     },
     methods: {
-        goToAddProduct(){
+        goToAddProduct() {
             router.push('/add_product')
         },
 
-
-        goToFolder() {
-
-            for (let i in this.folders) {
-                if (this.folders[i].folder_name == document.getElementById("folder_sel").value) {
-                    console.log('found')
-                    axios.defaults.headers.get['jwt'] = this.cookies.get('jwt');
-                    axios.get(URL_GET_IMG + "/all/" + this.folders[i].folder_id)
-                        .then(res => {
-                            this.images = []
-                            this.isLoading = false
-                            this.images = res.data
-
-                        })
-
-                    break;
-                }
-            }
-
-
-        },
         goToProduct(product_id) {
             //console.log("enter folder :"+folder_id)
             let path = "/product/" + product_id
@@ -235,22 +134,7 @@ export default {
         //VueSlideBar
     },
     created() {
-        if (this.cookies.get('jwt') == null) {
-            alert("You are not login yet , please login fisrt")
-            router.push('/login')
-        }
-        else {
-            axios.defaults.headers.get['jwt'] = this.cookies.get('jwt');
-            axios.get(URL_IMG_FOLDER)
-                .then(res => {
-                    this.folders = res.data;
-                    this.isLoading = false
-                })
-                .catch(err => {
-                    this.isLoading = false
-                    alert(err.data)
-                })
-        }
+
 
     }
 };

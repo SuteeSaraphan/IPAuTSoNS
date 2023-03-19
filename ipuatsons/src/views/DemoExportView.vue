@@ -116,7 +116,7 @@
 
 <script>
 import SlideBar from '@/components/SlideBar'
-import { useCookies } from "vue3-cookies";
+
 import router from '@/router';
 import RadialProgressBar from 'vue-radial-progress';
 
@@ -130,8 +130,7 @@ export default {
 
     name: "DemoExportView",
     setup() {
-        const { cookies } = useCookies();
-        return { cookies };
+       
 
 
 

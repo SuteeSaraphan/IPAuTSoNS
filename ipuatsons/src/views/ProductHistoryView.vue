@@ -1,5 +1,4 @@
 <template>
-
     <div>
         <SlideBar></SlideBar>
 
@@ -16,60 +15,89 @@
                 <span class="bars"></span>
 
                 <div style="color:#000 ;">
-                    asd
+                    Payment history
                 </div>
             </header>
 
 
             <main>
                 <div class="loading" v-if="this.isLoading">Loading&#8230;</div>
-                <h1>Drive page</h1>
+                <h1>Payment history</h1>
 
-                
-                <!--Add new folder image here  -->
-                <div style="padding:5px;">
-                    <button class="dropbtn" type="button" @click="addNewFolder" >Add new folder</button>
+
+                <!-- filter history here  -->
+                <div class="sort-btn" style="padding:5px;">
+                    <button type="button" @click="go_sort('1')">sort by newest </button>
+                    <button type="button" @click="go_sort('2')">sort by oldest</button>
+                    <input type="date" id="search_by_date" @change="go_search">
                 </div>
-                
-                
 
 
-                <!-- folder image list show here  -->
+
+
+                <!-- folder image list show here -->
                 <div style="background:#e7e5e6">
-                    
-                    <ul style="padding:5px;">
-                        <div v-if="files < 1" 
-                        style="text-align: center;
-                            align-items: center;
-                            color: #000;
-                            background:#ccc;">!!! You do not have image folder !!!</div>
+                    <table style="width: 100%; padding:1%">
 
-                        <li v-for="file in files" v-bind:key="file.id" style="margin-top: 5px;margin-bottom: 5px; ">
 
-                            <div style="display : flex; 
+                        <tr style="margin-top: 5px;margin-bottom: 5px; background-color: #ccc; text-align: center;">
+                            <!-- <div style="display : flex; 
+                             flex-direction : row;
+                             justify-content: space-between;
+                             align-items : center;
+
+                             background:#ccc;"> -->
+                            <td style="color:black;padding:10px; ">
+                                payment_id
+                            </td>
+                            <td style="color:black;padding:10px; justify-self: center;">
+                                product_id
+                            </td>
+                            <td style="color:black;padding:10px;">
+                                type
+                            </td>
+                            <td style="color:black;padding:10px;">
+                                pay_time
+                            </td>
+
+                        </tr>
+                        <tr v-if="payments < 1" style="text-align: center;
+                                align-items: center;
+                                color: #000;
+                                background:#ccc;">
+                            <td colspan="4">!!! You do not have any record !!!</td>
+                        </tr>
+
+                        <tr v-for="payment in payments" v-bind:key="payment.id"
+                            style="margin-top: 5px;margin-bottom: 5px;background:#ccc; ">
+
+                            <!-- <div style="display : flex; 
                              flex-direction : row;
                              justify-content: space-between;
                              align-items : center;
                              padding-right: 15px;
-                             background:#ccc;">
-
-                                <div style="color:black;padding:10px; " @click="enterFolder(file.folder_id)">
-                                    {{ file.folder_name }}</div>
-
-                                <!-- dropUp list here  -->
-                                <div class="dropup">
-                                    <button class="dropbtn">Option</button>
-                                    <div class="dropup-content">
-                                        <a @click="deleteFolder(file.folder_id)">Delete</a>
-                                        <a href="#">Edit name</a>
-                                    </div>
-                                </div>
+                             background:#ccc;"> -->
 
 
-                            </div>
-                        </li>
+                            <td style="color:black;padding:10px;">
+                                {{ payment.payment_id }}
+                            </td>
+                            <td style="color:black;padding:10px;">
+                                {{ payment.product_id }}
+                            </td>
+                            <td style="color:black;padding:10px;">
+                                {{ payment.type }}
+                            </td>
+                            <td style="color:black;padding:10px;">
+                                {{ payment.pay_time }}
+                            </td>
 
-                    </ul>
+
+
+                        </tr>
+
+
+                    </table>
                 </div>
 
 
@@ -77,81 +105,101 @@
         </div>
     </div>
 </template>
+<style>
+.sort-btn button {
+    color: black;
+    padding: 0.5%;
+    margin-right: 0.5%;
+}
+
+.sort-btn input {
+    color: black;
+    padding: 0.5%;
+    margin-right: 0.5%;
+}
+</style>
+
 <script>
 import SlideBar from '@/components/SlideBar'
-import { useCookies } from "vue3-cookies";
-import router from '@/router';
+//import router from '@/router';
 import axios from 'axios';
 //import VueSlideBar from 'vue-slide-bar';
-const URL_IMG_FOLDER = 'http://127.0.0.1:8000/api/folder_img';
-//const URL_IMG_UPLOAD = 'http://127.0.0.1:8000/api/upload_image';
-const URL_GET_IMG = 'http://127.0.0.1:8000/api/image';
+const URL_PAYMENT = "payment"
+
 
 
 
 export default {
-
-
-
-
     name: "ProductHistoryView",
     setup() {
-        const { cookies } = useCookies();
-        return { cookies };
+       
 
 
 
     },
     data() {
         return {
-            filterNoneCpu: ['Black and White', 'ASCII'],
-            filterOnCpu: ['Mosaic', 'PixelArt'],
             isLoading: true,
-            imgBarWidth: '175',
-            folders: [],
-            images: [],
-            imgShowSrc: null,
-            filter: null,
-            filter_value: 0
+            sort_his: null,
 
         }
     },
     methods: {
-        goToAddProduct(){
-            router.push('/addproduct')
-        },
 
-
-        goToFolder() {
-
-            for (let i in this.folders) {
-                if (this.folders[i].folder_name == document.getElementById("folder_sel").value) {
-                    console.log('found')
-                    axios.defaults.headers.get['jwt'] = this.cookies.get('jwt');
-                    axios.get(URL_GET_IMG + "/all/" + this.folders[i].folder_id)
-                        .then(res => {
-                            this.images = []
-                            this.isLoading = false
-                            this.images = res.data
-
-                        })
-
-                    break;
+        search_by_date(payment_list, date_sel) {
+            let temp = [];
+            for (let i in payment_list) {
+                console.log(payment_list[i].pay_time.substring(0, 10))
+                if (payment_list[i].pay_time.substring(0, 10) == date_sel) {
+                    temp.push(payment_list[i])
                 }
             }
+            console.log(temp)
+            return temp
+        },
 
 
+        // let path = "/img_folder/" + folder_id + "/1"
+        // window.location.href = path
+
+        go_sort(type) {
+            if (type == "1") {
+                let path = "/history/" + "newest"
+                window.location.href = path;
+            } else if (type == "2") {
+                let path = "/history/" + "oldest"
+                window.location.href = path;
+            }
+
         },
-        goToProduct(product_id) {
-            //console.log("enter folder :"+folder_id)
-            let path = "/product/" + product_id
-            window.location.href = path
+
+        go_search() {
+            let path = "/history/" + document.getElementById("search_by_date").value
+            window.location.href = path;
         },
-        changeFilter(filter_id) {
-            this.filter = filter_id;
-            document.getElementById("myRange").value = 80
-            console.log(this.filter)
-            console.log(this.filter_value)
+
+
+        sort(payment_list, type) {
+            try {
+                if (type == 'oldest') {
+                    let temp = payment_list
+                    temp.sort((a, b) => (a.pay_time > b.pay_time) ? 1 : ((b.pay_time > a.pay_time) ? -1 : 0));
+                    payment_list = temp
+                    return payment_list;
+                }
+                else if (type == 'newest') {
+                    let temp = payment_list
+                    temp.reverse((a, b) => (a.pay_time > b.pay_time) ? 1 : ((b.pay_time > a.pay_time) ? -1 : 0));
+                    payment_list = temp
+                    return payment_list;
+                }
+                else {
+                    payment_list = this.search_by_date(payment_list, type);
+                    return payment_list;
+                }
+            } catch (error) {
+                return payment_list = [];
+            }
 
         },
 
@@ -166,23 +214,20 @@ export default {
         //VueSlideBar
     },
     created() {
-        if (this.cookies.get('jwt') == null) {
-            alert("You are not login yet , please login fisrt")
-            router.push('/login')
-        }
-        else {
-            axios.defaults.headers.get['jwt'] = this.cookies.get('jwt');
-            axios.get(URL_IMG_FOLDER)
-                .then(res => {
-                    this.folders = res.data;
-                    this.isLoading = false
-                })
-                .catch(err => {
-                    this.isLoading = false
-                    alert(err.data)
-                })
-        }
-
+        console.log(typeof this.$route.params.type);
+        axios.defaults.headers.get['jwt']= this.$store.state.jwt;
+        axios.get(URL_PAYMENT)
+            .then(res => {
+                console.log(res.data[0].pay_time.substring(0, 10))
+                this.payments = this.sort(res.data, this.$route.params.type);
+                this.isLoading = false
+            })
+            .catch(err => {
+                this.isLoading = false
+                alert(err.data)
+            })
     }
+
+
 };
 </script>

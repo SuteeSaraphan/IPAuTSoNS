@@ -148,13 +148,12 @@
 
 <script>
 import SlideBar from '@/components/SlideBar'
-import { useCookies } from "vue3-cookies";
 import router from '@/router';
 import axios from 'axios';
 //import VueSlideBar from 'vue-slide-bar';
-const URL_IMG_FOLDER = 'http://127.0.0.1:8000/api/folder_img';
+const URL_IMG_FOLDER = 'folder_img';
 //const URL_IMG_UPLOAD = 'http://127.0.0.1:8000/api/upload_image';
-const URL_GET_IMG = 'http://127.0.0.1:8000/api/image';
+const URL_GET_IMG = 'image';
 
 
 
@@ -165,8 +164,7 @@ export default {
 
     name: "AdminView",
     setup() {
-        const { cookies } = useCookies();
-        return { cookies };
+
 
 
 
@@ -186,7 +184,7 @@ export default {
         }
     },
     methods: {
-        goToAddProduct(){
+        goToAddProduct() {
             router.push('/addproduct')
         },
 
@@ -235,22 +233,18 @@ export default {
         //VueSlideBar
     },
     created() {
-        if (this.cookies.get('jwt') == null) {
-            alert("You are not login yet , please login fisrt")
-            router.push('/login')
-        }
-        else {
-            axios.defaults.headers.get['jwt'] = this.cookies.get('jwt');
-            axios.get(URL_IMG_FOLDER)
-                .then(res => {
-                    this.folders = res.data;
-                    this.isLoading = false
-                })
-                .catch(err => {
-                    this.isLoading = false
-                    alert(err.data)
-                })
-        }
+
+        axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
+        axios.get(URL_IMG_FOLDER)
+            .then(res => {
+                this.folders = res.data;
+                this.isLoading = false
+            })
+            .catch(err => {
+                this.isLoading = false
+                alert(err.data)
+            })
+
 
     }
 };

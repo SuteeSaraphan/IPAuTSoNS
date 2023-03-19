@@ -1,5 +1,4 @@
 <template>
-
     <div>
         <SlideBar></SlideBar>
 
@@ -27,10 +26,10 @@
                     <input type="checkbox" name="" id="sidebar-toggle">
                     <!----------------------------------------------------- filter bar ----------------------------------------------------->
                     <div style="width : 20%;
-                          padding-right: 10px;
-                          height: 100%;
-                          background-color: #383C4A;
-                          overflow-y: scroll;">
+                                      padding-right: 10px;
+                                      height: 100%;
+                                      background-color: #383C4A;
+                                      overflow-y: scroll;">
 
                         <input type="text" v-model="search" placeholder="Search" />
                         <div class="sidebar-main">
@@ -71,14 +70,14 @@
 
                     <!-- image list show -->
                     <div style="
-                  padding-left: 15px;
-                  padding-right: 20px;
-                  padding-top: 15px;
-                  width: 80%;
-                  height: 50%;
-                  display: flex;
-                  flex-direction: column;
-                  background-color: #4B5162;">
+                              padding-left: 15px;
+                              padding-right: 20px;
+                              padding-top: 15px;
+                              width: 80%;
+                              height: 50%;
+                              display: flex;
+                              flex-direction: column;
+                              background-color: #4B5162;">
                         <h2>Drive >
                             <a style="align-self: center;width: 350px;">
                                 <select id="folder_sel" style="color:#000 ;" @change="goToFolder">
@@ -91,20 +90,20 @@
                             </a>
                         </h2>
                         <div style="display: flex;
-                            flex-direction: row; 
-                            width: 100%;
+                                        flex-direction: row; 
+                                        width: 100%;
                             
-                            padding:10px;
-                            overflow-x: scroll;
-                            align-items: center;
-                            ">
+                                        padding:10px;
+                                        overflow-x: scroll;
+                                        align-items: center;
+                                        ">
 
                             <div v-for="image in this.images" :key="image.img_id">
                                 <img :src="`data:image/jpeg;base64,${image.img_data}`" style="
-                                padding: 10px;
-                                max-width: 175px;
-                                max-height: 100px;
-                                " @click="changeImg(image.img_id)">
+                                            padding: 10px;
+                                            max-width: 175px;
+                                            max-height: 100px;
+                                            " @click="changeImg(image.img_id)">
                             </div>
 
 
@@ -112,15 +111,16 @@
                         <!-- image full show -->
 
                         <div v-if="this.imgShowSrc != null" style="
-                            display: flex;
-                            flex-direction: column;
-                            justify-content: space-between;
-                            align-items: center;
-                            padding:20px;">
+                                        display: flex;
+                                        flex-direction: column;
+                                        justify-content: space-between;
+                                        align-items: center;
+                                        padding:20px;">
                             <img :src="`data:image/jpeg;base64,${this.imgShowSrc.img_data}`" height="350">
 
                         </div>
-                        <div v-if="this.imgShowSrc != null" style="display: flex; flex-direction: row; justify-items:flex-start; align-items: center;">
+                        <div v-if="this.imgShowSrc != null"
+                            style="display: flex; flex-direction: row; justify-items:flex-start; align-items: center;">
 
                             <div style=" width: 15%; text-align: center;">Filter :</div>
                             <!-- sliding bar -->
@@ -132,15 +132,15 @@
 
                             <!-- Export botton -->
                             <div style="
-                                display: flex;
-                                flex-direction: row;
-                                justify-content: flex-end;
-                                padding:20px;">
+                                            display: flex;
+                                            flex-direction: row;
+                                            justify-content: flex-end;
+                                            padding:20px;">
                                 <button type="button" @click="exportImg" style="
-                              font-weight: bold;
+                                          font-weight: bold;
 
-                              color: #000;
-                              padding: 10px;">
+                                          color: #000;
+                                          padding: 10px;">
                                     Export
                                 </button>
                             </div>
@@ -161,14 +161,12 @@
 
 <script>
 import SlideBar from '@/components/SlideBar'
-import { useCookies } from "vue3-cookies";
-import router from '@/router';
+//import router from '@/router';
 import axios from 'axios';
 //import VueSlideBar from 'vue-slide-bar';
-const URL_IMG_FOLDER = 'http://127.0.0.1:8000/api/folder_img';
-//const URL_IMG_UPLOAD = 'http://127.0.0.1:8000/api/upload_image';
-const URL_GET_IMG = 'http://127.0.0.1:8000/api/image';
-
+const URL_IMG_FOLDER = 'folder_img';
+const URL_GET_IMG = 'image';
+const URL_JOB = 'make_docker_file';
 
 
 export default {
@@ -178,9 +176,7 @@ export default {
 
     name: "Img_appView",
     setup() {
-        const { cookies } = useCookies();
-        return { cookies };
-
+       
 
 
     },
@@ -206,7 +202,7 @@ export default {
             for (let i in this.folders) {
                 if (this.folders[i].folder_name == document.getElementById("folder_sel").value) {
                     console.log('found')
-                    axios.defaults.headers.get['jwt'] = this.cookies.get('jwt');
+                    axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
                     axios.get(URL_GET_IMG + "/all/" + this.folders[i].folder_id)
                         .then(res => {
                             this.images = []
@@ -226,7 +222,7 @@ export default {
 
         changeImg(img_id) {
             this.imgShowSrc = null
-            axios.defaults.headers.get['jwt'] = this.cookies.get('jwt');
+            axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
             axios.get(URL_GET_IMG + "/once/" + img_id)
                 .then(res => {
                     this.imgShowSrc = res.data[0]
@@ -239,13 +235,19 @@ export default {
         },
 
         exportImg() {
-            router.push('/demoexport')
+            axios.defaults.headers.post['jwt'] = this.$store.state.jwt;
+            axios.post(URL_JOB)
+                .then(async res => {
+                    console.log(res)
+                    alert("Job is on processing")
+                })
         },
 
         getImageOnPage(page) {
             // get image data from database
             this.page_sel = page;
             console.log(this.page_sel)
+            axios.defaults.headers.post['jwt'] = this.$store.state.jwt;
             axios.get(URL_GET_IMG + "/" + page + "/" + this.$route.params.folder_id)
                 .then(res => {
                     console.log(res.data)
@@ -280,24 +282,19 @@ export default {
         //VueSlideBar
     },
     created() {
-        if (this.cookies.get('jwt') == null) {
-            alert("You are not login yet , please login fisrt")
-            router.push('/login')
-        }
-        else {
-            axios.defaults.headers.get['jwt'] = this.cookies.get('jwt');
-            axios.get(URL_IMG_FOLDER)
-                .then(res => {
-                    this.folders = res.data;
-                    this.isLoading = false
-                })
-                .catch(err => {
-                    this.isLoading = false
-                    alert(err.data)
-                })
 
-            
-        }
+        axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
+        axios.get(URL_IMG_FOLDER)
+            .then(res => {
+                this.folders = res.data;
+                this.isLoading = false
+            })
+            .catch(err => {
+                this.isLoading = false
+                alert(err.data)
+            })
+
+
 
     }
 };

@@ -30,19 +30,27 @@
                 <div class="product-form">
                     <form>
                         <label for="pname">Product name :</label>
-                        <input id="pname" name="pname" type="text">
+                        <input id="pname" name="pname" type="text" required>
 
                         <label for="ptype">Product type :</label>
-                        <input id="ptype" name="ptype" type="text">
+                        <input id="ptype" name="ptype" type="text" required>
 
                         <label for="pmodel">Product model :</label>
-                        <input id="pmodel" name="pmodel" type="text">
+                        <input id="pmodel" name="pmodel" type="text" required>
+
+                        <label for="pdetail">Product detail :</label>
+                        <textarea id="pdetail" name="pdetail" type="text" required></textarea>
 
                         <label for="price">Product price :</label>
-                        <input id="price" name="price" type="text">
+                        <input id="price" name="price" type="text" required>
 
                         <label for="pimg">Product image : </label>
-                        <input id="pimg" name="pimg" type="file" accept="image/*" @change="uploadImage($event)">
+                        <input id="pimg" name="pimg" type="file" accept="image/*" @change="uploadImage($event)" required>
+
+                        <label for="pweight">Weight file : </label>
+                        <input id="pweight" name="pweight" type="file"  @change="uploadWeight($event)" required>
+
+                        <button @click="addProduct" type="button"> Add product </button>
 
                     </form>
                 </div>
@@ -59,18 +67,26 @@
     padding: 2%;
     background-color: brown;
 }
+
+textarea {
+  width: 100%;
+  height: 150px;
+  padding: 12px 20px;
+  box-sizing: border-box;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  background-color: #f8f8f8;
+  font-size: 13px;
+  resize: none;
+  color: black;
+}
 @media (max-width: 800px) {}
 </style>
 <script>
 import SlideBar from '@/components/SlideBar'
-import { useCookies } from "vue3-cookies";
-import router from '@/router';
+//import router from '@/router';
 import axios from 'axios';
-
-//const URL_GET_PRODUCT = 'http://127.0.0.1:8000/api/product';
-//const URL_GET_IMG = 'http://127.0.0.1:8000/api/image';
-
-
+const URL_ADD_PRODUCT = 'product';
 
 export default {
 
@@ -79,16 +95,13 @@ export default {
 
     name: "AddProductView",
     setup() {
-        const { cookies } = useCookies();
-        return { cookies };
-
-
 
     },
     data() {
         return {
-            isLoading: true,
+
             selectedImg : null,
+            selectedWeight : null, 
 
 
         }
@@ -99,23 +112,36 @@ export default {
         uploadImage(event) {
             //console.log('event :'+event.target.files[0].name)
             this.selectedImg = event.target.files[0]
-            //console.log('selectedImg :'+this.selectedImg)
+            if (this.selectedImg.size >= 15000000){
+                console.log('selectedImg :'+this.selectedImg.size)
+                alert("This file is too big")
+            }else{
+                console.log('selectedImg :'+this.selectedImg.size)
+            }
+            
         },
 
-        //upload image to server
-        onUploadFile() {
+        // choose weight to upload
+        uploadWeight(event) {
+            //console.log('event :'+event.target.files[0].name)
+            this.selectedWeight = event.target.files[0]
+            console.log('selectedWeight :'+this.selectedWeight.size)
+        },
+
+        //add product to database
+        addProduct() {
             //console.log(this.folder.folder_name)
-            if (this.selectedFile.length > 0) {
+            if (this.selectedImg != null & this.selectedWeight != null) {
                 this.isLoading = true
                 let data = new FormData();
-                data.append('jwt', this.cookies.get('jwt'));
-                data.append('folder', this.folder.folder_name);
-
-                //console.log(this.selectedFile[0])
-
-                for (let i = 0; i < this.selectedFile.length; i++) {
-                    data.append('img_file', this.selectedFile[i]);
-                }
+                data.append('product_img', this.selectedImg);
+                data.append('weight_file', this.selectedWeight);
+                data.append('name', document.getElementById("pname").value);
+                data.append('type', document.getElementById("ptype").value);
+                data.append('model', document.getElementById("pmodel").value);
+                data.append('detail', document.getElementById("pdetail").value);
+                data.append('price', document.getElementById("price").value);
+                
 
                 //console.log(data)
 
@@ -124,22 +150,20 @@ export default {
                         'Content-Type': 'multipart/form-data'
                     }
                 }
+                axios.defaults.headers.post['jwt'] = this.$store.state.jwt;
                 axios.post(
-                    //URL_IMG_UPLOAD,
+                    URL_ADD_PRODUCT,
                     data,
                     config
                 ).then(
                     async (response) => {
-                        this.isLoading = false
                         alert('image upload response >' + response.data['status'])
-                        location.reload();
                     }
                 ).catch(err => {
-                    this.isLoading = false
                     alert(err)
                 })
             } else {
-                alert('please upload Image before add product')
+                alert('Please upload image and weight before add product')
             }
 
         },
@@ -154,17 +178,6 @@ export default {
     created() {
         console.log(this.$route.params.product_id)
 
-        //cookie checker
-        if (this.cookies.get('jwt') == null) {
-            alert("You are not login yet , please login fisrt")
-            router.push('/login')
-        }
-        else {
-
-            // count image in from data base
-            axios.defaults.headers.get['jwt'] = this.cookies.get('jwt');
-
-        }
     }
 };
 </script>
