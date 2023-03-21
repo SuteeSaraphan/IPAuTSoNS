@@ -257,7 +257,7 @@ main{
 	color: #383c4a ;
 	display: grid;
 	grid-template-columns: repeat(3, 1fr);
-	grid-gap: 3rem;
+	grid-gap: 2rem;
 	margin-top: 2rem;
 }
 
@@ -268,6 +268,9 @@ main{
   flex-direction: column;
   justify-content: flex-end;
   align-items: center;
+  max-width: 23rem;
+  width: 95%;
+  min-height: 20rem;
 }
 
 
@@ -899,7 +902,9 @@ box-shadow: rgba(255,255,255, 0.75) 1.5em 0 0 0, rgba(255,255,255, 0.75) 1.1em 1
 
 .full-img {
   display: flex;
+  flex-direction: column;
   justify-content: center;
+  align-items: stretch;
   position: fixed;
   z-index: 999;
   height: 100%;

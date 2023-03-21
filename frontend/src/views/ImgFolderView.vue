@@ -19,16 +19,20 @@
 
                 <!-- show full image here  -->
                 <div class="full-img" v-if="this.fullShow">
-                    <img style='display:block; 
-                                                    width:1000px;
-                                                    height:900px; 
-                                                    object-fit: scale-down;
-                                                    border: 1px;
-                                                    image-rendering: auto;'
-                        :src="`data:image/jpeg;base64,${this.fullImage.img_data}`" alt="{{ this.fullImage.img_id }}">
-                    <button style="border: none;" @click="this.fullShow = false">
-                        <span style="font-size: 1.5rem;" class=" las la-times-circle"></span>
-                    </button>
+                    
+                        <button style="border: none; width: 3rem; align-self: flex-end;" @click="this.fullShow = false">
+                            <span style="font-size: 1.5rem;" class=" las la-times-circle"></span>
+                        </button>
+
+
+                    <img style='
+                                        height:95%; 
+                                        object-fit: scale-down;
+                                        border: 1px;
+                                        margin-bottom: 2%;
+                                        image-rendering: auto;' :src="`data:image/jpeg;base64,${this.fullImage.img_data}`"
+                        alt="{{ this.fullImage.img_id }}">
+
                 </div>
 
 
@@ -46,27 +50,25 @@
 
                 <!-- show image array here  -->
                 <div class="cards">
-                    <div class="card-single" v-for="image in this.images" v-bind:key="image.img_id" 
-                    style="background-color:#4b5162;
-                            border-radius: 15px;
-                            ">
-                        <div class="card-img">
-                            <img :src="`data:image/jpeg;base64,${image.img_data}`" alt="{{ image.img_id }}"
-                                @click="fullImageView(image.img_id)">
-                        </div>
-                        <div class="container"
-                            style="width:70%;
-                            margin-left: 5%; 
-                            margin-right: 5%; 
-                            display:flex; 
-                            flex-direction:row; 
-                            justify-content:space-between; 
-                            align-items:center;">
+                    <div class="card-single" v-for="image in this.images" v-bind:key="image.img_id" style="background-color:#4b5162;
+                                    border-radius: 15px;
+                                    ">
+
+                        <img :src="`data:image/jpeg;base64,${image.img_data}`" alt="{{ image.img_id }}"
+                            @click="fullImageView(image.img_id)">
+
+                        <div class="container" style="width:80%;
+                                    margin-left: 5%; 
+                                    margin-right: 5%; 
+                                    display:flex; 
+                                    flex-direction:row; 
+                                    justify-content:space-between; 
+                                    align-items:center;">
                             <div style="padding:2px; 
-                                                overflow: hidden;
-                                                text-overflow: ellipsis;
-                                                white-space: nowrap;
-                                                ">
+                                                        overflow: hidden;
+                                                        text-overflow: ellipsis;
+                                                        white-space: nowrap;
+                                                        ">
 
                                 {{ showImgName(image.path) }}
                             </div>
@@ -75,8 +77,8 @@
 
                             <div>
                                 <button style="background-color: red;
-                                                            padding:2px;
-                                                            border: none;" @click="deleteImage(image.img_id)">
+                                                                    padding:2px;
+                                                                    border: none;" @click="deleteImage(image.img_id)">
                                     <span style="font-size: 1.5rem;" class="las la-trash"></span></button>
                             </div>
                         </div>
@@ -88,14 +90,14 @@
 
                 <!-- page select here  -->
                 <div style="
-                                display: flex;
-                                margin: auto;
-                                padding-top: 1%;
-                                width: 35%;
-                                height: 50px;
-                                justify-content: space-between;
-                                text-align: center;
-                                ">
+                                        display: flex;
+                                        margin: auto;
+                                        padding-top: 1%;
+                                        width: 35%;
+                                        height: 50px;
+                                        justify-content: space-between;
+                                        text-align: center;
+                                        ">
                     <a style="align-self: center;width: 350px;">Page :
                         <select id="pageSel" style="color:#000 ;" @change="goToPage">
                             <option v-for="i in this.pages" :key="i" style="color:#000 ;">
@@ -111,21 +113,12 @@
 </template>
 
 <style>
-.card-img{
-    padding: 2.5%;
-    align-items: center;
-    justify-content: center;
-    justify-items: center;
-    min-height: 15rem;
+.card-single img {
+    height: auto;
+    object-fit: cover;
+    max-width: 15rem;
     max-height: 20rem;
-}
-
-.card-img img{
-    vertical-align: middle;
-    max-width: 25rem;
-    max-height: 15rem;
-    min-width: 10rem;
-    object-fit:scale-down;
+    padding: 2.5%;
 }
 </style>
 
@@ -141,7 +134,7 @@ const URL_IMG = 'image';
 export default {
     name: "ImgFolderView",
     setup() {
-       
+
     },
     data() {
         return {
