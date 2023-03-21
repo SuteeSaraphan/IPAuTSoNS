@@ -19,19 +19,19 @@
 
                 <!-- show full image here  -->
                 <div class="full-img" v-if="this.fullShow">
-                    
-                        <button style="border: none; width: 3rem; align-self: flex-end;" @click="this.fullShow = false">
-                            <span style="font-size: 1.5rem;" class=" las la-times-circle"></span>
-                        </button>
+
+                    <button style="border: none; width: 3rem; align-self: flex-end;" @click="this.fullShow = false">
+                        <span style="font-size: 1.5rem;" class=" las la-times-circle"></span>
+                    </button>
 
 
                     <img style='
-                                        height:95%; 
-                                        object-fit: scale-down;
-                                        border: 1px;
-                                        margin-bottom: 2%;
-                                        image-rendering: auto;' :src="`data:image/jpeg;base64,${this.fullImage.img_data}`"
-                        alt="{{ this.fullImage.img_id }}">
+                                                height:95%; 
+                                                object-fit: scale-down;
+                                                border: 1px;
+                                                margin-bottom: 2%;
+                                                image-rendering: auto;'
+                        :src="`data:image/jpeg;base64,${this.fullImage.img_data}`" alt="{{ this.fullImage.img_id }}">
 
                 </div>
 
@@ -51,24 +51,32 @@
                 <!-- show image array here  -->
                 <div class="cards">
                     <div class="card-single" v-for="image in this.images" v-bind:key="image.img_id" style="background-color:#4b5162;
-                                    border-radius: 15px;
+                                            border-radius: 15px;">
+                        <div style="display: block; justify-content: center; padding: 2.5%; ">
+                            <img :src="`data:image/jpeg;base64,${image.img_data}`" alt="{{ image.img_id }}"
+                                @click="fullImageView(image.img_id)" 
+                                style="
+                                    display: block;
+                                    margin-left: auto;
+                                    margin-right: auto;
+                                    width: auto;
+                                    max-height: 12rem;
+                                    max-width: 15rem;
                                     ">
-
-                        <img :src="`data:image/jpeg;base64,${image.img_data}`" alt="{{ image.img_id }}"
-                            @click="fullImageView(image.img_id)">
-
-                        <div class="container" style="width:80%;
-                                    margin-left: 5%; 
-                                    margin-right: 5%; 
-                                    display:flex; 
-                                    flex-direction:row; 
-                                    justify-content:space-between; 
-                                    align-items:center;">
+                        </div>
+                        <div class="container" style="width:90%;
+                                            margin-left: 3%; 
+                                            margin-right: 3%; 
+                                            display:flex; 
+                                            flex-direction:row; 
+                                            justify-content:space-between; 
+                                            align-items:center;
+                                            ">
                             <div style="padding:2px; 
-                                                        overflow: hidden;
-                                                        text-overflow: ellipsis;
-                                                        white-space: nowrap;
-                                                        ">
+                                                                overflow: hidden;
+                                                                text-overflow: ellipsis;
+                                                                white-space: nowrap;
+                                                                ">
 
                                 {{ showImgName(image.path) }}
                             </div>
@@ -77,8 +85,9 @@
 
                             <div>
                                 <button style="background-color: red;
-                                                                    padding:2px;
-                                                                    border: none;" @click="deleteImage(image.img_id)">
+                                                                            padding:2px;
+                                                                            border: none;"
+                                    @click="deleteImage(image.img_id)">
                                     <span style="font-size: 1.5rem;" class="las la-trash"></span></button>
                             </div>
                         </div>
@@ -90,14 +99,14 @@
 
                 <!-- page select here  -->
                 <div style="
-                                        display: flex;
-                                        margin: auto;
-                                        padding-top: 1%;
-                                        width: 35%;
-                                        height: 50px;
-                                        justify-content: space-between;
-                                        text-align: center;
-                                        ">
+                                                display: flex;
+                                                margin: auto;
+                                                padding-top: 1%;
+                                                width: 35%;
+                                                height: 50px;
+                                                justify-content: space-between;
+                                                text-align: center;
+                                                ">
                     <a style="align-self: center;width: 350px;">Page :
                         <select id="pageSel" style="color:#000 ;" @change="goToPage">
                             <option v-for="i in this.pages" :key="i" style="color:#000 ;">
@@ -113,13 +122,7 @@
 </template>
 
 <style>
-.card-single img {
-    height: auto;
-    object-fit: cover;
-    max-width: 15rem;
-    max-height: 20rem;
-    padding: 2.5%;
-}
+
 </style>
 
 <script>

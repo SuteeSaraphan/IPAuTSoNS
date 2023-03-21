@@ -23,6 +23,7 @@ import base64
 from pathlib import Path
 from PIL import Image
 from yaml_run import YamlRunner
+from preview_api import PreviewAPI
 import logging
 
 logger = logging.getLogger(__name__)
@@ -195,31 +196,28 @@ class ImageView(APIView):
 
         # send full data of one image to web
         elif (type == 'once'):
-            img_serializer = ImageSerializer(
-                Image_file.objects.all().filter(img_id=folder_id), many=True)
-            for i in img_serializer.data:
-                file_type = (i['img_type'].split('/'))[1]
-                try:
-                    with Image.open(str(BASE_DIR)+str(Path(i['path']))) as image_file_temp:
-                        percentage = 1
-                        resized_image = image_file_temp
-                        buffer = BytesIO()
-                        resized_image.save(buffer, format=file_type)
-                        image_data = base64.b64encode(buffer.getvalue())
+            img_serializer = ImageSerializer(Image_file.objects.get(img_id=folder_id))
+            file_type = (img_serializer.data['img_type'].split('/'))[1]
+            try:
+                with Image.open(str(BASE_DIR)+str(Path(img_serializer.data['path']))) as image_file_temp:
+                    percentage = 1
+                    resized_image = image_file_temp
+                    buffer = BytesIO()
+                    resized_image.save(buffer, format=file_type)
+                    image_data = base64.b64encode(buffer.getvalue())
+                    temp_img_data = {
+                        'img_id': img_serializer.data['img_id'],
+                        'user_id': img_serializer.data['user_id'],
+                        'img_type': img_serializer.data['img_type'],
+                        'img_folder': img_serializer.data['img_folder'],
+                        'path': img_serializer.data['path'],
+                        'img_size': img_serializer.data['img_size'],
+                        'img_data': image_data
+                    }
+                    temp_respond.append(temp_img_data)
 
-                        temp_img_data = {
-                            'img_id': i['img_id'],
-                            'user_id': i['user_id'],
-                            'img_type': i['img_type'],
-                            'img_folder': i['img_folder'],
-                            'path': i['path'],
-                            'img_size': i['img_size'],
-                            'img_data': image_data
-                        }
-                        temp_respond.append(temp_img_data)
-
-                except BaseException as error:
-                    print(error)
+            except BaseException as error:
+                print(error)
 
             return Response(temp_respond)
 
@@ -262,7 +260,6 @@ class ImageView(APIView):
                 for i in range(chosen_range_min, chosen_range_max):
 
                     try:
-                        print('send img from here')
                         file_type = (
                             img_serializer.data[i]['img_type'].split('/'))[1]
                         with Image.open(str(BASE_DIR)+str(Path(img_serializer.data[i]['path']))) as image_file_temp:
@@ -483,6 +480,37 @@ class ProductView(APIView):
             return Response({"status": "Fail to add product try again."})
         else:
             return Response({"status": "Add product successful"})
+
+class PreviewView(APIView):
+    def post(seld,request):
+        token = request.META['HTTP_JWT']
+        payload = Authentication(token)
+        #preview = PreviewAPI(request.data['img_id'],request.data['filter_id'],request.data['filter_value'])
+        img_serializer = ImageSerializer(Image_file.objects.get(img_id=request.data['img_id']))
+        file_type = (img_serializer.data['img_type'].split('/'))[1]
+        try:
+            with open(str(BASE_DIR)+str(Path(img_serializer.data['path'])),'rb') as image_file:
+                preview = PreviewAPI(image_file,file_type,request.data['filter_id'],request.data['filter_value'])
+                img_preview = preview.do_preview()
+                image_data = Image.open(BytesIO(img_preview))
+                buffer = BytesIO()
+                image_data.save(buffer, format=file_type)
+                image_data = base64.b64encode(buffer.getvalue())
+                temp_img_data = {
+                        'img_id': img_serializer.data['img_id'],
+                        'user_id': img_serializer.data['user_id'],
+                        'img_type': img_serializer.data['img_type'],
+                        'img_folder': img_serializer.data['img_folder'],
+                        'path': img_serializer.data['path'],
+                        'img_size': img_serializer.data['img_size'],
+                        'img_data': image_data
+                    }
+                return Response(temp_img_data)
+
+        except Exception as error:
+            print(error)
+            return Response({'status':'something is wrong'})
+            
 
 
 class PaymentView(APIView):

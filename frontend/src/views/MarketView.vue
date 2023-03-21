@@ -35,8 +35,8 @@
 
                 <!-- filter history here  -->
                 <div class="sort-btn" style="padding:5px;">
-                    <button type="button" @click="goSort('1')">sort by newest </button>
-                    <button type="button" @click="goSort('2')">sort by oldest</button>
+                    <button type="button" @click="goSort('lastest')">sort by newest </button>
+                    <button type="button" @click="goSort('oldest')">sort by oldest</button>
                     <input type="date" id="search" @change="goSearch">
                 </div>
 
@@ -44,18 +44,20 @@
                 <!-- show all products here -->
                 <div class="cards">
                     <!-- show each product info here -->
-                    <div class="card-single" v-for="product in this.productList" v-bind:key="product.product_id" @click="goToProduct(1)" >
+                    <div class="card-single" v-for="product in this.productList" v-bind:key="product.product_id"
+                        @click="goProduct(1)">
                         <div class="card-flex">
                             <div class="card-info">
                                 <div class="card-head">
                                     <span style="color: #000;">Seller - </span>
-                                    <small style="color: #000;">{{product.seller}}</small>
+                                    <small style="color: #000;">{{ product.seller }}</small>
                                 </div>
                                 <div class="card-img">
-                                    <img :src="`data:image/jpeg;base64,${product.product_img}`" alt="{{ product.product_id }}">
+                                    <img :src="`data:image/jpeg;base64,${product.product_img}`"
+                                        alt="{{ product.product_id }}">
                                 </div>
-                                <h2 style="color: #000;">Yha tub sean gun</h2>
-                                <small style="color: #000;">object detection</small>
+                                <h2 style="color: #000;">{{product.product_name}}</h2>
+                                <small style="color: #000;">{{product.product_type}}</small>
                             </div>
                         </div>
                     </div>
@@ -79,8 +81,8 @@
 
 .card-flex {
     width: 100%;
-    padding-left: 15%;
-    padding-right: 15%
+    padding-left: 5%;
+    padding-right: 5%
 }
 
 .card-head {
@@ -89,15 +91,16 @@
 }
 
 .card-img {
-    display: flex;
-    justify-content: center;
-    margin-left: 20%;
-    margin-right: 20%;
+    display: block; justify-content: center; padding: 2.5%; 
 }
 
 .card-img img {
-    max-width: 12rem;
-    background-color: aqua;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: auto;
+    max-height: 12rem;
+    max-width: 15rem;
 }
 </style>
 
@@ -124,7 +127,7 @@ export default {
     data() {
         return {
             isLoading: true,
-            productList : []
+            productList: []
 
 
         }
@@ -175,7 +178,7 @@ export default {
                 this.isLoading = false;
                 this.productList = res.data
             })
-            .catch(err =>{
+            .catch(err => {
                 this.isLoading = false;
                 console.log(err)
             })

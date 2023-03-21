@@ -28,4 +28,6 @@ urlpatterns = [
 
     path('payment', views.PaymentView.as_view()),
 
+    path('preview', views.PreviewView.as_view())
+
 ]

@@ -26,10 +26,10 @@
                     <input type="checkbox" name="" id="sidebar-toggle">
                     <!----------------------------------------------------- filter bar ----------------------------------------------------->
                     <div style="width : 20%;
-                                      padding-right: 10px;
-                                      height: 100%;
-                                      background-color: #383C4A;
-                                      overflow-y: scroll;">
+                                              padding-right: 10px;
+                                              height: 100%;
+                                              background-color: #383C4A;
+                                              overflow-y: scroll;">
 
                         <input type="text" v-model="search" placeholder="Search" />
                         <div class="sidebar-main">
@@ -70,14 +70,14 @@
 
                     <!-- image list show -->
                     <div style="
-                              padding-left: 15px;
-                              padding-right: 20px;
-                              padding-top: 15px;
-                              width: 80%;
-                              height: 50%;
-                              display: flex;
-                              flex-direction: column;
-                              background-color: #4B5162;">
+                                      padding-left: 15px;
+                                      padding-right: 20px;
+                                      padding-top: 15px;
+                                      width: 80%;
+                                      height: 50%;
+                                      display: flex;
+                                      flex-direction: column;
+                                      background-color: #4B5162;">
                         <h2>Drive >
                             <a style="align-self: center;width: 350px;">
                                 <select id="folder_sel" style="color:#000 ;" @change="goToFolder">
@@ -90,20 +90,20 @@
                             </a>
                         </h2>
                         <div style="display: flex;
-                                        flex-direction: row; 
-                                        width: 100%;
+                                                flex-direction: row; 
+                                                width: 100%;
                             
-                                        padding:10px;
-                                        overflow-x: scroll;
-                                        align-items: center;
-                                        ">
+                                                padding:10px;
+                                                overflow-x: scroll;
+                                                align-items: center;
+                                                ">
 
                             <div v-for="image in this.images" :key="image.img_id">
                                 <img :src="`data:image/jpeg;base64,${image.img_data}`" style="
-                                            padding: 10px;
-                                            max-width: 175px;
-                                            max-height: 100px;
-                                            " @click="changeImg(image.img_id)">
+                                                    padding: 10px;
+                                                    max-width: 175px;
+                                                    max-height: 100px;
+                                                    " @click="changeImg(image.img_id)">
                             </div>
 
 
@@ -111,11 +111,11 @@
                         <!-- image full show -->
 
                         <div v-if="this.imgShowSrc != null" style="
-                                        display: flex;
-                                        flex-direction: column;
-                                        justify-content: space-between;
-                                        align-items: center;
-                                        padding:20px;">
+                                                display: flex;
+                                                flex-direction: column;
+                                                justify-content: space-between;
+                                                align-items: center;
+                                                padding:20px;">
                             <img :src="`data:image/jpeg;base64,${this.imgShowSrc.img_data}`" height="350">
 
                         </div>
@@ -124,23 +124,29 @@
 
                             <div style=" width: 15%; text-align: center;">Filter :</div>
                             <!-- sliding bar -->
-                            <div class="slidecontainer" style="width: 100%;">
+                            <div class="slidecontainer" style="width: 100%;
+                                                                        display: flex; 
+                                                                        flex-direction: column; 
+                                                                        justify-items:center; 
+                                                                        align-items: center;
+                            
+                                    ">
                                 <input type="range" min="1" max="100" value="80" class="slider" id="myRange"
-                                    @change="filterAdjusting">
+                                    @change="filterAdjusting" style="width: 100%;">
                             </div>
                             <!-- end of sliding bar -->
 
                             <!-- Export botton -->
                             <div style="
-                                            display: flex;
-                                            flex-direction: row;
-                                            justify-content: flex-end;
-                                            padding:20px;">
+                                                    display: flex;
+                                                    flex-direction: row;
+                                                    justify-content: flex-end;
+                                                    padding:20px;">
                                 <button type="button" @click="exportImg" style="
-                                          font-weight: bold;
+                                                  font-weight: bold;
 
-                                          color: #000;
-                                          padding: 10px;">
+                                                  color: #000;
+                                                  padding: 10px;">
                                     Export
                                 </button>
                             </div>
@@ -176,21 +182,21 @@ export default {
 
     name: "Img_appView",
     setup() {
-       
+
 
 
     },
     data() {
         return {
-            filterNoneCpu: ['Black and White', 'ASCII'],
-            filterOnCpu: ['Mosaic', 'PixelArt'],
+            filterNoneCpu: ['Black and White','ASCII','PixelArt'],
+            filterOnCpu: ['Mosaic','Object-detection'],
             isLoading: true,
             imgBarWidth: '175',
             folders: [],
             images: [],
             imgShowSrc: null,
-            filter: null,
-            filterValue: 0
+            filter: "none",
+            filterValue: 80,
 
         }
     },
@@ -252,22 +258,65 @@ export default {
                 .then(res => {
                     console.log(res.data)
                     this.isLoading = false
-                    this.images = res.data
+                    this.images = res.data[0]
                 })
 
         },
 
         filterAdjusting() {
+            if (this.imgShowSrc != null){
+            this.isLoading = true
             this.filterValue = document.getElementById("myRange").value;
             console.log(this.filter)
             console.log(this.filterValue)
+            let img_preview = {
+                'img_id':this.imgShowSrc.img_id,
+                'filter_id':this.filter,
+                'filter_value':this.filterValue,
+            }
+            axios.defaults.headers.post['jwt'] = this.$store.state.jwt;
+            axios.post('preview',img_preview)
+                .then(res => {
+                    this.isLoading = false
+                    console.log(res)
+                    this.imgShowSrc = res.data
+                })
+                .catch(err => {
+                    this.isLoading = false
+                    alert(err.data)
+                })
+            }else{
+                alert('Please select image')
+            }
+
         },
 
         changeFilter(filter_id) {
+            if (this.imgShowSrc != null){
+            this.isLoading = true
             this.filter = filter_id;
             document.getElementById("myRange").value = 80
             console.log(this.filter)
             console.log(this.filterValue)
+            let img_preview = {
+                'img_id':this.imgShowSrc.img_id,
+                'filter_id':this.filter,
+                'filter_value':this.filterValue,
+            }
+            axios.defaults.headers.post['jwt'] = this.$store.state.jwt;
+            axios.post('preview',img_preview)
+                .then(res => {
+                    this.isLoading = false
+                    console.log(res)
+                    this.imgShowSrc = res.data
+                })
+                .catch(err => {
+                    this.isLoading = false
+                    alert(err.data)
+                })
+            }else{
+                alert('Please select image')
+            }
 
         },
 
