@@ -24,7 +24,7 @@ urlpatterns = [
     path('folder_img/<str:folder_id>', views.FolderView.as_view()),
 
     path('product', views.ProductView.as_view()),
-    path('product/<str:product_id>', views.ProductView.as_view()),
+    path('product/<str:type>/<str:key>', views.ProductView.as_view()),
 
     path('payment', views.PaymentView.as_view()),
 

@@ -28,9 +28,9 @@
                 
                 <!-- filter history here  -->
                 <div class="sort-btn" style="padding:5px;">
-                    <button type="button" @click="go_sort('1')" >sort by newest </button>
-                    <button type="button" @click="go_sort('2')" >sort by oldest</button>
-                    <input type="date" id="search_by_date" @change="go_search">
+                    <button type="button" @click="goSort('1')" >sort by newest </button>
+                    <button type="button" @click="goSort('2')" >sort by oldest</button>
+                    <input type="date" id="search_by_date" @change="goSearch">
                 </div>
                 
                 
@@ -139,13 +139,12 @@ export default {
     data() {
         return {
             isLoading: true,
-            sort_his : null,
 
         }
     },
     methods: {
 
-        search_by_date(payment_list,date_sel){
+        searchByDate(payment_list,date_sel){
             let temp = [];
             for(let i in payment_list){
                 console.log(payment_list[i].pay_time.substring(0,10))
@@ -161,7 +160,7 @@ export default {
         // let path = "/img_folder/" + folder_id + "/1"
         // window.location.href = path
 
-        go_sort(type){
+        goSort(type){
             if (type == "1"){
                 let path = "/history/" + "newest"
                 window.location.href = path;
@@ -172,7 +171,7 @@ export default {
 
         },
 
-        go_search(){
+        goSearch(){
             let path = "/history/" + document.getElementById("search_by_date").value
             window.location.href = path;
         },
@@ -192,7 +191,7 @@ export default {
                 return payment_list;
             }
             else{
-                payment_list = this.search_by_date(payment_list,type);
+                payment_list = this.searchByDate(payment_list,type);
                 return payment_list;
             }
         },
@@ -212,13 +211,14 @@ export default {
             axios.defaults.headers.get['jwt'] = this.$store.state.jwt
             axios.get(URL_PAYMENT)
                 .then(res => {
+                    console.log(res)
                     console.log(res.data[0].pay_time.substring(0,10)) 
                     this.payments = this.sort(res.data,this.$route.params.type);
                     this.isLoading = false
                 })
                 .catch(err => {
                     this.isLoading = false
-                    alert(err.data)
+                    console.log(err)
                 })
         
 

@@ -26,14 +26,17 @@ from yaml_run import YamlRunner
 import logging
 
 logger = logging.getLogger(__name__)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 
 
 class VersionCheck(APIView):
-    def get(self,request):
-        return Response({"version":"1.2:1521"})
+    def get(self, request):
+        return Response({"version": "1.4.1345"})
 
 # for Authentication user with JWT
+
+
 def Authentication(token):
     if not token:
         raise AuthenticationFailed('Unauthenticated')
@@ -72,12 +75,15 @@ class LoginView(APIView):
     def post(self, reqest):
         email = reqest.data['email']
         password = reqest.data['password']
-        user = User.objects.get(email=email)
-
+        user = None
+        try:
+            user = User.objects.get(email=email)
+        except Exception as error:
+            print(error)
         if user is None:
-            raise AuthenticationFailed("Email not found!")
+            return Response(status=404)
         elif not user.check_password(password):
-            raise AuthenticationFailed("Password is not match!")
+            return Response(status=404)
         else:
             payload = {
                 'id': user.user_id,
@@ -91,8 +97,8 @@ class LoginView(APIView):
             # respond.set_cookie(key='jwt',value=token,httponly=True)
             respond.data = ({
                 'jwt': token,
-                'fname':user.first_name,
-                'lname':user.last_name
+                'fname': user.first_name,
+                'lname': user.last_name
             })
             return respond
 
@@ -257,7 +263,8 @@ class ImageView(APIView):
 
                     try:
                         print('send img from here')
-                        file_type = (img_serializer.data[i]['img_type'].split('/'))[1]
+                        file_type = (
+                            img_serializer.data[i]['img_type'].split('/'))[1]
                         with Image.open(str(BASE_DIR)+str(Path(img_serializer.data[i]['path']))) as image_file_temp:
                             percentage = 0.25
                             width, height = image_file_temp.size
@@ -321,7 +328,8 @@ class ImageView(APIView):
         img_id = folder_id
         image = Image_file.objects.get(img_id=img_id)
         try:
-            del_path = os.path.join(BASE_DIR, "nas_sim/ipautsons", str(image.path))
+            del_path = os.path.join(
+                BASE_DIR, "nas_sim/ipautsons", str(image.path))
             os.remove(del_path)
         except BaseException as error:
             print(error)
@@ -398,10 +406,49 @@ class FolderView(APIView):
 
 
 class ProductView(APIView):
-    def get(self, request, product_id):
+    def get(self, request, type, key):
         token = request.META['HTTP_JWT']
         payload = Authentication(token)
-        return Response({"status": product_id})
+        all_product = ProductSerializer(
+            Product.objects.all().order_by('last_update'), many=True)
+        temp_respond = []
+
+        for i in all_product.data:
+            file_type = (i['product_img'].split('.'))[-1]
+            seller = User.objects.get(user_id=i['user_id'])
+            if (file_type == 'JPG' or file_type == 'JPEG' or file_type == 'jpg' or file_type == 'jpeg'):
+                file_type = 'jpeg'
+            else:
+                file_type = 'png'
+            try:
+                with Image.open(str(BASE_DIR)+str(Path(i['product_img']))) as image_file_temp:
+                    percentage = 0.25
+                    width, height = image_file_temp.size
+                    resized_dimensions = (
+                        int(width * percentage), int(height * percentage))
+                    resized_image = image_file_temp.resize(
+                        resized_dimensions)
+                    buffer = BytesIO()
+                    resized_image.save(buffer, format=file_type)
+                    image_data = base64.b64encode(buffer.getvalue())
+
+                    temp_img_data = {
+                        'product_id': i['product_id'],
+                        'product_name': i['product_name'],
+                        'seller': seller.first_name + " " + seller.last_name,
+                        'product_type': i['product_type'],
+                        'model': i['model'],
+                        'price': i['price'],
+                        'detail': i['detail'],
+                        'product_img': image_data,
+                        'last_update': i['last_update']
+                    }
+                    temp_respond.append(temp_img_data)
+
+            except Exception as error:
+                print(error)
+                pass
+        return Response(temp_respond)
 
     def post(self, request):
         token = request.META['HTTP_JWT']
@@ -418,7 +465,7 @@ class ProductView(APIView):
             'product_type': request.data['type'],
             'model': request.data['model'],
             'price': request.data['price'],
-            'detail':request.data['detail'],
+            'detail': request.data['detail'],
             'path': weight_file,
             'product_img': product_img,
             'last_update': datetime.datetime.utcnow()
@@ -443,16 +490,18 @@ class PaymentView(APIView):
         token = request.META['HTTP_JWT']
         payload = Authentication(token)
         serializer = PaymentSerializer(
-            Payment.objects.all().filter(user_id=payload['id']), many=True)
+            Payment.objects.all().filter(user_id=str(payload['id'])), many=True
+        )
         return Response(serializer.data)
 
     def post(self, request):
         token = request.META['HTTP_JWT']
         payload = Authentication(token)
+        user = User.objects.get(user_id=payload['id'])
         payment_data = {
             'payment_id': ''.join(random.choices(string.ascii_lowercase + string.digits, k=25)),
             'product_id': request.data['product_id'],
-            'user_id': payload['id'],
+            'user_id': user,
             'type': request.data['type'],
             'pay_time': datetime.datetime.utcnow()
         }
@@ -469,7 +518,7 @@ class PaymentView(APIView):
 
 class MakeDockerFile(APIView):
     def post(self, request):
-        logger.info('Running YAMLRunner at '+str(datetime.datetime.now()))
+        logger.error('Running YAMLRunner at '+str(datetime.datetime.now()))
         # job_id = request.data['job_id']
         # token = request.META['HTTP_JWT']
         # path = request.data['path']
@@ -512,7 +561,7 @@ spec:
       - name: nfs-share
         persistentVolumeClaim: 
           claimName: example"""
-#         
+#
 #             job_data = {
 #                 'job_id': job_id,
 #                 'user_id': user.user_id,
@@ -571,7 +620,7 @@ spec:
 #       restartPolicy: Never
 #       volumes:
 #       - name: myvolume
-#         persistentVolumeClaim: 
+#         persistentVolumeClaim:
 #           claimName: mypvc"""
 #         try:
 #             job_data = {

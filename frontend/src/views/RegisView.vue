@@ -75,9 +75,7 @@ export default {
         }
     },
     methods: {
-        go_register() {
-            router.push('register')
-        },
+
         register() {
             if (document.getElementById("email").value.length == 0) {
                 alert("Email is empty")

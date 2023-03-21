@@ -96,16 +96,14 @@
                                 justify-content: space-between;
                                 text-align: center;
                                 ">
-                    <button style="width: 50px;color:#000 ;"> Last </button>
                     <a style="align-self: center;width: 350px;">Page :
-                        <select id="page_sel" style="color:#000 ;" @change="goToPage">
+                        <select id="pageSel" style="color:#000 ;" @change="goToPage">
                             <option v-for="i in this.pages" :key="i" style="color:#000 ;">
                                 {{ i }}
                             </option>
-                            <option selected style="color:#000 ;" hidden> {{ this.page_sel }}</option>
+                            <option selected style="color:#000 ;" hidden> {{ this.pageSel }}</option>
                         </select>
                     </a>
-                    <button style="width: 50px;color:#000 ;"> Next </button>
                 </div>
             </main>
         </div>
@@ -118,12 +116,16 @@
     align-items: center;
     justify-content: center;
     justify-items: center;
+    min-height: 15rem;
+    max-height: 20rem;
 }
 
 .card-img img{
     vertical-align: middle;
-    max-width: 24rem;
-    max-height: 12rem;
+    max-width: 25rem;
+    max-height: 15rem;
+    min-width: 10rem;
+    object-fit:scale-down;
 }
 </style>
 
@@ -137,8 +139,6 @@ const URL_IMG = 'image';
 
 
 export default {
-
-
     name: "ImgFolderView",
     setup() {
        
@@ -154,7 +154,7 @@ export default {
             isLoading: true,
             fullShow: false,
             pages: 1,
-            page_sel: 0,
+            pageSel: 0,
             folder: null
 
         }
@@ -256,16 +256,16 @@ export default {
         },
 
         goToPage() {
-            console.log(document.getElementById("page_sel").value)
-            let path = "/img_folder/" + this.$route.params.folder_id + "/" + document.getElementById("page_sel").value
+            console.log(document.getElementById("pageSel").value)
+            let path = "/img_folder/" + this.$route.params.folder_id + "/" + document.getElementById("pageSel").value
             window.location.href = path
 
         },
 
         getImageOnPage(page) {
             // get image data from data base
-            this.page_sel = page;
-            //console.log(this.page_sel)
+            this.pageSel = page;
+            //console.log(this.pageSel)
             axios.get(URL_IMG + "/" + page + "/" + this.$route.params.folder_id)
                 .then(res => {
                     console.log(res.data)

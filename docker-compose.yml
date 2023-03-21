@@ -7,17 +7,17 @@ services:
       - "8000:8000"
     volumes:
      - ipautsons-volume:/IPAuTSoNS
-    image: chinglew27/ipautsons-backend:v1.3.1245
+    image: chinglew27/ipautsons-backend:v1.4.1345
 
 
   frontend:
     # will build ./ipuatsons/Dockerfile
-    build: ./ipuatsons
+    build: ./frontend
     ports:
      - "80:80"
     volumes:
      - ipautsons-volume:/IPAuTSoNS
-    image: chinglew27/ipautsons-frontend:v1.2
+    image: chinglew27/ipautsons-frontend:v1.4
 
 volumes:
   ipautsons-volume:

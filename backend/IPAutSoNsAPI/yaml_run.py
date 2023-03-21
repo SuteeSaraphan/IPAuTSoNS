@@ -8,10 +8,7 @@ class YamlRunner:
     def __init__(self):
         # def __init__(self,user_id,job_id,path,img_selected,param1,param2,param3):
         # self.user_id = user_id
-        # self.yaml_file = 'yaml_file/test123.yaml' # 1423
-        # self.yaml_file = './test123.yaml' # 1443
-        # self.yaml_file = 'yaml_file/test123.yaml' # 1520
-        self.yaml_file = './test123.yaml' # 1521
+        self.yaml_file = 'yaml_file/test123.yaml' # v1.4.1345
         # self.path = path
         # self.img_selected = img_selected
         # if param1 != None:

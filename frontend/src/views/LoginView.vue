@@ -24,7 +24,7 @@
                     <div style="padding: 7px">
                         <input type="button" value="Login" @click="login()" />
                         <input type="button" value="Register" style="color: white;background-color: #5294e2;"
-                            @click="go_register()" />
+                            @click="goRegister()" />
                     </div>
                 </form>
             </div>
@@ -65,17 +65,18 @@ export default {
                     }
                 )
                     .then(response => {
-                        this.$store.commit('setToken',response.data.jwt)
-                        this.$store.commit('setName',[response.data.fname,response.data.lname])
+                        this.$store.commit('setToken',response.data.jwt);
+                        this.$store.commit('setName',[response.data.fname,response.data.lname]);
                         router.push('/home');
                     }).catch(error => {
-                        console.log(error.data);
+                        console.log(error);
+                        alert("Username or password is wrong try again");
                     })
             }
 
 
         },
-        go_register() {
+        goRegister() {
             router.push('/register');
         }
     },

@@ -90,7 +90,6 @@ export default {
     data() {
         return {
             selectedFile: [],
-            token_url: "",
             files: [],
             isLoading: true
         }

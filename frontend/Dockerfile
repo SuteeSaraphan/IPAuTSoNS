@@ -1,7 +1,7 @@
 FROM --platform=$BUILDPLATFORM node:16.16.0-alpine AS frontend
 
-RUN mkdir /ipuatsons
-WORKDIR /ipuatsons
+RUN mkdir /frontend
+WORKDIR /frontend
 
 COPY . .
 

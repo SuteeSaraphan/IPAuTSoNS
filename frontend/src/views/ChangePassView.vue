@@ -19,34 +19,33 @@
                     <div class="menu">
 
                         <form style="padding:15px">
-                            <h1>Profile setting Page</h1>
+                            <h1>Change password Page</h1>
                             <div style="text-align: left">
-                                <label style="font-size: 15px">Email :</label>
+                                <label style="font-size: 15px">Old password :</label>
                                 <p>
-                                    <input id="email" type="email" style="color:black" disabled="True" />
+                                    <input id="oldPassword" type="password" style="color:black" />
                                 </p>
                             </div>
                             <div style="text-align: left">
-                                <label style="font-size: 15px">Firstname :</label>
+                                <label style="font-size: 15px">New password :</label>
                                 <p>
-                                    <input id="first_name" type="text" style="color:black" />
+                                    <input id="newPassword" type="password" style="color:black" />
                                 </p>
                             </div>
                             <div style="text-align: left">
-                                <label style="font-size: 15px">Lastname :</label>
+                                <label style="font-size: 15px">New password confirm :</label>
                                 <p>
-                                    <input id="last_name" type="text" style="color:black" />
+                                    <input id="newPasswordConfirm" type="password" style="color:black" />
                                 </p>
                             </div>
 
 
 
 
-                            <div style="padding: 10px">
-                                <input type="button" value="Submit" style="color:black" @click="edit_profile()" />
+                            <div style="padding: 15px">
+                                <input type="button" value="Submit" style="color:black" @click="editPassword()" />
                                 <input type="button" value="Clear" style="color:black" @click="clear()" />
-                                <input type="button" value="Change password" style="width:85%"
-                                    @click="change_password()">
+                                <input type="button" value="Back" style="width:85%" @click="back()">
                             </div>
                         </form>
                     </div>
@@ -56,33 +55,30 @@
             </main>
         </div>
     </div>
-
 </template>
 
 <script>
 import SlideBar from '@/components/SlideBar';
-import { useCookies } from "vue3-cookies";
 import router from '@/router';
 const axios = require('axios').default;
 export default {
-    name: "SettingView",
+    name: "ChangePassView",
     components: {
         SlideBar
     },
     setup() {
-        const { cookies } = useCookies();
-        return { cookies };
+
     },
     data() {
 
     },
     methods: {
-        edit_profile() {
-            axios.put('/user',
+        editPassword() {
+            axios.put('password',
                 {
-                    'jwt': this.cookies.get('jwt'),
-                    'first_name': document.getElementById("first_name").value,
-                    'last_name': document.getElementById("last_name").value
+                    'jwt': this.$store.state.jwt,
+                    'oldPassword': document.getElementById("oldPassword").value,
+                    'newPassword': document.getElementById("newPassword").value
                 }
             ).then(async res => {
                 alert(res.data.status)
@@ -91,25 +87,26 @@ export default {
             })
 
         },
-        change_password() {
-            router.push('/changepass')
+        back() {
+            router.push('/setting')
         },
 
         clear() {
-            document.getElementById("first_name").value = ""
-            document.getElementById("last_name").value = ""
+            document.getElementById("oldPassword").value = ""
+            document.getElementById("newPassword").value = ""
+            document.getElementById("newPasswordConfirm").value = ""
         }
+
     },
     created() {
-        axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
-        axios.get('user').then(async res => {
-            document.getElementById("email").value = res.data.email
-            document.getElementById("first_name").value = res.data.first_name
-            document.getElementById("last_name").value = res.data.last_name
-        }).catch(error => {
-            alert(error);
-        })
 
+        axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
+        axios.get('user')
+            .then(res => res)
+            .catch(err => {
+                alert('Can not change password now try again later')
+                console.log(err.data)
+            })
 
     }
 

@@ -190,7 +190,7 @@ export default {
             images: [],
             imgShowSrc: null,
             filter: null,
-            filter_value: 0
+            filterValue: 0
 
         }
     },
@@ -258,16 +258,16 @@ export default {
         },
 
         filterAdjusting() {
-            this.filter_value = document.getElementById("myRange").value;
+            this.filterValue = document.getElementById("myRange").value;
             console.log(this.filter)
-            console.log(this.filter_value)
+            console.log(this.filterValue)
         },
 
         changeFilter(filter_id) {
             this.filter = filter_id;
             document.getElementById("myRange").value = 80
             console.log(this.filter)
-            console.log(this.filter_value)
+            console.log(this.filterValue)
 
         },
 
