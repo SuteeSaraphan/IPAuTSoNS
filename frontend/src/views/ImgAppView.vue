@@ -331,7 +331,6 @@ export default {
         //VueSlideBar
     },
     created() {
-
         axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
         axios.get(URL_IMG_FOLDER)
             .then(res => {

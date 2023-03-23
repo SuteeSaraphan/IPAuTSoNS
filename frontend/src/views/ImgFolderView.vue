@@ -26,14 +26,30 @@
 
 
                     <img style='
-                                                height:95%; 
-                                                object-fit: scale-down;
-                                                border: 1px;
-                                                margin-bottom: 2%;
-                                                image-rendering: auto;'
+                                                    height:95%; 
+                                                    object-fit: scale-down;
+                                                    border: 1px;
+                                                    margin-bottom: 2%;
+                                                    image-rendering: auto;'
                         :src="`data:image/jpeg;base64,${this.fullImage.img_data}`" alt="{{ this.fullImage.img_id }}">
 
                 </div>
+
+                <!-- loading -->
+                <div v-if="this.isUploading">
+                        <div class="uploading">
+                            <radial-progress-bar :diameter="500" :completed-steps="completedSteps" :total-steps="totalSteps"
+                                :startColor="this.barColor" :stopColor="this.barColor" style="
+                                    align-items: center;
+                                    justify-content:center;
+                                ">
+                                <h2>On Process</h2>
+                                <h1>Completed : {{ completedSteps }} %</h1>
+                            </radial-progress-bar>
+                        </div>
+                    </div>
+                    <!-- loading -->
+
 
 
                 <h1>Image Folder page</h1>
@@ -51,32 +67,31 @@
                 <!-- show image array here  -->
                 <div class="cards">
                     <div class="card-single" v-for="image in this.images" v-bind:key="image.img_id" style="background-color:#4b5162;
-                                            border-radius: 15px;">
+                                                border-radius: 15px;">
                         <div style="display: block; justify-content: center; padding: 2.5%; ">
                             <img :src="`data:image/jpeg;base64,${image.img_data}`" alt="{{ image.img_id }}"
-                                @click="fullImageView(image.img_id)" 
-                                style="
-                                    display: block;
-                                    margin-left: auto;
-                                    margin-right: auto;
-                                    width: auto;
-                                    max-height: 12rem;
-                                    max-width: 15rem;
-                                    ">
+                                @click="fullImageView(image.img_id)" style="
+                                        display: block;
+                                        margin-left: auto;
+                                        margin-right: auto;
+                                        width: auto;
+                                        max-height: 12rem;
+                                        max-width: 15rem;
+                                        ">
                         </div>
                         <div class="container" style="width:90%;
-                                            margin-left: 3%; 
-                                            margin-right: 3%; 
-                                            display:flex; 
-                                            flex-direction:row; 
-                                            justify-content:space-between; 
-                                            align-items:center;
-                                            ">
+                                                margin-left: 3%; 
+                                                margin-right: 3%; 
+                                                display:flex; 
+                                                flex-direction:row; 
+                                                justify-content:space-between; 
+                                                align-items:center;
+                                                ">
                             <div style="padding:2px; 
-                                                                overflow: hidden;
-                                                                text-overflow: ellipsis;
-                                                                white-space: nowrap;
-                                                                ">
+                                            overflow: hidden;
+                                            text-overflow: ellipsis;
+                                            white-space: nowrap;
+                                            ">
 
                                 {{ showImgName(image.path) }}
                             </div>
@@ -85,8 +100,8 @@
 
                             <div>
                                 <button style="background-color: red;
-                                                                            padding:2px;
-                                                                            border: none;"
+                                                                                padding:2px;
+                                                                                border: none;"
                                     @click="deleteImage(image.img_id)">
                                     <span style="font-size: 1.5rem;" class="las la-trash"></span></button>
                             </div>
@@ -99,14 +114,14 @@
 
                 <!-- page select here  -->
                 <div style="
-                                                display: flex;
-                                                margin: auto;
-                                                padding-top: 1%;
-                                                width: 35%;
-                                                height: 50px;
-                                                justify-content: space-between;
-                                                text-align: center;
-                                                ">
+                                                    display: flex;
+                                                    margin: auto;
+                                                    padding-top: 1%;
+                                                    width: 35%;
+                                                    height: 50px;
+                                                    justify-content: space-between;
+                                                    text-align: center;
+                                                    ">
                     <a style="align-self: center;width: 350px;">Page :
                         <select id="pageSel" style="color:#000 ;" @change="goToPage">
                             <option v-for="i in this.pages" :key="i" style="color:#000 ;">
@@ -121,14 +136,13 @@
     </div>
 </template>
 
-<style>
-
-</style>
+<style></style>
 
 <script>
 import SlideBar from '@/components/SlideBar'
 import router from '@/router';
 import axios from 'axios';
+import RadialProgressBar from 'vue-radial-progress';
 const URL_IMG_FOLDER = 'folder_img';
 const URL_IMG = 'image';
 
@@ -151,7 +165,12 @@ export default {
             fullShow: false,
             pages: 1,
             pageSel: 0,
-            folder: null
+            folder: null,
+            upload_progress: 0,
+            isUploading: false,
+            completedSteps :1,
+            totalSteps:0
+
 
         }
     },
@@ -168,45 +187,49 @@ export default {
 
         },
         //upload image to server
-        onUploadFile() {
-            console.log(this.folder.folder_name)
+        async onUploadFile() {
+            this.upload_progress = 0
             if (this.selectedFile.length > 0) {
-                this.isLoading = true
-                let data = new FormData();
-                data.append('jwt', this.$store.state.jwt);
-                data.append('folder', this.folder.folder_name);
-
+                this.isUploading = true
                 //console.log(this.selectedFile[0])
-
+                this.totalSteps = this.selectedFile.length;
+                let data = new FormData();
                 for (let i = 0; i < this.selectedFile.length; i++) {
+                    data = new FormData();
+                    data.append('jwt', this.$store.state.jwt);
+                    data.append('folder', this.folder.folder_name);
                     data.append('img_file', this.selectedFile[i]);
+                    await this.performUpload(data)
                 }
-
-                //console.log(data)
-
-                let config = {
-                    header: {
-                        'Content-Type': 'multipart/form-data'
-                    }
-                }
-                axios.post(
-                    URL_IMG,
-                    data,
-                    config
-                ).then(
-                    async (response) => {
-                        this.isLoading = false
-                        alert('image upload response >' + response.data['status'])
-                        location.reload();
-                    }
-                ).catch(err => {
-                    this.isLoading = false
-                    alert(err)
-                })
+                alert('Upload all done')
             } else {
-                alert('plese selece file before upload')
+                alert('please select file before upload')
             }
 
+        },
+        async performUpload(data) {
+            let config = {
+                header: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            }
+            await axios.post(
+                URL_IMG,
+                data,
+                config
+            ).then(
+                async (response) => {
+                    this.completedSteps += 1
+                    this.upload_progress += 1
+                    console.log(response.data['status'])
+                    if (this.upload_progress == this.selectedFile.length) {
+                        this.isUploading = false
+                        window.location.reload()
+                    }
+                }
+            ).catch(err => {
+                alert(err)
+            })
         },
 
         //view full resolution image
@@ -264,7 +287,6 @@ export default {
             //console.log(this.pageSel)
             axios.get(URL_IMG + "/" + page + "/" + this.$route.params.folder_id)
                 .then(res => {
-                    console.log(res.data)
                     this.isLoading = false
                     this.images = res.data
                 })
@@ -277,10 +299,10 @@ export default {
     }
     ,
     components: {
-        SlideBar
+        SlideBar,
+        RadialProgressBar
     },
     created() {
-        console.log(this.$route.params.folder_id)
         axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
         //check rights in this folder
         axios.get(URL_IMG_FOLDER)

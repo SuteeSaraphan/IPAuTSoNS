@@ -111,7 +111,7 @@ class LoginView(APIView):
             serializer = Login_logSerializer(data=login_log)
             serializer.is_valid(raise_exception=True)
             serializer.save()
-            return Response(serializer.data)
+            return respond
 
 
 class UserView(APIView):
@@ -306,26 +306,24 @@ class ImageView(APIView):
         folder = request.data['folder']
         payload = Authentication(token)
         user = User.objects.get(user_id=payload['id'])
-
-        for img_file in request.FILES.getlist('img_file'):
-            # print("name : "+str(img_file.name))
-            # print("size : "+str(img_file.size)+" byte")
-            # print("type : " +img_file.content_type)
+        try:
             print("------------------")
             img_data = {
                 'img_id': ''.join(random.choices(string.ascii_lowercase + string.digits, k=6)),
                 'user_id': user.user_id,
-                'img_type': img_file.content_type,
+                'img_type': request.FILES['img_file'].content_type,
                 'img_folder': folder,
-                'path': img_file,
-                'img_size': img_file.size
+                'path': request.FILES['img_file'],
+                'img_size': request.FILES['img_file'].size
             }
             serializer = ImageSerializer(data=img_data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
-            print("file "+img_file.name+" upload done")
-
-        return Response({"status": "Upload done!"})
+        except Exception as error:
+            print(error)
+            return Response({"status": "file "+request.FILES['img_file'].name+" upload fail"})
+        else:
+            return Response({"status": "file "+request.FILES['img_file'].name+" upload done"})
 
     # delete image
     def delete(self, request, folder_id):
