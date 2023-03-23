@@ -1,56 +1,56 @@
 <template>
     <div class="login-regis">
-        <div class="menu">
+        <form style="
+        display: flex;
+        flex-direction: column ;
+        margin: auto;
+        padding-top: 2%;
+        padding-bottom: 2%;
+        width: 35%;  
+        align-items: stretch;">
+            <img src="@/img/logo.png" style="max-width:200px; width: 65%; align-self: center;" alt="">
+            <h1>Register</h1>
+            <div style="text-align: left">
+                <label style="font-size: 15px">Email :</label>
+                <p>
+                    <input id="email" type="email" @change="(e) => setUser({ ...user, email: e.target.value })"
+                        style="color:black" />
+                </p>
+            </div>
 
-            <form style="width: 35%;">
-                <img src="@/img/logo.png" style="width:250px" alt="">
-                <h1>Register</h1>
-                <div style="text-align: left">
-                    <label style="font-size: 15px">Email :</label>
-                    <p>
-                        <input id="email" type="email" @change="(e) => setUser({ ...user, email: e.target.value })"
-                            style="color:black" />
-                    </p>
-                </div>
+            <div style="text-align: left">
+                <label style="font-size: 15px">Password :</label>
+                <p>
+                    <input id="password" type="password" @change="(e) => setUser({ ...user, password: e.target.value })"
+                        style="color:black" />
+                </p>
+            </div>
+            <div style="text-align: left">
+                <label style="font-size: 15px">Password confirm :</label>
+                <p>
+                    <input id="password_confirm" type="password" style="color:black" />
+                </p>
+            </div>
+            <div style="text-align: left">
+                <label style="font-size: 15px">Firstname :</label>
+                <p>
+                    <input id="first_name" type="text" @change="(e) => setUser({ ...user, first_name: e.target.value })"
+                        style="color:black" />
+                </p>
+            </div>
+            <div style="text-align: left">
+                <label style="font-size: 15px">Lastname :</label>
+                <p>
+                    <input id="last_name" type="text" @change="(e) => setUser({ ...user, last_name: e.target.value })"
+                        style="color:black" />
+                </p>
+            </div>
 
-                <div style="text-align: left">
-                    <label style="font-size: 15px">Password :</label>
-                    <p>
-                        <input id="password" type="password"
-                            @change="(e) => setUser({ ...user, password: e.target.value })" style="color:black" />
-                    </p>
-                </div>
-                <div style="text-align: left">
-                    <label style="font-size: 15px">Password confirm :</label>
-                    <p>
-                        <input id="password_confirm" type="password" style="color:black" />
-                    </p>
-                </div>
-                <div style="text-align: left">
-                    <label style="font-size: 15px">Firstname :</label>
-                    <p>
-                        <input id="first_name" type="text"
-                            @change="(e) => setUser({ ...user, first_name: e.target.value })" style="color:black" />
-                    </p>
-                </div>
-                <div style="text-align: left">
-                    <label style="font-size: 15px">Lastname :</label>
-                    <p>
-                        <input id="last_name" type="text"
-                            @change="(e) => setUser({ ...user, last_name: e.target.value })" style="color:black" />
-                    </p>
-                </div>
-
-
-
-
-                <div style="padding: 15px">
-                    <input type="button" value="Regis" style="color:white;background-color: #5294e2;"
-                        @click="register()" />
-                    <input type="button" value="Clear" style="color:black" @click="clear()" />
-                </div>
-            </form>
-        </div>
+            <div style="display: flex; justify-content: center; padding: 15px;">
+                <input type="button" value="Regis" style="color:white;background-color: #5294e2;" @click="register()" />
+                <input type="button" value="Clear" style="color:black" @click="clear()" />
+            </div>
+        </form>
     </div>
 </template>
 

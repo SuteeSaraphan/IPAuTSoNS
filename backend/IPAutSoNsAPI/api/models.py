@@ -87,6 +87,7 @@ class Image_app(models.Model):
 class Product(models.Model):
     product_id = models.CharField(primary_key=True,unique=True,max_length=100)
     user_id = models.ForeignKey(User,on_delete=models.CASCADE)
+    vertify = models.BooleanField(default=False) # false : wait for vetify , true : already vertify and on sale
     product_name = models.CharField(unique=True,max_length=100, null=False)
     product_type = models.CharField(max_length=100, null=False)
     model = models.CharField(max_length=100, null=False)

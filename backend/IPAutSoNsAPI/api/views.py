@@ -10,7 +10,7 @@ from django.shortcuts import render
 from requests import delete
 from rest_framework import generics
 from .models import Folder_img, Job, User, Image_file, Product, Login_log, Payment
-from .serializers import JobSerializer, UserSerializer, ImageSerializer, FolderImageSerializer, ProductSerializer, PaymentSerializer
+from .serializers import *
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
@@ -33,7 +33,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(
 
 class VersionCheck(APIView):
     def get(self, request):
-        return Response({"version": "1.4.1345"})
+        return Response({"version": "1.5"})
 
 # for Authentication user with JWT
 
@@ -101,7 +101,17 @@ class LoginView(APIView):
                 'fname': user.first_name,
                 'lname': user.last_name
             })
-            return respond
+
+            login_log = ({
+                'login_log_id' : ''.join(random.choices(string.ascii_lowercase + string.digits, k=15)),
+                'user_id' : user.user_id,
+                'login_time' : datetime.datetime.utcnow()
+            })
+
+            serializer = Login_logSerializer(data=login_log)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data)
 
 
 class UserView(APIView):
@@ -196,14 +206,13 @@ class ImageView(APIView):
 
         # send full data of one image to web
         elif (type == 'once'):
-            img_serializer = ImageSerializer(Image_file.objects.get(img_id=folder_id))
+            img_serializer = ImageSerializer(
+                Image_file.objects.get(img_id=folder_id))
             file_type = (img_serializer.data['img_type'].split('/'))[1]
             try:
                 with Image.open(str(BASE_DIR)+str(Path(img_serializer.data['path']))) as image_file_temp:
-                    percentage = 1
-                    resized_image = image_file_temp
                     buffer = BytesIO()
-                    resized_image.save(buffer, format=file_type)
+                    image_file_temp.save(buffer, format=file_type)
                     image_data = base64.b64encode(buffer.getvalue())
                     temp_img_data = {
                         'img_id': img_serializer.data['img_id'],
@@ -215,11 +224,11 @@ class ImageView(APIView):
                         'img_data': image_data
                     }
                     temp_respond.append(temp_img_data)
+                return Response(temp_respond)
 
             except BaseException as error:
                 print(error)
-
-            return Response(temp_respond)
+                return Response({'status': 'something wrong'})
 
         # count image to create page list in web
         elif (type == 'count'):
@@ -348,7 +357,6 @@ class AllImageView(APIView):
 class FolderView(APIView):
     # create ,new image folder
     def post(self, request):
-        print(BASE_DIR)
         token = request.data['jwt']
         payload = Authentication(token)
         user_id = payload['id']
@@ -481,36 +489,38 @@ class ProductView(APIView):
         else:
             return Response({"status": "Add product successful"})
 
+
 class PreviewView(APIView):
-    def post(seld,request):
+    def post(seld, request):
         token = request.META['HTTP_JWT']
         payload = Authentication(token)
         #preview = PreviewAPI(request.data['img_id'],request.data['filter_id'],request.data['filter_value'])
-        img_serializer = ImageSerializer(Image_file.objects.get(img_id=request.data['img_id']))
+        img_serializer = ImageSerializer(
+            Image_file.objects.get(img_id=request.data['img_id']))
         file_type = (img_serializer.data['img_type'].split('/'))[1]
         try:
-            with open(str(BASE_DIR)+str(Path(img_serializer.data['path'])),'rb') as image_file:
-                preview = PreviewAPI(image_file,file_type,request.data['filter_id'],request.data['filter_value'])
+            with open(str(BASE_DIR)+str(Path(img_serializer.data['path'])), 'rb') as image_file:
+                preview = PreviewAPI(
+                    image_file, file_type, request.data['filter_id'], request.data['filter_value'])
                 img_preview = preview.do_preview()
                 image_data = Image.open(BytesIO(img_preview))
                 buffer = BytesIO()
                 image_data.save(buffer, format=file_type)
                 image_data = base64.b64encode(buffer.getvalue())
                 temp_img_data = {
-                        'img_id': img_serializer.data['img_id'],
-                        'user_id': img_serializer.data['user_id'],
-                        'img_type': img_serializer.data['img_type'],
-                        'img_folder': img_serializer.data['img_folder'],
-                        'path': img_serializer.data['path'],
-                        'img_size': img_serializer.data['img_size'],
-                        'img_data': image_data
-                    }
+                    'img_id': img_serializer.data['img_id'],
+                    'user_id': img_serializer.data['user_id'],
+                    'img_type': img_serializer.data['img_type'],
+                    'img_folder': img_serializer.data['img_folder'],
+                    'path': img_serializer.data['path'],
+                    'img_size': img_serializer.data['img_size'],
+                    'img_data': image_data
+                }
                 return Response(temp_img_data)
 
         except Exception as error:
             print(error)
-            return Response({'status':'something is wrong'})
-            
+            return Response({'status': 'something is wrong'})
 
 
 class PaymentView(APIView):
