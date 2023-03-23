@@ -168,8 +168,9 @@ export default {
             folder: null,
             upload_progress: 0,
             isUploading: false,
-            completedSteps :1,
-            totalSteps:0
+            completedSteps :0,
+            totalSteps:0,
+            barColor: "#5294e2",
 
 
         }
