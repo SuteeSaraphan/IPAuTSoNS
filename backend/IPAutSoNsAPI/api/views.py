@@ -464,10 +464,51 @@ class ProductView(APIView):
             return response
         
         elif (type == 'filter'):
-            print('filter')
+
             product = ProductSerializer(
                 Product.objects.get(product_id=key))
             return Response(product.data)
+        
+        elif (type == 'home'):
+            temp_respond = []
+            product = ProductSerializer(Product.objects.all().order_by('last_update')[:12], many=True)
+            for i in product.data:
+                file_type = (i['product_img'].split('.'))[-1]
+                seller = User.objects.get(user_id=i['user_id'])
+                if (file_type == 'JPG' or file_type == 'JPEG' or file_type == 'jpg' or file_type == 'jpeg'):
+                    file_type = 'jpeg'
+                else:
+                    file_type = 'png'
+                try:
+                    with Image.open(str(BASE_DIR)+str(Path(i['product_img']))) as image_file_temp:
+                        percentage = 0.25
+                        width, height = image_file_temp.size
+                        resized_dimensions = (
+                            int(width * percentage), int(height * percentage))
+                        resized_image = image_file_temp.resize(
+                            resized_dimensions)
+                        buffer = BytesIO()
+                        resized_image.save(buffer, format=file_type)
+                        image_data = base64.b64encode(buffer.getvalue())
+
+                        temp_img_data = {
+                            'product_id': i['product_id'],
+                            'product_name': i['product_name'],
+                            'seller': seller.first_name + " " + seller.last_name,
+                            'product_type': i['product_type'],
+                            'model': i['model'],
+                            'price': i['price'],
+                            'detail': i['detail'],
+                            'product_img': image_data,
+                            'last_update': i['last_update']
+                        }
+                        temp_respond.append(temp_img_data)
+
+                except Exception as error:
+                    print(error)
+                    pass
+            return Response(temp_respond)
+
 
         elif (type == 'all'):
             all_product = ProductSerializer(
