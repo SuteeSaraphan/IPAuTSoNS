@@ -45,7 +45,7 @@
                 <div class="cards">
                     <!-- show each product info here -->
                     <div class="card-single" v-for="product in this.productList" v-bind:key="product.product_id"
-                        @click="goProduct(1)">
+                        @click="goProduct(product.product_id)">
                         <div class="card-flex">
                             <div class="card-info">
                                 <div class="card-head">

@@ -94,6 +94,21 @@ class LoginView(APIView):
 
             token = jwt.encode(payload, 'IPAutSoNs', algorithm='HS256')
 
+            folder_size = 0
+
+            folder_serializer = FolderImageSerializer(
+                Folder_img.objects.all().filter(user_id=user.user_id), many=True)
+
+            for i in folder_serializer.data:
+                print(i)
+                img_serializer = ImageSerializer(Image_file.objects.all().filter(
+                    user_id=user.user_id, img_folder=i['folder_name']), many=True)
+
+                for j in img_serializer.data:
+                    folder_size += int(j['img_size'])
+
+            print("folder size = "+str(get_size(folder_size, 'gb'))+" gb")
+
             respond = Response()
             # respond.set_cookie(key='jwt',value=token,httponly=True)
             respond.data = ({
@@ -103,9 +118,9 @@ class LoginView(APIView):
             })
 
             login_log = ({
-                'login_log_id' : ''.join(random.choices(string.ascii_lowercase + string.digits, k=15)),
-                'user_id' : user.user_id,
-                'login_time' : datetime.datetime.utcnow()
+                'login_log_id': ''.join(random.choices(string.ascii_lowercase + string.digits, k=15)),
+                'user_id': user.user_id,
+                'login_time': datetime.datetime.utcnow()
             })
 
             serializer = Login_logSerializer(data=login_log)
@@ -228,7 +243,7 @@ class ImageView(APIView):
 
             except BaseException as error:
                 print(error)
-                return Response({'status': 'something wrong'})
+                return Response(data={'status': 'something wrong'}, status=503)
 
         # count image to create page list in web
         elif (type == 'count'):
@@ -321,7 +336,7 @@ class ImageView(APIView):
             serializer.save()
         except Exception as error:
             print(error)
-            return Response({"status": "file "+request.FILES['img_file'].name+" upload fail"})
+            return Response(data={"status": "file "+request.FILES['img_file'].name+" upload fail"}, status=503)
         else:
             return Response({"status": "file "+request.FILES['img_file'].name+" upload done"})
 
@@ -337,7 +352,7 @@ class ImageView(APIView):
             os.remove(del_path)
         except BaseException as error:
             print(error)
-            return Response({"status": "Delete fail !!! try again"})
+            return Response(data={"status": "Delete fail !!! try again"}, status=503)
         else:
             image.delete()
             return Response({"status": "Delete done!"})
@@ -366,7 +381,7 @@ class FolderView(APIView):
             os.makedirs(folder_path)
         except OSError as error:
             print(error)
-            return Response({'status': '!!! Something is wrong try again !!!'})
+            return Response(data={'status': '!!! Something is wrong try again !!!'}, status=503)
         else:
             folder_data = {
                 'folder_id': request.data['folder_id'],
@@ -398,7 +413,7 @@ class FolderView(APIView):
             shutil.rmtree(folder_img.path)
         except BaseException as error:
             print(error)
-            return Response({"status": "Delete fail ! try again"})
+            return Response(data={"status": "Delete fail ! try again"}, status=503)
         else:
             print(folder_img.folder_name)
             del_img = Image_file.objects.all().filter(img_folder=folder_img.folder_name)
@@ -412,46 +427,89 @@ class ProductView(APIView):
     def get(self, request, type, key):
         token = request.META['HTTP_JWT']
         payload = Authentication(token)
-        all_product = ProductSerializer(
-            Product.objects.all().order_by('last_update'), many=True)
-        temp_respond = []
 
-        for i in all_product.data:
-            file_type = (i['product_img'].split('.'))[-1]
-            seller = User.objects.get(user_id=i['user_id'])
+        if (type == 'once'):
+ 
+            product = ProductSerializer(
+                Product.objects.get(product_id=key))
+            ownner = UserSerializer(User.objects.get(
+                user_id=product.data['user_id']))
+                
+            file_type = (product.data['product_img'].split('.'))[-1]
+
             if (file_type == 'JPG' or file_type == 'JPEG' or file_type == 'jpg' or file_type == 'jpeg'):
                 file_type = 'jpeg'
             else:
                 file_type = 'png'
-            try:
-                with Image.open(str(BASE_DIR)+str(Path(i['product_img']))) as image_file_temp:
-                    percentage = 0.25
-                    width, height = image_file_temp.size
-                    resized_dimensions = (
-                        int(width * percentage), int(height * percentage))
-                    resized_image = image_file_temp.resize(
-                        resized_dimensions)
-                    buffer = BytesIO()
-                    resized_image.save(buffer, format=file_type)
-                    image_data = base64.b64encode(buffer.getvalue())
+            with Image.open(str(BASE_DIR)+str(Path(product.data['product_img']))) as image_file_temp:
+                percentage = 0.25
+                width, height = image_file_temp.size
+                resized_dimensions = (
+                    int(width * percentage), int(height * percentage))
+                resized_image = image_file_temp.resize(
+                    resized_dimensions)
+                buffer = BytesIO()
+                resized_image.save(buffer, format=file_type)
+                image_data = base64.b64encode(buffer.getvalue())
 
-                    temp_img_data = {
-                        'product_id': i['product_id'],
-                        'product_name': i['product_name'],
-                        'seller': seller.first_name + " " + seller.last_name,
-                        'product_type': i['product_type'],
-                        'model': i['model'],
-                        'price': i['price'],
-                        'detail': i['detail'],
-                        'product_img': image_data,
-                        'last_update': i['last_update']
-                    }
-                    temp_respond.append(temp_img_data)
+            response = Response({
+                'product_id': product.data['product_id'],
+                'product_name': product.data['product_name'],
+                'ownner': ownner.data['first_name'] +" "+ ownner.data['last_name'],
+                'last_update': product.data['last_update'],
+                'detail': product.data['detail'],
+                'product_img' : image_data
+            })
 
-            except Exception as error:
-                print(error)
-                pass
-        return Response(temp_respond)
+            return response
+        
+        elif (type == 'filter'):
+            print('filter')
+            product = ProductSerializer(
+                Product.objects.get(product_id=key))
+            return Response(product.data)
+
+        elif (type == 'all'):
+            all_product = ProductSerializer(
+                Product.objects.all().order_by('last_update'), many=True)
+            temp_respond = []
+
+            for i in all_product.data:
+                file_type = (i['product_img'].split('.'))[-1]
+                seller = User.objects.get(user_id=i['user_id'])
+                if (file_type == 'JPG' or file_type == 'JPEG' or file_type == 'jpg' or file_type == 'jpeg'):
+                    file_type = 'jpeg'
+                else:
+                    file_type = 'png'
+                try:
+                    with Image.open(str(BASE_DIR)+str(Path(i['product_img']))) as image_file_temp:
+                        percentage = 0.25
+                        width, height = image_file_temp.size
+                        resized_dimensions = (
+                            int(width * percentage), int(height * percentage))
+                        resized_image = image_file_temp.resize(
+                            resized_dimensions)
+                        buffer = BytesIO()
+                        resized_image.save(buffer, format=file_type)
+                        image_data = base64.b64encode(buffer.getvalue())
+
+                        temp_img_data = {
+                            'product_id': i['product_id'],
+                            'product_name': i['product_name'],
+                            'seller': seller.first_name + " " + seller.last_name,
+                            'product_type': i['product_type'],
+                            'model': i['model'],
+                            'price': i['price'],
+                            'detail': i['detail'],
+                            'product_img': image_data,
+                            'last_update': i['last_update']
+                        }
+                        temp_respond.append(temp_img_data)
+
+                except Exception as error:
+                    print(error)
+                    pass
+            return Response(temp_respond)
 
     def post(self, request):
         token = request.META['HTTP_JWT']
@@ -483,7 +541,7 @@ class ProductView(APIView):
 
         except (BaseException) as error:
             print(error)
-            return Response({"status": "Fail to add product try again."})
+            return Response(data={"status": "Fail to add product try again."}, status=503)
         else:
             return Response({"status": "Add product successful"})
 
@@ -518,7 +576,7 @@ class PreviewView(APIView):
 
         except Exception as error:
             print(error)
-            return Response({'status': 'something is wrong'})
+            return Response(data={'status': 'something is wrong'}, status=503)
 
 
 class PaymentView(APIView):
@@ -547,33 +605,108 @@ class PaymentView(APIView):
             serializer.save()
         except (BaseException) as error:
             print(error)
-            return Response({"status": "Fail to add payment try again."})
+            return Response(data={"status": "Fail to add payment try again."}, status=503)
         else:
             return Response({"status": "Add payment successful"})
+
+
+# class MakeDockerFile(APIView):
+#     def post(self, request):
+#         logger.error('Running YAMLRunner at '+str(datetime.datetime.now()))
+#         # job_id = request.data['job_id']
+#         # token = request.META['HTTP_JWT']
+#         # path = request.data['path']
+#         # param1 = request.data['param1']
+#         # num_img = request.data['num_img']
+#         # img_selected = request.data['img_selected']
+#         # payload = Authentication(token)
+#         # user = User.objects.get(user_id=payload['id'])
+#         # path = "/ipautsons/backend/media"+path
+#         # img_folder_temp = path.split("/")
+#         # img_folder = img_folder_temp[5]
+
+#         template = """apiVersion: batch/v1
+
+# kind: Job
+
+# metadata:
+
+#   name: test123
+
+# spec:
+
+#   template:
+
+#     spec:
+
+#       containers:
+
+#       - name: test123
+
+#         image: suteesaraphan27/ascii
+#         volumeMounts:
+#             - name: nfs-share
+#               mountPath: /ipautsons
+
+#         command: ["python","ASCII.py","test123","/ipautsons/img"]
+
+#       restartPolicy: Never
+#       volumes:
+#       - name: nfs-share
+#         persistentVolumeClaim:
+#           claimName: example"""
+# #
+# #             job_data = {
+# #                 'job_id': job_id,
+# #                 'user_id': user.user_id,
+# #                 # 'app_id': app_id,
+# #                 'path': path,
+# #                 'num_img': num_img,
+# #                 'img_selected': img_selected,
+# #                 'job_status': "0"
+# #             }
+
+# #             serializer = JobSerializer(data=job_data)
+# #             serializer.is_valid(raise_exception=True)
+# #             serializer.save()
+#         try:
+#             with open('yaml_file/'+"test123"+'.yaml', 'w') as yfile:
+#                 yfile.write(template)
+#                 yfile.close()
+#                 logger.error('Calling run_yaml functions')
+#                 yaml_run = YamlRunner()
+#                 yaml_run.run_yaml()
+#             return Response({"status": "File is made!"})
+
+#         except (BaseException)as error:
+#             print(error)
+#             return Response({"status": "something is not right"})
 
 
 class MakeDockerFile(APIView):
     def post(self, request):
         logger.error('Running YAMLRunner at '+str(datetime.datetime.now()))
-        # job_id = request.data['job_id']
-        # token = request.META['HTTP_JWT']
-        # path = request.data['path']
-        # param1 = request.data['param1']
-        # num_img = request.data['num_img']
-        # img_selected = request.data['img_selected']
-        # payload = Authentication(token)
-        # user = User.objects.get(user_id=payload['id'])
-        # path = "/ipautsons/backend/media"+path
-        # img_folder_temp = path.split("/")
-        # img_folder = img_folder_temp[5]
+        token = request.META['HTTP_JWT']
+        payload = Authentication(token)
+        user = User.objects.get(user_id=payload['id'])
 
+        job_id = ''.join(random.choices(
+            string.ascii_lowercase + string.digits, k=6))
+        img_id = request.data['img_id']
+        product_id = request.data['filter_id']
+        img_path = request.data['img_path'].split("/")[3:-1]
+        img_selected = request.data['img_selected']
+        path = "/ipautsons/"+img_path[0]+"/"+img_path[1]+"/"+img_path[2]
+        print(path)
+        num_img = Image_file.objects.all().filter(
+            user_id=payload['id'], img_folder=img_path[2]).count()
         template = """apiVersion: batch/v1
 
 kind: Job
 
 metadata:
 
-  name: test123
+  name: """+job_id+"""
 
 spec:
 
@@ -583,103 +716,46 @@ spec:
 
       containers:
 
-      - name: test123
+      - name: """+job_id+"""
 
         image: suteesaraphan27/ascii
         volumeMounts:
             - name: nfs-share
               mountPath: /ipautsons
 
-        command: ["python","ASCII.py","test123","/ipautsons/img"]
+        command: ["python","ASCII.py","""+job_id+""","""+path+"""]
 
       restartPolicy: Never
       volumes:
       - name: nfs-share
         persistentVolumeClaim: 
           claimName: example"""
-#
-#             job_data = {
-#                 'job_id': job_id,
-#                 'user_id': user.user_id,
-#                 # 'app_id': app_id,
-#                 'path': path,
-#                 'num_img': num_img,
-#                 'img_selected': img_selected,
-#                 'job_status': "0"
-#             }
 
-#             serializer = JobSerializer(data=job_data)
-#             serializer.is_valid(raise_exception=True)
-#             serializer.save()
         try:
-            with open('yaml_file/'+"test123"+'.yaml', 'w') as yfile:
+            job_data = {
+                'job_id': job_id,
+                'user_id': user.user_id,
+                # 'app_id': app_id,
+                'path': path,
+                'num_img': num_img,
+                'img_selected': img_selected,
+                'job_status': "0"
+            }
+
+            serializer = JobSerializer(data=job_data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+
+            with open('yaml_file/'+job_id+'.yaml', 'w') as yfile:
                 yfile.write(template)
                 yfile.close()
-                logger.error('Calling run_yaml functions')
-                yaml_run = YamlRunner()
-                yaml_run.run_yaml()
-            return Response({"status": "File is made!"})
+                yaml_run = YamlRunner(job_id)
+                x = yaml_run.run_yaml()
+            if (x == 1):
+                return Response(data={"status": "File is made!"})
+            else:
+                return Response(data={"status": "ERROR create job file fail", "cause": str(x)}, status=503)
 
-        except (BaseException)as error:
+        except Exception as error:
             print(error)
-            return Response({"status": "something is not right"})
-
-
-# class MakeDockerFile(APIView):
-#     def post(self, request):
-#         job_id = request.data['job_id']
-#         token = request.META['HTTP_JWT']
-#         path = request.data['path']
-#         param1 = request.data['param1']
-#         num_img = request.data['num_img']
-#         img_selected = request.data['img_selected']
-#         payload = Authentication(token)
-#         user = User.objects.get(user_id=payload['id'])
-#         path = "/ipautsons/backend/media"+path
-#         img_folder_temp = path.split("/")
-#         img_folder = img_folder_temp[5]
-
-#         template = """apiVersion: batch/v1
-# kind: Job
-# metadata:
-#   name:"""+job_id+"""
-# spec:
-#   template:
-#     spec:
-#       containers:
-#       - name: """+job_id+"""
-#         image: suteesaraphan27/ascii
-#         volumeMounts:
-#             - name: myvolume
-#               mountPath: /www
-#         command: ["python","ASCII.py","""+img_folder+""","""+path+"""]
-#       restartPolicy: Never
-#       volumes:
-#       - name: myvolume
-#         persistentVolumeClaim:
-#           claimName: mypvc"""
-#         try:
-#             job_data = {
-#                 'job_id': job_id,
-#                 'user_id': user.user_id,
-#                 # 'app_id': app_id,
-#                 'path': path,
-#                 'num_img': num_img,
-#                 'img_selected': img_selected,
-#                 'job_status': "0"
-#             }
-
-#             serializer = JobSerializer(data=job_data)
-#             serializer.is_valid(raise_exception=True)
-#             serializer.save()
-
-#             with open('yaml_file/'+job_id+'.yaml', 'w') as yfile:
-#                 yfile.write(template)
-#                 yfile.close()
-#                 yaml_run = YamlRunner(job_id)
-#                 yaml_run.run_yaml()
-#             return Response({"status": "File is made!"})
-
-#         except (BaseException)as error:
-#             print(error)
-#             return Response({"status": "ERROR create job file fail"})
+            return Response(data={"status": "ERROR create job file fail", "cause": error}, status=503)
