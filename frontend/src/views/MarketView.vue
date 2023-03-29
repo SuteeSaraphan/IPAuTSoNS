@@ -56,8 +56,8 @@
                                     <img :src="`data:image/jpeg;base64,${product.product_img}`"
                                         alt="{{ product.product_id }}">
                                 </div>
-                                <h2 style="color: #000;">{{product.product_name}}</h2>
-                                <small style="color: #000;">{{product.product_type}}</small>
+                                <h2 style="color: #000;">{{ product.product_name }}</h2>
+                                <small style="color: #000;">{{ product.product_type }}</small>
                             </div>
                         </div>
                     </div>
@@ -91,7 +91,9 @@
 }
 
 .card-img {
-    display: block; justify-content: center; padding: 2.5%; 
+    display: block;
+    justify-content: center;
+    padding: 2.5%;
 }
 
 .card-img img {
@@ -163,8 +165,7 @@ export default {
 
 
 
-    }
-    ,
+    },
     components: {
         SlideBar,
         //VueSlideBar

@@ -109,7 +109,6 @@
 </style>
 <script>
 import SlideBar from '@/components/SlideBar'
-import router from '@/router';
 import axios from 'axios';
 
 const URL_GET_PRODUCT = 'product';
@@ -131,7 +130,9 @@ export default {
     },
     methods: {
         tryThisWeight(product_id){
-            router.push('/img_app/'+product_id)
+            //console.log("enter folder :"+folder_id)
+            let path = "/img_app/" + product_id
+            window.location.href = path
         }
     }
     ,

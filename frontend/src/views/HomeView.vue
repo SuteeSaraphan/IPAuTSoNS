@@ -75,6 +75,14 @@ export default {
 
         }
     },
+	methods: {
+        goProduct(product_id) {
+            //console.log("enter folder :"+folder_id)
+            let path = "/product/" + product_id
+            window.location.href = path
+        },
+
+    },
 	components: {
 		SlideBar
 	},
