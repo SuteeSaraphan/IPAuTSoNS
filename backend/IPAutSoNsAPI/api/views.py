@@ -452,13 +452,18 @@ class ProductView(APIView):
                 resized_image.save(buffer, format=file_type)
                 image_data = base64.b64encode(buffer.getvalue())
 
+            is_ownner = (product.data['user_id'] == payload['id'])
             response = Response({
+                'is_ownner' : is_ownner,
                 'product_id': product.data['product_id'],
                 'product_name': product.data['product_name'],
+                'product_type': product.data['product_type'],
+                'model': product.data['model'],
                 'ownner': ownner.data['first_name'] +" "+ ownner.data['last_name'],
                 'last_update': product.data['last_update'],
                 'detail': product.data['detail'],
-                'product_img' : image_data
+                'product_img' : image_data,
+                'product_price' : product.data['price'],
             })
 
             return response
@@ -491,7 +496,7 @@ class ProductView(APIView):
                         resized_image.save(buffer, format=file_type)
                         image_data = base64.b64encode(buffer.getvalue())
 
-                        temp_img_data = {
+                        temp_product_data = {
                             'product_id': i['product_id'],
                             'product_name': i['product_name'],
                             'seller': seller.first_name + " " + seller.last_name,
@@ -502,7 +507,7 @@ class ProductView(APIView):
                             'product_img': image_data,
                             'last_update': i['last_update']
                         }
-                        temp_respond.append(temp_img_data)
+                        temp_respond.append(temp_product_data)
 
                 except Exception as error:
                     print(error)

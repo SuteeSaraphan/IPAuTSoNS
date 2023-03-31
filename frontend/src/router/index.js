@@ -14,6 +14,7 @@ import AddProductView from "@/views/AddProductView";
 import ProductHistoryView from "@/views/ProductHistoryView";
 import HistoryView from "@/views/HistoryView";
 import AdminView from "@/views/AdminView";
+import EditProductView from "@/views/EditProductView";
 
 const routes = [
   {
@@ -98,6 +99,12 @@ const routes = [
     path: "/add_product",
     name: "add_product",
     component: AddProductView,  
+  },
+
+  {
+    path: "/edit_product",
+    name: "edit_product",
+    component: EditProductView,  
   },
 
   {

@@ -23,6 +23,18 @@
                         <small>By {{product.ownner}} || {{product.last_update}}</small>
                     </div>
 
+                    <div class="header-actions" v-if="this.product['is_ownner']">
+                        <button @click="goEditProduct">
+                            <span class="las la-edit"></span>
+                            Edit this product
+                        </button>
+
+                        <button @click="goProductHistory">
+                            <span class="las la-history"></span>
+                            View product use history
+                        </button>
+                    </div>
+
                 </div>
 
                 <div class="product-main">
