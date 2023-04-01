@@ -429,12 +429,12 @@ class ProductView(APIView):
         payload = Authentication(token)
 
         if (type == 'once'):
- 
+
             product = ProductSerializer(
                 Product.objects.get(product_id=key))
             ownner = UserSerializer(User.objects.get(
                 user_id=product.data['user_id']))
-                
+
             file_type = (product.data['product_img'].split('.'))[-1]
 
             if (file_type == 'JPG' or file_type == 'JPEG' or file_type == 'jpg' or file_type == 'jpeg'):
@@ -454,29 +454,30 @@ class ProductView(APIView):
 
             is_ownner = (product.data['user_id'] == payload['id'])
             response = Response({
-                'is_ownner' : is_ownner,
+                'is_ownner': is_ownner,
                 'product_id': product.data['product_id'],
                 'product_name': product.data['product_name'],
                 'product_type': product.data['product_type'],
                 'model': product.data['model'],
-                'ownner': ownner.data['first_name'] +" "+ ownner.data['last_name'],
+                'ownner': ownner.data['first_name'] + " " + ownner.data['last_name'],
                 'last_update': product.data['last_update'],
                 'detail': product.data['detail'],
-                'product_img' : image_data,
-                'product_price' : product.data['price'],
+                'product_img': image_data,
+                'product_price': product.data['price'],
             })
 
             return response
-        
+
         elif (type == 'filter'):
 
             product = ProductSerializer(
                 Product.objects.get(product_id=key))
             return Response(product.data)
-        
+
         elif (type == 'home'):
             temp_respond = []
-            product = ProductSerializer(Product.objects.all().order_by('last_update')[:12], many=True)
+            product = ProductSerializer(
+                Product.objects.all().order_by('last_update')[:12], many=True)
             for i in product.data:
                 file_type = (i['product_img'].split('.'))[-1]
                 seller = User.objects.get(user_id=i['user_id'])
@@ -513,7 +514,6 @@ class ProductView(APIView):
                     print(error)
                     pass
             return Response(temp_respond)
-
 
         elif (type == 'all'):
             all_product = ProductSerializer(
@@ -556,6 +556,35 @@ class ProductView(APIView):
                     print(error)
                     pass
             return Response(temp_respond)
+
+    def put(self, request):
+        token = request.META['HTTP_JWT']
+        payload = Authentication(token)
+        product_edit = Product.objects.get(product_id=request.data['id'])
+        product_edit.product_name = request.data['name']
+        product_edit.product_type = request.data['type']
+        product_edit.model = request.data['model']
+        product_edit.price = request.data['price']
+        product_edit.detail = request.data['detail']
+        product_edit.last_update = datetime.datetime.utcnow()
+        
+        
+        weight_file = request.FILES.get('weight_file')
+        if(weight_file != None):
+            product_edit.path= weight_file
+
+        product_img = request.FILES.get('product_img')
+        if(product_img != None):
+            product_edit.product_img= product_img
+
+
+        try:
+            product_edit.save()
+        except (Exception) as error:
+            print(error)
+            return Response(data={"status": "Fail to edit product try again."}, status=503)
+        else:
+            return Response({"status": "Edit product successful"})
 
     def post(self, request):
         token = request.META['HTTP_JWT']

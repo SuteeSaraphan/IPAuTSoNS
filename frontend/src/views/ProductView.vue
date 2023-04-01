@@ -24,12 +24,12 @@
                     </div>
 
                     <div class="header-actions" v-if="this.product['is_ownner']">
-                        <button @click="goEditProduct">
+                        <button @click="this.goEditProduct">
                             <span class="las la-edit"></span>
                             Edit this product
                         </button>
 
-                        <button @click="goProductHistory">
+                        <button @click="this.goProductHistory">
                             <span class="las la-history"></span>
                             View product use history
                         </button>
@@ -144,6 +144,10 @@ export default {
         tryThisWeight(product_id){
             //console.log("enter folder :"+folder_id)
             let path = "/img_app/" + product_id
+            window.location.href = path
+        },
+        goEditProduct(){
+            let path = "/edit_product/" + this.$route.params.product_id
             window.location.href = path
         }
     }

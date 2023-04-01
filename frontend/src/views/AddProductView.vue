@@ -87,7 +87,6 @@ textarea {
 </style>
 <script>
 import SlideBar from '@/components/SlideBar'
-//import router from '@/router';
 import axios from 'axios';
 const URL_ADD_PRODUCT = 'product';
 
@@ -166,6 +165,8 @@ export default {
                 ).then(
                     async (response) => {
                         alert('product upload response >' + response.data['status'])
+                        let path = "/market/lastest"
+                        window.location.href = path
                     }
                 ).catch(err => {
                     alert(err)

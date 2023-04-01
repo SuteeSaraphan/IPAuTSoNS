@@ -44,6 +44,9 @@
                         <label for="price">Product price :</label>
                         <input id="price" name="price" type="text" required>
 
+                        <p style="color:red;">*** If you do not want to update image of product or weight file. Please leave
+                            it blank ***</p>
+
                         <label for="pimg">Product image : </label>
                         <input id="pimg" name="pimg" type="file" accept="image/*" @change="uploadImage($event)" required>
 
@@ -51,9 +54,10 @@
                         <input id="pweight" name="pweight" type="file" accept="" @change="uploadWeight($event)" required>
 
 
+
                     </form>
-                    <button style="background-color: #5294e2; padding: 0.3%; margin-top: 1%;" @click="addProduct"
-                        type="button"> Add product </button>
+                    <button style="background-color: #5294e2; padding: 0.3%; margin-top: 1%;" @click="editProduct"
+                        type="button"> Update product </button>
 
                     <p id="output"></p>
                 </div>
@@ -111,7 +115,7 @@ export default {
     },
     methods: {
 
-        
+
 
 
 
@@ -133,47 +137,61 @@ export default {
             //console.log('event :'+event.target.files[0].name)
             this.selectedWeight = event.target.files[0]
             console.log('selectedWeight :' + this.selectedWeight.size)
-            
+
         },
 
         //add product to database
         editProduct() {
             //console.log(this.folder.folder_name)
-            if (this.selectedImg != null & this.selectedWeight != null) {
-                this.isLoading = true
-                let data = new FormData();
+            this.isLoading = true
+            let data = new FormData();
+
+            data.append('id', this.$route.params.product_id);
+            if (this.selectedImg != null) {
                 data.append('product_img', this.selectedImg);
-                data.append('weight_file', this.selectedWeight);
-                data.append('name', document.getElementById("pname").value);
-                data.append('type', document.getElementById("ptype").value);
-                data.append('model', document.getElementById("pmodel").value);
-                data.append('detail', document.getElementById("pdetail").value);
-                data.append('price', document.getElementById("price").value);
-
-
-                //console.log(data)
-
-                let config = {
-                    header: {
-                        'Content-Type': 'multipart/form-data'
-                    }
-                }
-                axios.defaults.headers.put['jwt'] = this.$store.state.jwt;
-                axios.put(
-                    URL_PRODUCT,
-                    data,
-                    config
-                ).then(
-                    async (response) => {
-                        alert('product upload response >' + response.data['status'])
-                    }
-                ).catch(err => {
-                    alert(err)
-                })
-            } else {
-                alert('Please upload image and weight before add product')
             }
 
+            if (this.selectedWeight != null) {
+                data.append('weight_file', this.selectedWeight);
+            }
+            data.append('name', document.getElementById("pname").value);
+            data.append('type', document.getElementById("ptype").value);
+            data.append('model', document.getElementById("pmodel").value);
+            data.append('detail', document.getElementById("pdetail").value);
+            data.append('price', document.getElementById("price").value);
+
+
+            //console.log(data)
+
+            let config = {
+                header: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            }
+            axios.defaults.headers.put['jwt'] = this.$store.state.jwt;
+            axios.put(
+                URL_PRODUCT,
+                data,
+                config
+            ).then(
+                async (response) => {
+                    alert('product upload response >' + response.data['status'])
+                    let path = "/market/lastest"
+                    window.location.href = path
+                }
+            ).catch(err => {
+                alert(err)
+            })
+
+
+        },
+
+        updateProduct() {
+            document.getElementById("pname").value = this.product['product_name']
+            document.getElementById("ptype").value = this.product['product_type']
+            document.getElementById("pmodel").value = this.product['model']
+            document.getElementById("pdetail").value = this.product['detail']
+            document.getElementById("price").value = this.product['product_price']
         },
 
 
@@ -192,6 +210,13 @@ export default {
                 //console.log('image : ' + res.data)
                 console.log(res.data);
                 this.product = res.data;
+                if (this.product['is_ownner'] != true) {
+                    alert('Sorry you do not have permission in this product')
+                    window.location.href = "/market/lastest"
+                } else {
+                    this.updateProduct()
+                }
+
             }).catch(err => {
                 alert(err);
             })
