@@ -124,7 +124,7 @@ import SlideBar from '@/components/SlideBar'
 //import router from '@/router';
 import axios from 'axios';
 //import VueSlideBar from 'vue-slide-bar';
-const URL_PAYMENT = "payment"
+const URL_PRODUCT_HISTORY = "product_history"
 
 
 
@@ -214,9 +214,9 @@ export default {
         //VueSlideBar
     },
     created() {
-        console.log(typeof this.$route.params.type);
+        console.log(this.$route.params.type);
         axios.defaults.headers.get['jwt']= this.$store.state.jwt;
-        axios.get(URL_PAYMENT)
+        axios.get(URL_PRODUCT_HISTORY+"/"+this.$route.params.product_id+"/"+this.$route.params.type)
             .then(res => {
                 console.log(res.data[0].pay_time.substring(0, 10))
                 this.payments = this.sort(res.data, this.$route.params.type);
@@ -224,7 +224,7 @@ export default {
             })
             .catch(err => {
                 this.isLoading = false
-                alert(err.data)
+                console.log("error : "+err)
             })
     }
 

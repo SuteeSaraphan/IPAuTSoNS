@@ -22,6 +22,8 @@ urlpatterns = [
 
     path('payment', views.PaymentView.as_view()),
 
+    path('product_history/<str:product_id>/<str:type>', views.ProductHistoryView.as_view()),
+
     path('preview', views.PreviewView.as_view())
 
 ]

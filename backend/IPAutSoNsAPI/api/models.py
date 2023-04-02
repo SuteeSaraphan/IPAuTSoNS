@@ -110,7 +110,8 @@ class Payment(models.Model):
     user_id = models.ForeignKey(User,on_delete=models.CASCADE)
     product_id = models.ForeignKey(Product,on_delete=models.CASCADE)
     type = models.CharField(max_length=50, null=False)
-    pay_time = models.DateTimeField(editable=False, auto_now_add=True) 
+    pay_time = models.DateTimeField(editable=False, auto_now_add=True)
+    credit =  models.FloatField(max_length=100,null=False)
     # proof = models.ImageField(upload_to = upload_path_proof, null=False) 
 
 

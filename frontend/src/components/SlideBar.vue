@@ -16,8 +16,8 @@
         <img src="../img/profile.jpg" alt="">
         <div class="info-profile">
           <div v-if="fname !=null & lname !=null" style="display: flex; flex-direction: row; justify-content: space-around;"><h3>{{fname}}</h3> <h3>{{lname}}</h3></div>
-          <span>Credit: 227</span>
-          <span>Usage Total: 32GB</span>
+          <span>Credit : {{creditTotal}}</span>
+          <span>Usage Total : {{storageSize}} GB</span>
           <span>60 %</span>
           <!-- About -->
           <div class="about">
@@ -131,7 +131,9 @@ export default {
   data(){
     return{
       fname:null,
-      lname:null
+      lname:null,
+      storageSize:null,
+      creditTotal:null,
     }
   },
 
@@ -142,6 +144,8 @@ export default {
     } else {
       this.fname = this.$store.state.first_name
       this.lname = this.$store.state.last_name
+      this.storageSize = this.$store.state.storageSize
+      this.creditTotal = this.$store.state.creditTotal
     }
     
 

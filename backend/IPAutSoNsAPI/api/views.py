@@ -59,6 +59,17 @@ def get_size(file_size, unit='bytes'):
         size = file_size / 1024 ** exponents_map[unit]
         return round(size, 3)
 
+def credit_check(user_id):
+    all_payment = Payment.objects.all().filter(user_id=user_id).order_by('pay_time')
+    credit_total = 0
+    # type 0 = + # type 1 = - 
+    for i in all_payment:
+        if(i.type==0):
+            credit_total += i.credit
+        elif(i.type==1):
+            credit_total -= i.credit
+
+    return credit_total
 
 # for doing register new user
 
@@ -109,12 +120,18 @@ class LoginView(APIView):
 
             print("folder size = "+str(get_size(folder_size, 'gb'))+" gb")
 
+            credit = credit_check(user.user_id)
+
+
+
             respond = Response()
             # respond.set_cookie(key='jwt',value=token,httponly=True)
             respond.data = ({
                 'jwt': token,
                 'fname': user.first_name,
-                'lname': user.last_name
+                'lname': user.last_name,
+                'storage': str(get_size(folder_size, 'gb')),
+                'credit' : credit
             })
 
             login_log = ({
@@ -659,7 +676,7 @@ class PaymentView(APIView):
         token = request.META['HTTP_JWT']
         payload = Authentication(token)
         serializer = PaymentSerializer(
-            Payment.objects.all().filter(user_id=str(payload['id'])), many=True
+            Payment.objects.all().filter(user_id=str(payload['id'])).order_by('pay_time'), many=True
         )
         return Response(serializer.data)
 
@@ -672,6 +689,7 @@ class PaymentView(APIView):
             'product_id': request.data['product_id'],
             'user_id': user,
             'type': request.data['type'],
+            'credit' : request.data['credit'],
             'pay_time': datetime.datetime.utcnow()
         }
         try:
@@ -683,6 +701,17 @@ class PaymentView(APIView):
             return Response(data={"status": "Fail to add payment try again."}, status=503)
         else:
             return Response({"status": "Add payment successful"})
+        
+
+class ProductHistoryView(APIView):
+    def get(self, request ,product_id,type):
+        token = request.META['HTTP_JWT']
+        payload = Authentication(token)
+        serializer = PaymentSerializer(
+            Payment.objects.all().filter(product_id=str(product_id)).order_by('pay_time'), many=True
+        )
+        return Response(serializer.data)
+
 
 
 # class MakeDockerFile(APIView):

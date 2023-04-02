@@ -108,7 +108,7 @@ const routes = [
   },
 
   {
-    path: "/product_history/:type",
+    path: "/product_history/:product_id/:type",
     name: "product_history",
     component: ProductHistoryView,  
   },

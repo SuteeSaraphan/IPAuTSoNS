@@ -9,6 +9,8 @@ export default createStore({
     last_name: "",
     jwt: "",
     isAuthenticated: false,
+    storageSize : 0,
+    creditTotal : 0
   },
   getters: {},
   mutations: {
@@ -18,9 +20,11 @@ export default createStore({
       console.log('set token done')
     },
 
-    setName(state, fullname) {
-      state.first_name = fullname[0];
-      state.last_name = fullname[1];
+    setUserData(state, data) {
+      state.first_name = data[0];
+      state.last_name = data[1];
+      state.storageSize = data[2];
+      state.creditTotal = data[3];
     },
 
     logout(state) {

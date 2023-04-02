@@ -149,6 +149,11 @@ export default {
         goEditProduct(){
             let path = "/edit_product/" + this.$route.params.product_id
             window.location.href = path
+        },
+
+        goProductHistory(){
+            let path = "/product_history/"+this.$route.params.product_id+"/lastest"
+            window.location.href = path
         }
     }
     ,
