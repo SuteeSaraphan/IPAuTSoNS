@@ -74,7 +74,7 @@ class Product(models.Model):
 class Job(models.Model):
     job_id = models.CharField(max_length=100, primary_key=True) #sent for check and connect
     user_id = models.ForeignKey(User,on_delete=models.CASCADE) #sent for check and connect
-    product_id = models.ForeignKey(Product,on_delete=models.CASCADE)
+    product_id = models.ForeignKey(Product,on_delete=models.CASCADE,default=00)
     path = models.CharField(max_length=200, null=False) #sent for access image folder 
     num_img = models.IntegerField(default=0, null=False) #sent for check job status
     img_selected = models.CharField(max_length=500, null=False) #sent path of image file 

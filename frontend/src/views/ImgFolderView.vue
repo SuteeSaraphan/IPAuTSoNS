@@ -202,6 +202,7 @@ export default {
                     data.append('img_file', this.selectedFile[i]);
                     await this.performUpload(data)
                 }
+                this.isUploading = false
                 alert('Upload all done')
             } else {
                 alert('please select file before upload')

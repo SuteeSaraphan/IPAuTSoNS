@@ -112,6 +112,9 @@ export default {
                     alert(response.data['status']);
                     location.reload();
 
+                }).catch(err =>{
+                    alert(err.response.data['status']);
+                    //location.reload();
                 })
             }
 

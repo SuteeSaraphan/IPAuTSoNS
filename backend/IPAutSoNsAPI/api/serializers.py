@@ -7,7 +7,7 @@ class JobSerializer(serializers.ModelSerializer):
         fields = (
             'job_id',
             'user_id',
-            'app_id',
+            'product_id',
             'path',
             'num_img',
             'img_selected',

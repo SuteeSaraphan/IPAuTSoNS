@@ -28,3 +28,4 @@ class PreviewAPI():
             return response.content
         except Exception as error:
             print(error)
+            return error

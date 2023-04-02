@@ -257,7 +257,7 @@ export default {
                 })
                 .catch(async err => {
                     console.log(err)
-                    alert("Create jod fail")
+                    alert("Create job fail")
                 })
         },
 
@@ -295,7 +295,8 @@ export default {
                     })
                     .catch(err => {
                         this.isLoading = false
-                        alert(err.data)
+                        console.log(err)
+                        alert('!!! Preview fail ,try again !!!')
                     })
             } else {
                 alert('Please select image')

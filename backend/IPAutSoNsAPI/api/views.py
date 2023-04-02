@@ -899,7 +899,6 @@ spec:
             job_data = {
                 'job_id': job_id,
                 'user_id': user.user_id,
-                # 'app_id': app_id,
                 'path': path,
                 'num_img': num_img,
                 'img_selected': img_selected,
