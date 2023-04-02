@@ -24,7 +24,7 @@
 						<small>ข่าวสาร</small>
 					</div>
 
-					
+
 				</div>
 
 				<!-- show all products here -->
@@ -49,6 +49,19 @@
 					</div>
 					<!-- end of show each product info here -->
 				</div>
+				<div style="display: flex; justify-content: center; padding-top: 2.5%;">
+					<router-link to="/market/newest"><button @click="this.goEditProduct" style="	outline:  none;
+																			background: transparent;
+																			border:  2px solid #ccc;
+																			padding: .6rem 1rem;
+																			margin-left: 1rem;
+																			border-radius: 3px;
+																			font-weight: 600;">
+						<span class="las la-search"></span>
+						See more at Market !!!
+					</button></router-link>
+				</div>
+
 
 
 			</main>
@@ -65,31 +78,31 @@ import axios from 'axios';
 export default {
 	name: 'HomeView',
 	setup() {
-	
+
 	},
 	data() {
-        return {
-            isLoading: true,
-            productList: []
+		return {
+			isLoading: true,
+			productList: []
 
 
-        }
-    },
+		}
+	},
 	methods: {
-        goProduct(product_id) {
-            //console.log("enter folder :"+folder_id)
-            let path = "/product/" + product_id
-            window.location.href = path
-        },
+		goProduct(product_id) {
+			//console.log("enter folder :"+folder_id)
+			let path = "/product/" + product_id
+			window.location.href = path
+		},
 
-    },
+	},
 	components: {
 		SlideBar
 	},
 	async created() {
 		console.log(this.$route.params.keyword)
 		axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
-		await axios.get('product/home/all')
+		await axios.get('feed')
 			.then(res => {
 				console.log(res.data)
 				this.productList = res.data

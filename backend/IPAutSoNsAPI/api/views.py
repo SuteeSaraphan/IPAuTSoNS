@@ -50,6 +50,19 @@ def Authentication(token):
     return payload
 
 
+def storage_size(user_id):
+    folder_size = 0
+    folder_serializer = FolderImageSerializer(
+        Folder_img.objects.all().filter(user_id=user_id), many=True)
+
+    for i in folder_serializer.data:
+        img_serializer = ImageSerializer(Image_file.objects.all().filter(user_id=user_id, img_folder=i['folder_name']), many=True)
+
+        for j in img_serializer.data:
+            folder_size += int(j['img_size'])
+
+    return get_size(folder_size, 'gb')
+
 def get_size(file_size, unit='bytes'):
     exponents_map = {'bytes': 0, 'kb': 1, 'mb': 2, 'gb': 3}
     if unit not in exponents_map:
@@ -104,33 +117,15 @@ class LoginView(APIView):
             }
 
             token = jwt.encode(payload, 'IPAutSoNs', algorithm='HS256')
-
-            folder_size = 0
-
-            folder_serializer = FolderImageSerializer(
-                Folder_img.objects.all().filter(user_id=user.user_id), many=True)
-
-            for i in folder_serializer.data:
-                print(i)
-                img_serializer = ImageSerializer(Image_file.objects.all().filter(
-                    user_id=user.user_id, img_folder=i['folder_name']), many=True)
-
-                for j in img_serializer.data:
-                    folder_size += int(j['img_size'])
-
-            print("folder size = "+str(get_size(folder_size, 'gb'))+" gb")
-
+            folder_size = storage_size(user.user_id)
             credit = credit_check(user.user_id)
-
-
-
             respond = Response()
             # respond.set_cookie(key='jwt',value=token,httponly=True)
             respond.data = ({
                 'jwt': token,
                 'fname': user.first_name,
                 'lname': user.last_name,
-                'storage': str(get_size(folder_size, 'gb')),
+                'storage': folder_size,
                 'credit' : credit
             })
 
@@ -439,6 +434,49 @@ class FolderView(APIView):
 
             return Response({"status": "Delete done !"})
 
+class FeedView(APIView):
+    def get(self, request):
+        token = request.META['HTTP_JWT']
+        payload = Authentication(token)
+        temp_respond = []
+        product = ProductSerializer(
+            Product.objects.all().order_by('last_update')[:12], many=True)
+        for i in product.data:
+            file_type = (i['product_img'].split('.'))[-1]
+            seller = User.objects.get(user_id=i['user_id'])
+            if (file_type == 'JPG' or file_type == 'JPEG' or file_type == 'jpg' or file_type == 'jpeg'):
+                file_type = 'jpeg'
+            else:
+                file_type = 'png'
+            try:
+                with Image.open(str(BASE_DIR)+str(Path(i['product_img']))) as image_file_temp:
+                    percentage = 0.25
+                    width, height = image_file_temp.size
+                    resized_dimensions = (
+                        int(width * percentage), int(height * percentage))
+                    resized_image = image_file_temp.resize(
+                            resized_dimensions)
+                    buffer = BytesIO()
+                    resized_image.save(buffer, format=file_type)
+                    image_data = base64.b64encode(buffer.getvalue())
+
+                    temp_product_data = {
+                        'product_id': i['product_id'],
+                        'product_name': i['product_name'],
+                        'seller': seller.first_name + " " + seller.last_name,
+                        'product_type': i['product_type'],
+                        'model': i['model'],
+                        'price': i['price'],
+                        'detail': i['detail'],
+                        'product_img': image_data,
+                        'last_update': i['last_update']
+                        }
+                    temp_respond.append(temp_product_data)
+
+            except Exception as error:
+                print(error)
+        return Response(temp_respond)
+
 
 class ProductView(APIView):
     def get(self, request, type, key):
@@ -490,47 +528,6 @@ class ProductView(APIView):
             product = ProductSerializer(
                 Product.objects.get(product_id=key))
             return Response(product.data)
-
-        elif (type == 'home'):
-            temp_respond = []
-            product = ProductSerializer(
-                Product.objects.all().order_by('last_update')[:12], many=True)
-            for i in product.data:
-                file_type = (i['product_img'].split('.'))[-1]
-                seller = User.objects.get(user_id=i['user_id'])
-                if (file_type == 'JPG' or file_type == 'JPEG' or file_type == 'jpg' or file_type == 'jpeg'):
-                    file_type = 'jpeg'
-                else:
-                    file_type = 'png'
-                try:
-                    with Image.open(str(BASE_DIR)+str(Path(i['product_img']))) as image_file_temp:
-                        percentage = 0.25
-                        width, height = image_file_temp.size
-                        resized_dimensions = (
-                            int(width * percentage), int(height * percentage))
-                        resized_image = image_file_temp.resize(
-                            resized_dimensions)
-                        buffer = BytesIO()
-                        resized_image.save(buffer, format=file_type)
-                        image_data = base64.b64encode(buffer.getvalue())
-
-                        temp_product_data = {
-                            'product_id': i['product_id'],
-                            'product_name': i['product_name'],
-                            'seller': seller.first_name + " " + seller.last_name,
-                            'product_type': i['product_type'],
-                            'model': i['model'],
-                            'price': i['price'],
-                            'detail': i['detail'],
-                            'product_img': image_data,
-                            'last_update': i['last_update']
-                        }
-                        temp_respond.append(temp_product_data)
-
-                except Exception as error:
-                    print(error)
-                    pass
-            return Response(temp_respond)
 
         elif (type == 'all'):
             all_product = ProductSerializer(

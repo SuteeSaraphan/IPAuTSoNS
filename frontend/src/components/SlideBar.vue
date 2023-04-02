@@ -18,23 +18,17 @@
           <div v-if="fname !=null & lname !=null" style="display: flex; flex-direction: row; justify-content: space-around;"><h3>{{fname}}</h3> <h3>{{lname}}</h3></div>
           <span>Credit : {{creditTotal}}</span>
           <span>Usage Total : {{storageSize}} GB</span>
-          <span>60 %</span>
+          <span>{{ Math.round((100 * (storageSize/5.0))) }} % of storage</span>
           <!-- About -->
           <div class="about">
-            <div class="box">
-              <h3>54</h3>
-              <span>Models</span>
-            </div>
+            
 
             <div class="box">
-              <h3>22/7</h3>
-              <span>Followers</span>
+              <h3>20</h3>
+              <span>Product ownner</span>
             </div>
 
-            <div class="box">
-              <h3>27</h3>
-              <span>Following</span>
-            </div>
+            
           </div>
         </div>
       </div>
