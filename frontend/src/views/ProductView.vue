@@ -152,7 +152,7 @@ export default {
         },
 
         goProductHistory(){
-            let path = "/product_history/"+this.$route.params.product_id+"/lastest"
+            let path = "/product_history/"+this.$route.params.product_id+"/newest"
             window.location.href = path
         }
     }

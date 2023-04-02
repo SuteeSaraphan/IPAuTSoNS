@@ -53,10 +53,13 @@
                             <td style="color:black;padding:10px; justify-self: center;">
                                 product_id
                             </td>
-                            <td style="color:black;padding:10px;">
+                            <td style="color:black;padding:10px; justify-self: center;">
+                                credit
+                            </td>
+                            <td style="color:black;padding:10px; justify-self: center;">
                                 type
                             </td>
-                            <td style="color:black;padding:10px;">
+                            <td style="color:black;padding:10px; justify-self: center;">
                                 pay_time
                             </td>
 
@@ -65,7 +68,7 @@
                                 align-items: center;
                                 color: #000;
                                 background:#ccc;">
-                            <td colspan="4">!!! You do not have any record !!!</td>
+                            <td colspan="5">!!! You do not have any record !!!</td>
                         </tr>
 
                         <tr v-for="payment in payments" v-bind:key="payment.id"
@@ -84,6 +87,9 @@
                             </td>
                             <td style="color:black;padding:10px;">
                                 {{ payment.product_id }}
+                            </td>
+                            <td style="color:black;padding:10px;">
+                                {{ payment.credit }}
                             </td>
                             <td style="color:black;padding:10px;">
                                 {{ payment.type }}
@@ -140,72 +146,29 @@ export default {
     data() {
         return {
             isLoading: true,
-            sort_his: null,
+            payments : null
 
         }
     },
     methods: {
-
-        search_by_date(payment_list, date_sel) {
-            let temp = [];
-            for (let i in payment_list) {
-                console.log(payment_list[i].pay_time.substring(0, 10))
-                if (payment_list[i].pay_time.substring(0, 10) == date_sel) {
-                    temp.push(payment_list[i])
-                }
-            }
-            console.log(temp)
-            return temp
-        },
-
-
         // let path = "/img_folder/" + folder_id + "/1"
         // window.location.href = path
 
         go_sort(type) {
             if (type == "1") {
-                let path = "/history/" + "newest"
+                let path = "/product_history/" +this.$route.params.product_id+ "/newest"
                 window.location.href = path;
             } else if (type == "2") {
-                let path = "/history/" + "oldest"
+                let path = "/product_history/" +this.$route.params.product_id+ "/oldest"
                 window.location.href = path;
             }
-
         },
+
 
         go_search() {
-            let path = "/history/" + document.getElementById("search_by_date").value
+            let path = "/product_history/"+this.$route.params.product_id+"/"+ document.getElementById("search_by_date").value
             window.location.href = path;
         },
-
-
-        sort(payment_list, type) {
-            try {
-                if (type == 'oldest') {
-                    let temp = payment_list
-                    temp.sort((a, b) => (a.pay_time > b.pay_time) ? 1 : ((b.pay_time > a.pay_time) ? -1 : 0));
-                    payment_list = temp
-                    return payment_list;
-                }
-                else if (type == 'newest') {
-                    let temp = payment_list
-                    temp.reverse((a, b) => (a.pay_time > b.pay_time) ? 1 : ((b.pay_time > a.pay_time) ? -1 : 0));
-                    payment_list = temp
-                    return payment_list;
-                }
-                else {
-                    payment_list = this.search_by_date(payment_list, type);
-                    return payment_list;
-                }
-            } catch (error) {
-                return payment_list = [];
-            }
-
-        },
-
-
-
-
 
     }
     ,
@@ -218,8 +181,7 @@ export default {
         axios.defaults.headers.get['jwt']= this.$store.state.jwt;
         axios.get(URL_PRODUCT_HISTORY+"/"+this.$route.params.product_id+"/"+this.$route.params.type)
             .then(res => {
-                console.log(res.data[0].pay_time.substring(0, 10))
-                this.payments = this.sort(res.data, this.$route.params.type);
+                this.payments = res.data
                 this.isLoading = false
             })
             .catch(err => {

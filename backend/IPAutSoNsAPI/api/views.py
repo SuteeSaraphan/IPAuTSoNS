@@ -670,6 +670,41 @@ class PreviewView(APIView):
             print(error)
             return Response(data={'status': 'something is wrong'}, status=503)
 
+class UserHistoryView(APIView):
+    def get(self,request,type):
+        token = request.META['HTTP_JWT']
+        payload = Authentication(token)
+        record_total = 0
+        if(type=='newest'):
+            serializer = PaymentSerializer(
+                Payment.objects.all().filter(user_id=str(payload['id'])).order_by('-pay_time'), many=True
+            )
+            for i in serializer.data:
+                record_total += 1
+        elif(type=='oldest'):
+            serializer = PaymentSerializer(
+                Payment.objects.all().filter(user_id=str(payload['id'])).order_by('pay_time'), many=True
+            )
+            for i in serializer.data:
+                record_total += 1
+        else:
+            date_search = str(type).split("-")
+            print(date_search)
+            serializer = PaymentSerializer(
+                Payment.objects.all()
+                .filter(user_id=str(payload['id']))
+                .filter(pay_time__gte=datetime.date(int(date_search[0]),int(date_search[1]),int(date_search[2])))
+                .order_by('pay_time'), many=True
+            )
+            for i in serializer.data:
+                record_total += 1
+        
+        if(record_total > 0 ):
+            return Response(serializer.data)
+        else:
+            return Response({'status':'no record found'}, status=503)
+
+
 
 class PaymentView(APIView):
     def get(self, request):
@@ -704,14 +739,42 @@ class PaymentView(APIView):
         
 
 class ProductHistoryView(APIView):
-    def get(self, request ,product_id,type):
+    def get(self,request,product_id,type):
         token = request.META['HTTP_JWT']
         payload = Authentication(token)
-        serializer = PaymentSerializer(
-            Payment.objects.all().filter(product_id=str(product_id)).order_by('pay_time'), many=True
-        )
-        return Response(serializer.data)
+        record_total = 0
+        if(type=='newest'):
+            serializer = PaymentSerializer(
+                Payment.objects.all().filter(product_id=product_id).order_by('-pay_time'), many=True
+            )
+            for i in serializer.data:
+                record_total += 1
+        elif(type=='oldest'):
+            serializer = PaymentSerializer(
+                Payment.objects.all().filter(product_id=product_id).order_by('pay_time'), many=True
+            )
+            for i in serializer.data:
+                record_total += 1
+        else:
+            date_search = str(type).split("-")
+            print(date_search)
+            serializer = PaymentSerializer(
+                Payment.objects.all()
+                .filter(product_id=product_id)
+                .filter(pay_time__gte=datetime.date(int(date_search[0]),int(date_search[1]),int(date_search[2])))
+                .order_by('pay_time'), many=True
+            )
+            for i in serializer.data:
+                record_total += 1
+            
 
+        
+
+        
+        if(record_total > 0 ):
+            return Response(serializer.data)
+        else:
+            return Response({'status':'no record found'}, status=503)
 
 
 # class MakeDockerFile(APIView):

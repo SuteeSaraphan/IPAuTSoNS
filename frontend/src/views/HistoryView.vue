@@ -58,6 +58,9 @@
                                     type
                                 </td>
                                 <td style="color:black;padding:10px;">
+                                    credit
+                                </td>
+                                <td style="color:black;padding:10px;">
                                     pay_time
                                 </td>
 
@@ -67,7 +70,7 @@
                             align-items: center;
                             color: #000;
                             background:#ccc;">
-                            <td colspan="4">!!! You do not have any record !!!</td>
+                            <td colspan="5">!!! You do not have any record !!!</td>
                         </tr>
 
                         <tr v-for="payment in payments" v-bind:key="payment.id" style="margin-top: 5px;margin-bottom: 5px;background:#ccc; ">
@@ -88,6 +91,9 @@
                                 </td>
                                 <td style="color:black;padding:10px;">
                                     {{ payment.type }} 
+                                </td>
+                                <td style="color:black;padding:10px;">
+                                    {{ payment.credit }} 
                                 </td>
                                 <td style="color:black;padding:10px;">
                                     {{ payment.pay_time }}
@@ -124,7 +130,7 @@ import SlideBar from '@/components/SlideBar'
 //import router from '@/router';
 import axios from 'axios';
 //import VueSlideBar from 'vue-slide-bar';
-const URL_PAYMENT = "payment"
+const URL_USER_HISTORY = "user_history"
 
 
 
@@ -139,26 +145,11 @@ export default {
     data() {
         return {
             isLoading: true,
+            payments : null
 
         }
     },
     methods: {
-
-        searchByDate(payment_list,date_sel){
-            let temp = [];
-            for(let i in payment_list){
-                console.log(payment_list[i].pay_time.substring(0,10))
-                if (payment_list[i].pay_time.substring(0,10) == date_sel){
-                    temp.push(payment_list[i]) 
-                }
-            }
-            console.log(temp)
-            return temp
-        },
-
-
-        // let path = "/img_folder/" + folder_id + "/1"
-        // window.location.href = path
 
         goSort(type){
             if (type == "1"){
@@ -177,25 +168,6 @@ export default {
         },
         
 
-        sort(payment_list,type){
-            if (type == 'oldest'){
-                let temp = payment_list
-                temp.sort((a,b) => (a.pay_time > b.pay_time) ? 1 : ((b.pay_time > a.pay_time) ? -1 : 0));
-                payment_list = temp
-                return payment_list;
-            }
-            else if(type == 'newest'){
-                let temp = payment_list
-                temp.reverse((a,b) => (a.pay_time > b.pay_time) ? 1 : ((b.pay_time > a.pay_time) ? -1 : 0));
-                payment_list = temp
-                return payment_list;
-            }
-            else{
-                payment_list = this.searchByDate(payment_list,type);
-                return payment_list;
-            }
-        },
-
 
 
 
@@ -207,14 +179,11 @@ export default {
         //VueSlideBar
     },
     created() {
-            console.log(typeof this.$route.params.type);
             axios.defaults.headers.get['jwt'] = this.$store.state.jwt
-            axios.get(URL_PAYMENT)
+            axios.get(URL_USER_HISTORY+"/"+this.$route.params.type)
                 .then(res => {
-                    console.log(res)
-                    console.log(res.data[0].pay_time.substring(0,10)) 
-                    this.payments = this.sort(res.data,this.$route.params.type);
-                    this.isLoading = false
+                    this.payments = res.data;
+                    this.isLoading = false; 
                 })
                 .catch(err => {
                     this.isLoading = false

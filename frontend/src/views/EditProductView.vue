@@ -176,7 +176,7 @@ export default {
             ).then(
                 async (response) => {
                     alert('product upload response >' + response.data['status'])
-                    let path = "/market/lastest"
+                    let path = "/market/newest"
                     window.location.href = path
                 }
             ).catch(err => {
@@ -212,7 +212,7 @@ export default {
                 this.product = res.data;
                 if (this.product['is_ownner'] != true) {
                     alert('Sorry you do not have permission in this product')
-                    window.location.href = "/market/lastest"
+                    window.location.href = "/market/newest"
                 } else {
                     this.updateProduct()
                 }

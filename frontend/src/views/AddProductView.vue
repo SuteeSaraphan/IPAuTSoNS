@@ -165,7 +165,7 @@ export default {
                 ).then(
                     async (response) => {
                         alert('product upload response >' + response.data['status'])
-                        let path = "/market/lastest"
+                        let path = "/market/newest"
                         window.location.href = path
                     }
                 ).catch(err => {

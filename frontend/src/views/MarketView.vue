@@ -35,7 +35,7 @@
 
                 <!-- filter history here  -->
                 <div class="sort-btn" style="padding:5px;">
-                    <button type="button" @click="goSort('lastest')">sort by newest </button>
+                    <button type="button" @click="goSort('newest')">sort by newest </button>
                     <button type="button" @click="goSort('oldest')">sort by oldest</button>
                     <input type="date" id="search" @change="goSearch">
                 </div>
@@ -173,7 +173,7 @@ export default {
     async created() {
         console.log(this.$route.params.keyword)
         axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
-        await axios.get('product/all/lastest')
+        await axios.get('product/all/newest')
             .then(res => {
                 console.log(res.data)
                 this.isLoading = false;
