@@ -440,7 +440,7 @@ class FeedView(APIView):
         payload = Authentication(token)
         temp_respond = []
         product = ProductSerializer(
-            Product.objects.all().order_by('last_update')[:12], many=True)
+            Product.objects.all().order_by('-last_update')[:12], many=True)
         for i in product.data:
             file_type = (i['product_img'].split('.'))[-1]
             seller = User.objects.get(user_id=i['user_id'])
@@ -530,8 +530,12 @@ class ProductView(APIView):
             return Response(product.data)
 
         elif (type == 'all'):
-            all_product = ProductSerializer(
-                Product.objects.all().order_by('last_update'), many=True)
+            if(key == 'newest'):
+                all_product = ProductSerializer(
+                    Product.objects.all().order_by('-last_update'), many=True)
+            if(key == 'oldest'):
+                all_product = ProductSerializer(
+                    Product.objects.all().order_by('last_update'), many=True)
             temp_respond = []
 
             for i in all_product.data:

@@ -59,7 +59,7 @@
                 <!-- upload image here  -->
                 <form style="padding:5px;">
                     <input type="file" accept="image/*" @change="uploadImage($event)" id="file-input" multiple="multiple">
-                    <button type="button" @click="onUploadFile" style="color:black">Upload</button>
+                    <button type="button" @click="onUploadFile" style="padding-right:0.5%;padding-left:0.5%;background-color:#5294e2;"><span class="las la-cloud-upload-alt"></span> Upload</button>
                 </form>
 
                 <hr>

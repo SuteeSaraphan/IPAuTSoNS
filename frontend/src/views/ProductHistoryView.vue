@@ -51,7 +51,7 @@
                                 payment_id
                             </td>
                             <td style="color:black;padding:10px; justify-self: center;">
-                                product_id
+                                user_id
                             </td>
                             <td style="color:black;padding:10px; justify-self: center;">
                                 credit
@@ -86,7 +86,7 @@
                                 {{ payment.payment_id }}
                             </td>
                             <td style="color:black;padding:10px;">
-                                {{ payment.product_id }}
+                                {{ payment.user_id }}
                             </td>
                             <td style="color:black;padding:10px;">
                                 {{ payment.credit }}

@@ -27,7 +27,7 @@
 
                 <!--Add new folder image here  -->
                 <div style="padding:5px;">
-                    <button class="dropbtn" type="button" @click="addNewFolder">Add new folder</button>
+                    <button class="dropbtn" type="button" @click="addNewFolder"><span class="las la-folder-plus"></span>Add new folder</button>
                 </div>
 
 
@@ -50,8 +50,9 @@
                                  align-items : center;
                                  padding-right: 15px;
                                  background:#ccc;">
+                                
 
-                                <div style="color:black;padding:10px; " @click="enterFolder(file.folder_id)">
+                                <div style="color:black;padding:10px; " @click="enterFolder(file.folder_id)"><span class="las la-folder"></span>
                                     {{ file.folder_name }}</div>
 
                                 <!-- dropUp list here  -->

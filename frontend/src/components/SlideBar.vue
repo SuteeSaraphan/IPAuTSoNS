@@ -83,7 +83,7 @@
           <li>
             <a href="">
               <span class="ri-store-line"></span>
-              <router-link to="/market/lastest">Marketplace</router-link>
+              <router-link to="/market/newest">Marketplace</router-link>
             </a>
           </li>
         </ul>
