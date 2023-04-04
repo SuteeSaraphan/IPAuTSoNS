@@ -901,12 +901,18 @@ class MakeDockerFile(APIView):
         num_img = Image_file.objects.all().filter(user_id=payload['id']).filter(img_folder=img_path[2]).count()
         try:
             product_on_job = Product.objects.get(product_id=request.data['filter_id'])
+            total_credit_use = num_img*product_on_job.price
+            
+            user_credit = credit_check(user)
+            if(user_credit < total_credit_use):
+                return Response(data={"status": "ERROR create job file fail", "cause": "Do not have enough credit point"}, status=503)
+            
             payment_buyyer_data = {
                     'payment_id': buyyer_payment_id,
                     'product_id': product_on_job.product_id,
                     'user_id': user,
                     'type': 0,
-                    'credit': num_img*product_on_job.price,
+                    'credit': total_credit_use,
                     'pay_time': datetime.datetime.utcnow()
                     }
 
@@ -915,17 +921,17 @@ class MakeDockerFile(APIView):
                     'product_id': product_on_job.product_id,
                     'user_id': product_on_job.user_id,
                     'type': 1,
-                    'credit': num_img*product_on_job.price,
+                    'credit': total_credit_use,
                     'pay_time': datetime.datetime.utcnow()
                     }
         except Exception as error:
-            
+            total_credit_use = num_img*5
             payment_buyyer_data = {
                     'payment_id': buyyer_payment_id,
                     'product_id': 00,
                     'user_id': user,
                     'type': 0,
-                    'credit' : num_img*5,
+                    'credit' : total_credit_use,
                     'pay_time': datetime.datetime.utcnow()
                     }
 
@@ -934,7 +940,7 @@ class MakeDockerFile(APIView):
                     'product_id': 00,
                     'user_id': 00,
                     'type': 1,
-                    'credit' : num_img*5,
+                    'credit' : total_credit_use,
                     'pay_time': datetime.datetime.utcnow()
                     }
             
