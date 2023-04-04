@@ -56,12 +56,14 @@ def storage_size(user_id):
         Folder_img.objects.all().filter(user_id=user_id), many=True)
 
     for i in folder_serializer.data:
-        img_serializer = ImageSerializer(Image_file.objects.all().filter(user_id=user_id, img_folder=i['folder_name']), many=True)
+        img_serializer = ImageSerializer(Image_file.objects.all().filter(
+            user_id=user_id, img_folder=i['folder_name']), many=True)
 
         for j in img_serializer.data:
             folder_size += int(j['img_size'])
 
     return get_size(folder_size, 'gb')
+
 
 def get_size(file_size, unit='bytes'):
     exponents_map = {'bytes': 0, 'kb': 1, 'mb': 2, 'gb': 3}
@@ -72,19 +74,22 @@ def get_size(file_size, unit='bytes'):
         size = file_size / 1024 ** exponents_map[unit]
         return round(size, 3)
 
+
 def credit_check(user_id):
-    all_payment = Payment.objects.all().filter(user_id=user_id).order_by('pay_time')
+    all_payment = Payment.objects.all().filter(
+        user_id=user_id).order_by('pay_time')
     credit_total = 0
-    # type 0 = + # type 1 = - 
+    # type 0 = + # type 1 = -
     for i in all_payment:
-        if(i.type==0):
+        if (i.type == 0):
             credit_total += i.credit
-        elif(i.type==1):
+        elif (i.type == 1):
             credit_total -= i.credit
 
     return credit_total
 
 # for doing register new user
+
 
 class RegisterView(APIView):
     def post(self, request):
@@ -126,7 +131,7 @@ class LoginView(APIView):
                 'fname': user.first_name,
                 'lname': user.last_name,
                 'storage': folder_size,
-                'credit' : credit
+                'credit': credit
             })
 
             login_log = ({
@@ -434,6 +439,7 @@ class FolderView(APIView):
 
             return Response({"status": "Delete done !"})
 
+
 class FeedView(APIView):
     def get(self, request):
         token = request.META['HTTP_JWT']
@@ -530,10 +536,10 @@ class ProductView(APIView):
             return Response(product.data)
 
         elif (type == 'all'):
-            if(key == 'newest'):
+            if (key == 'newest'):
                 all_product = ProductSerializer(
                     Product.objects.all().order_by('-last_update'), many=True)
-            if(key == 'oldest'):
+            if (key == 'oldest'):
                 all_product = ProductSerializer(
                     Product.objects.all().order_by('last_update'), many=True)
             temp_respond = []
@@ -585,16 +591,14 @@ class ProductView(APIView):
         product_edit.price = request.data['price']
         product_edit.detail = request.data['detail']
         product_edit.last_update = datetime.datetime.utcnow()
-        
-        
+
         weight_file = request.FILES.get('weight_file')
-        if(weight_file != None):
-            product_edit.path= weight_file
+        if (weight_file != None):
+            product_edit.path = weight_file
 
         product_img = request.FILES.get('product_img')
-        if(product_img != None):
-            product_edit.product_img= product_img
-
+        if (product_img != None):
+            product_edit.product_img = product_img
 
         try:
             product_edit.save()
@@ -639,11 +643,11 @@ class ProductView(APIView):
             return Response({"status": "Add product successful"})
 
 
-class PreviewView(APIView):
+class PreviewNormalView(APIView):
     def post(seld, request):
         token = request.META['HTTP_JWT']
         payload = Authentication(token)
-        #preview = PreviewAPI(request.data['img_id'],request.data['filter_id'],request.data['filter_value'])
+        # preview = PreviewAPI(request.data['img_id'],request.data['filter_id'],request.data['filter_value'])
         img_serializer = ImageSerializer(
             Image_file.objects.get(img_id=request.data['img_id']))
         file_type = (img_serializer.data['img_type'].split('/'))[1]
@@ -671,18 +675,48 @@ class PreviewView(APIView):
             print(error)
             return Response(data={'status': 'something is wrong'}, status=503)
 
+
+class PreviewAdvanceView(APIView):
+    def post(seld, request):
+        token = request.META['HTTP_JWT']
+        payload = Authentication(token)
+        # preview = PreviewAPI(request.data['img_id'],request.data['filter_id'],request.data['filter_value'])
+        img_serializer = ImageSerializer(
+            Image_file.objects.get(img_id=request.data['img_id']))
+        file_type = (img_serializer.data['img_type'].split('/'))[1]
+        try:
+            with Image.open(str(BASE_DIR)+str(Path(img_serializer.data['path']))) as image_file:
+                buffer = BytesIO()
+                image_file.save(buffer, format=file_type)
+                image_data = base64.b64encode(buffer.getvalue())
+                temp_img_data = {
+                    'img_id': img_serializer.data['img_id'],
+                    'user_id': img_serializer.data['user_id'],
+                    'img_type': img_serializer.data['img_type'],
+                    'img_folder': img_serializer.data['img_folder'],
+                    'path': img_serializer.data['path'],
+                    'img_size': img_serializer.data['img_size'],
+                    'img_data': image_data
+                }
+                return Response(temp_img_data)
+
+        except Exception as error:
+            print(error)
+            return Response(data={'status': 'something is wrong'}, status=503)
+
+
 class UserHistoryView(APIView):
-    def get(self,request,type):
+    def get(self, request, type):
         token = request.META['HTTP_JWT']
         payload = Authentication(token)
         record_total = 0
-        if(type=='newest'):
+        if (type == 'newest'):
             serializer = PaymentSerializer(
                 Payment.objects.all().filter(user_id=str(payload['id'])).order_by('-pay_time'), many=True
             )
             for i in serializer.data:
                 record_total += 1
-        elif(type=='oldest'):
+        elif (type == 'oldest'):
             serializer = PaymentSerializer(
                 Payment.objects.all().filter(user_id=str(payload['id'])).order_by('pay_time'), many=True
             )
@@ -694,17 +728,16 @@ class UserHistoryView(APIView):
             serializer = PaymentSerializer(
                 Payment.objects.all()
                 .filter(user_id=str(payload['id']))
-                .filter(pay_time__gte=datetime.date(int(date_search[0]),int(date_search[1]),int(date_search[2])))
+                .filter(pay_time__gte=datetime.date(int(date_search[0]), int(date_search[1]), int(date_search[2])))
                 .order_by('pay_time'), many=True
             )
             for i in serializer.data:
                 record_total += 1
-        
-        if(record_total > 0 ):
+
+        if (record_total > 0):
             return Response(serializer.data)
         else:
-            return Response({'status':'no record found'}, status=503)
-
+            return Response({'status': 'no record found'}, status=503)
 
 
 class PaymentView(APIView):
@@ -725,7 +758,7 @@ class PaymentView(APIView):
             'product_id': request.data['product_id'],
             'user_id': user,
             'type': request.data['type'],
-            'credit' : request.data['credit'],
+            'credit': request.data['credit'],
             'pay_time': datetime.datetime.utcnow()
         }
         try:
@@ -737,20 +770,20 @@ class PaymentView(APIView):
             return Response(data={"status": "Fail to add payment try again."}, status=503)
         else:
             return Response({"status": "Add payment successful"})
-        
+
 
 class ProductHistoryView(APIView):
-    def get(self,request,product_id,type):
+    def get(self, request, product_id, type):
         token = request.META['HTTP_JWT']
         payload = Authentication(token)
         record_total = 0
-        if(type=='newest'):
+        if (type == 'newest'):
             serializer = PaymentSerializer(
                 Payment.objects.all().filter(product_id=product_id).order_by('-pay_time'), many=True
             )
             for i in serializer.data:
                 record_total += 1
-        elif(type=='oldest'):
+        elif (type == 'oldest'):
             serializer = PaymentSerializer(
                 Payment.objects.all().filter(product_id=product_id).order_by('pay_time'), many=True
             )
@@ -762,20 +795,16 @@ class ProductHistoryView(APIView):
             serializer = PaymentSerializer(
                 Payment.objects.all()
                 .filter(product_id=product_id)
-                .filter(pay_time__gte=datetime.date(int(date_search[0]),int(date_search[1]),int(date_search[2])))
+                .filter(pay_time__gte=datetime.date(int(date_search[0]), int(date_search[1]), int(date_search[2])))
                 .order_by('pay_time'), many=True
             )
             for i in serializer.data:
                 record_total += 1
-            
 
-        
-
-        
-        if(record_total > 0 ):
+        if (record_total > 0):
             return Response(serializer.data)
         else:
-            return Response({'status':'no record found'}, status=503)
+            return Response({'status': 'no record found'}, status=503)
 
 
 # class MakeDockerFile(APIView):
@@ -857,17 +886,73 @@ class MakeDockerFile(APIView):
         token = request.META['HTTP_JWT']
         payload = Authentication(token)
         user = User.objects.get(user_id=payload['id'])
+        buyyer_payment_id = ''.join(random.choices(
+            string.ascii_lowercase + string.digits, k=25))
+        seller_payment_id = ''.join(random.choices(
+            string.ascii_lowercase + string.digits, k=25))
 
         job_id = ''.join(random.choices(
             string.ascii_lowercase + string.digits, k=6))
-        img_id = request.data['img_id']
-        product_id = request.data['filter_id']
-        img_path = request.data['img_path'].split("/")[3:-1]
-        img_selected = request.data['img_selected']
+        img_sel = Image_file.objects.get(img_id=request.data['img_id'])
+        img_selected = img_sel.img_id
+        img_path = str(img_sel.path)
+        img_path = img_path.split('/')
+       
+        num_img = Image_file.objects.all().filter(user_id=payload['id']).filter(img_folder=img_path[2]).count()
+        try:
+            product_on_job = Product.objects.get(product_id=request.data['filter_id'])
+            payment_buyyer_data = {
+                    'payment_id': buyyer_payment_id,
+                    'product_id': product_on_job.product_id,
+                    'user_id': user,
+                    'type': 0,
+                    'credit': num_img*product_on_job.price,
+                    'pay_time': datetime.datetime.utcnow()
+                    }
+
+            payment_seller_data = {
+                    'payment_id': seller_payment_id,
+                    'product_id': product_on_job.product_id,
+                    'user_id': product_on_job.user_id,
+                    'type': 1,
+                    'credit': num_img*product_on_job.price,
+                    'pay_time': datetime.datetime.utcnow()
+                    }
+        except Exception as error:
+            
+            payment_buyyer_data = {
+                    'payment_id': buyyer_payment_id,
+                    'product_id': 00,
+                    'user_id': user,
+                    'type': 0,
+                    'credit' : num_img*5,
+                    'pay_time': datetime.datetime.utcnow()
+                    }
+
+            payment_seller_data = {
+                    'payment_id': seller_payment_id,
+                    'product_id': 00,
+                    'user_id': 00,
+                    'type': 1,
+                    'credit' : num_img*5,
+                    'pay_time': datetime.datetime.utcnow()
+                    }
+            
+        try:
+            serializer_buyyer = PaymentSerializer(data=payment_buyyer_data)
+            serializer_buyyer.is_valid(raise_exception=True)
+            serializer_buyyer.save()
+
+            serializer_seller = PaymentSerializer(data=payment_seller_data)
+            serializer_seller.is_valid(raise_exception=True)
+            serializer_seller.save()
+        except Exception as error:
+            print(error)
+            return Response(data={"status": "ERROR create job file fail", "cause": str(x)}, status=503)
+
         path = "/ipautsons/"+img_path[0]+"/"+img_path[1]+"/"+img_path[2]
-        print(path)
-        num_img = Image_file.objects.all().filter(
-            user_id=payload['id'], img_folder=img_path[2]).count()
+        
+    
         template = """apiVersion: batch/v1
 
 kind: Job
@@ -900,29 +985,48 @@ spec:
           claimName: example"""
 
         try:
+            
             job_data = {
                 'job_id': job_id,
                 'user_id': user.user_id,
                 'path': path,
                 'num_img': num_img,
                 'img_selected': img_selected,
-                'job_status': "0"
+                'job_status': "0",
+                'product_id' : product_on_job.product_id,
+                'payment_id' : buyyer_payment_id
             }
-
+        except Exception as error :
+            job_data = {
+                'job_id': job_id,
+                'user_id': user.user_id,
+                'path': path,
+                'num_img': num_img,
+                'img_selected': img_selected,
+                'job_status': "0",
+                'product_id' : 00,
+                'payment_id' : buyyer_payment_id
+            }
+        
+        try:
             serializer = JobSerializer(data=job_data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
-
+        except Exception as error:
+            print(error)
+            return Response(data={"status": "ERROR create job file fail", "cause": error}, status=503)
+        try:
+            
             with open('yaml_file/'+job_id+'.yaml', 'w') as yfile:
                 yfile.write(template)
                 yfile.close()
                 yaml_run = YamlRunner(job_id)
                 x = yaml_run.run_yaml()
             if (x == 1):
+
                 return Response(data={"status": "File is made!"})
             else:
                 return Response(data={"status": "ERROR create job file fail", "cause": str(x)}, status=503)
-
         except Exception as error:
             print(error)
             return Response(data={"status": "ERROR create job file fail", "cause": error}, status=503)

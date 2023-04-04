@@ -8,6 +8,7 @@ class JobSerializer(serializers.ModelSerializer):
             'job_id',
             'user_id',
             'product_id',
+            'payment_id',
             'path',
             'num_img',
             'img_selected',
