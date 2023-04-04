@@ -81,9 +81,9 @@ def credit_check(user_id):
     credit_total = 0
     # type 0 = + # type 1 = -
     for i in all_payment:
-        if (i.type == 0):
+        if (i.type == '0'):
             credit_total += i.credit
-        elif (i.type == 1):
+        elif (i.type == '1'):
             credit_total -= i.credit
 
     return credit_total
@@ -958,14 +958,15 @@ class MakeDockerFile(APIView):
 
         path = "/ipautsons/"+img_path[0]+"/"+img_path[1]+"/"+img_path[2]
         
-    
+        job_id_temp = '"'+job_id+'"'
+        path_temp =  '"'+path +'"'
         template = """apiVersion: batch/v1
 
 kind: Job
 
 metadata:
 
-  name: """+job_id+"""
+  name: """+str(job_id_temp)+"""
 
 spec:
 
@@ -975,14 +976,14 @@ spec:
 
       containers:
 
-      - name: """+job_id+"""
+      - name: """+str(job_id_temp)+"""
 
         image: suteesaraphan27/ascii
         volumeMounts:
             - name: nfs-share
               mountPath: /ipautsons
 
-        command: ["python","ASCII.py","""+job_id+""","""+path+"""]
+        command: ["python","ASCII.py","""+str(job_id_temp)+""","""+str(path_temp)+"""]
 
       restartPolicy: Never
       volumes:
