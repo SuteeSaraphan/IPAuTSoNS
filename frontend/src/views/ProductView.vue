@@ -31,7 +31,7 @@
 
                         <button @click="this.goProductHistory">
                             <span class="las la-history"></span>
-                            View product use history
+                            View product history
                         </button>
                     </div>
 
@@ -43,7 +43,9 @@
                     </div>
                     <div class="product-detail">
                         <h1>{{product.product_name}}</h1>
-                        <small>By {{product.ownner}} || {{product.last_update}}</small>
+                        <small>By {{product.ownner}} || Last update : {{product.last_update}}</small>
+
+                        <small>Model : {{product.model}} || Type : {{product.last_update}}</small>
                         <p>{{product.detail}}</p>
 
                         <button @click="tryThisWeight(product.product_id)"> Try this weight </button>
@@ -64,13 +66,10 @@
     flex-direction: row;
     width: 100%;
     height: auto;
-    background-color: rgb(42, 208, 0);
-
 }
 
 .product-img {
     width: 60%;
-    background-color: rgb(33, 84, 129);
 }
 
 .product-img img {
@@ -85,9 +84,10 @@
 }
 
 .product-detail {
-    background-color: brown;
     width: 100%;
     padding: 2%;
+    display: flex;
+    flex-direction: column;
 }
 
 .product-detail button {
