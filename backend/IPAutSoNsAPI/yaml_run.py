@@ -13,11 +13,8 @@ class YamlRunner:
     def run_yaml(self):
         logger.error('run '+self.yaml_file)
         try:
-            logger.error('1')
             config.load_incluster_config()
-            logger.error('2')
             k8s_client = client.ApiClient()
-            logger.error('3')
             utils.create_from_yaml(k8s_client, self.yaml_file)
             logger.error('runed run_yaml functions')
             return 1

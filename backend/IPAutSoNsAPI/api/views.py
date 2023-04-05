@@ -806,80 +806,6 @@ class ProductHistoryView(APIView):
         else:
             return Response({'status': 'no record found'}, status=503)
 
-
-# class MakeDockerFile(APIView):
-#     def post(self, request):
-#         logger.error('Running YAMLRunner at '+str(datetime.datetime.now()))
-#         # job_id = request.data['job_id']
-#         # token = request.META['HTTP_JWT']
-#         # path = request.data['path']
-#         # param1 = request.data['param1']
-#         # num_img = request.data['num_img']
-#         # img_selected = request.data['img_selected']
-#         # payload = Authentication(token)
-#         # user = User.objects.get(user_id=payload['id'])
-#         # path = "/ipautsons/backend/media"+path
-#         # img_folder_temp = path.split("/")
-#         # img_folder = img_folder_temp[5]
-
-#         template = """apiVersion: batch/v1
-
-# kind: Job
-
-# metadata:
-
-#   name: test123
-
-# spec:
-
-#   template:
-
-#     spec:
-
-#       containers:
-
-#       - name: test123
-
-#         image: suteesaraphan27/ascii
-#         volumeMounts:
-#             - name: nfs-share
-#               mountPath: /ipautsons
-
-#         command: ["python","ASCII.py","test123","/ipautsons/img"]
-
-#       restartPolicy: Never
-#       volumes:
-#       - name: nfs-share
-#         persistentVolumeClaim:
-#           claimName: example"""
-# #
-# #             job_data = {
-# #                 'job_id': job_id,
-# #                 'user_id': user.user_id,
-# #                 # 'app_id': app_id,
-# #                 'path': path,
-# #                 'num_img': num_img,
-# #                 'img_selected': img_selected,
-# #                 'job_status': "0"
-# #             }
-
-# #             serializer = JobSerializer(data=job_data)
-# #             serializer.is_valid(raise_exception=True)
-# #             serializer.save()
-#         try:
-#             with open('yaml_file/'+"test123"+'.yaml', 'w') as yfile:
-#                 yfile.write(template)
-#                 yfile.close()
-#                 logger.error('Calling run_yaml functions')
-#                 yaml_run = YamlRunner()
-#                 yaml_run.run_yaml()
-#             return Response({"status": "File is made!"})
-
-#         except (BaseException)as error:
-#             print(error)
-#             return Response({"status": "something is not right"})
-
-
 class MakeDockerFile(APIView):
     def post(self, request):
         logger.error('Running YAMLRunner at '+str(datetime.datetime.now()))
@@ -1030,7 +956,6 @@ spec:
                 yaml_run = YamlRunner(job_id)
                 x = yaml_run.run_yaml()
             if (x == 1):
-
                 return Response(data={"status": "File is made!"})
             else:
                 return Response(data={"status": "ERROR create job file fail", "cause": str(x)}, status=503)
