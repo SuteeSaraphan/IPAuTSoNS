@@ -16,25 +16,19 @@
         <img src="../img/profile.jpg" alt="">
         <div class="info-profile">
           <div v-if="fname !=null & lname !=null" style="display: flex; flex-direction: row; justify-content: space-around;"><h3>{{fname}}</h3> <h3>{{lname}}</h3></div>
-          <span>Credit: 227</span>
-          <span>Usage Total: 32GB</span>
-          <span>60 %</span>
+          <span>Credit : {{creditTotal}}</span>
+          <span>Usage Total : {{storageSize}} GB</span>
+          <span>{{ Math.round((100 * (storageSize/5.0))) }} % of storage</span>
           <!-- About -->
           <div class="about">
-            <div class="box">
-              <h3>54</h3>
-              <span>Models</span>
-            </div>
+            
 
             <div class="box">
-              <h3>22/7</h3>
-              <span>Followers</span>
+              <h3>20</h3>
+              <span>Product ownner</span>
             </div>
 
-            <div class="box">
-              <h3>27</h3>
-              <span>Following</span>
-            </div>
+            
           </div>
         </div>
       </div>
@@ -89,7 +83,7 @@
           <li>
             <a href="">
               <span class="ri-store-line"></span>
-              <router-link to="/market/lastest">Marketplace</router-link>
+              <router-link to="/market/newest">Marketplace</router-link>
             </a>
           </li>
         </ul>
@@ -131,7 +125,9 @@ export default {
   data(){
     return{
       fname:null,
-      lname:null
+      lname:null,
+      storageSize:null,
+      creditTotal:null,
     }
   },
 
@@ -142,6 +138,8 @@ export default {
     } else {
       this.fname = this.$store.state.first_name
       this.lname = this.$store.state.last_name
+      this.storageSize = this.$store.state.storageSize
+      this.creditTotal = this.$store.state.creditTotal
     }
     
 

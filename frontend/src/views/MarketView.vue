@@ -35,8 +35,8 @@
 
                 <!-- filter history here  -->
                 <div class="sort-btn" style="padding:5px;">
-                    <button type="button" @click="goSort('lastest')">sort by newest </button>
-                    <button type="button" @click="goSort('oldest')">sort by oldest</button>
+                    <button type="button" @click="goSort('1')">sort by newest </button>
+                    <button type="button" @click="goSort('2')">sort by oldest</button>
                     <input type="date" id="search" @change="goSearch">
                 </div>
 
@@ -45,7 +45,7 @@
                 <div class="cards">
                     <!-- show each product info here -->
                     <div class="card-single" v-for="product in this.productList" v-bind:key="product.product_id"
-                        @click="goProduct(1)">
+                        @click="goProduct(product.product_id)">
                         <div class="card-flex">
                             <div class="card-info">
                                 <div class="card-head">
@@ -56,8 +56,8 @@
                                     <img :src="`data:image/jpeg;base64,${product.product_img}`"
                                         alt="{{ product.product_id }}">
                                 </div>
-                                <h2 style="color: #000;">{{product.product_name}}</h2>
-                                <small style="color: #000;">{{product.product_type}}</small>
+                                <h2 style="color: #000;">{{ product.product_name }}</h2>
+                                <small style="color: #000;">{{ product.product_type }}</small>
                             </div>
                         </div>
                     </div>
@@ -91,7 +91,9 @@
 }
 
 .card-img {
-    display: block; justify-content: center; padding: 2.5%; 
+    display: block;
+    justify-content: center;
+    padding: 2.5%;
 }
 
 .card-img img {
@@ -145,10 +147,10 @@ export default {
 
         goSort(type) {
             if (type == "1") {
-                let path = "/history/" + "newest"
+                let path = "/market/" + "newest"
                 window.location.href = path;
             } else if (type == "2") {
-                let path = "/history/" + "oldest"
+                let path = "/market/" + "oldest"
                 window.location.href = path;
             }
 
@@ -163,8 +165,7 @@ export default {
 
 
 
-    }
-    ,
+    },
     components: {
         SlideBar,
         //VueSlideBar
@@ -172,7 +173,7 @@ export default {
     async created() {
         console.log(this.$route.params.keyword)
         axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
-        await axios.get('product/all/lastest')
+        await axios.get('product/all/'+this.$route.params.keyword)
             .then(res => {
                 console.log(res.data)
                 this.isLoading = false;

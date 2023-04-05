@@ -21,7 +21,12 @@ urlpatterns = [
     path('product/<str:type>/<str:key>', views.ProductView.as_view()),
 
     path('payment', views.PaymentView.as_view()),
+    path('feed', views.FeedView.as_view()),
 
-    path('preview', views.PreviewView.as_view())
+    path('user_history/<str:type>', views.UserHistoryView.as_view()),
+    path('product_history/<str:product_id>/<str:type>', views.ProductHistoryView.as_view()),
+
+    path('preview', views.PreviewNormalView.as_view()),
+    path('preview_adv', views.PreviewAdvanceView.as_view())
 
 ]

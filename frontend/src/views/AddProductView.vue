@@ -48,11 +48,14 @@
                         <input id="pimg" name="pimg" type="file" accept="image/*" @change="uploadImage($event)" required>
 
                         <label for="pweight">Weight file : </label>
-                        <input id="pweight" name="pweight" type="file"  @change="uploadWeight($event)" required>
+                        <input id="pweight" name="pweight" type="file" accept="" @change="uploadWeight($event)" required>
 
-                        <button @click="addProduct" type="button"> Add product </button>
 
                     </form>
+                    <button style="background-color: #5294e2; padding: 0.3%; margin-top: 1%;" @click="addProduct"
+                        type="button"> Add product </button>
+
+                    <p id="output"></p>
                 </div>
 
             </main>
@@ -61,30 +64,29 @@
     </div>
 </template>
 <style>
-.product-form{
+.product-form {
     margin: auto;
-    width: 80%;
+    width: 70%;
     padding: 2%;
-    background-color: brown;
 }
 
 textarea {
-  width: 100%;
-  height: 150px;
-  padding: 12px 20px;
-  box-sizing: border-box;
-  border: 2px solid #ccc;
-  border-radius: 4px;
-  background-color: #f8f8f8;
-  font-size: 13px;
-  resize: none;
-  color: black;
+    width: 100%;
+    height: 150px;
+    padding: 12px 20px;
+    box-sizing: border-box;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    background-color: #f8f8f8;
+    font-size: 13px;
+    resize: none;
+    color: black;
 }
+
 @media (max-width: 800px) {}
 </style>
 <script>
 import SlideBar from '@/components/SlideBar'
-//import router from '@/router';
 import axios from 'axios';
 const URL_ADD_PRODUCT = 'product';
 
@@ -100,32 +102,37 @@ export default {
     data() {
         return {
 
-            selectedImg : null,
-            selectedWeight : null, 
+            selectedImg: null,
+            selectedWeight: null,
 
 
         }
     },
     methods: {
 
+        
+
+
+
         // choose image to upload
         uploadImage(event) {
             //console.log('event :'+event.target.files[0].name)
             this.selectedImg = event.target.files[0]
-            if (this.selectedImg.size >= 15000000){
-                console.log('selectedImg :'+this.selectedImg.size)
+            if (this.selectedImg.size >= 15000000) {
+                console.log('selectedImg :' + this.selectedImg.size)
                 alert("This file is too big")
-            }else{
-                console.log('selectedImg :'+this.selectedImg.size)
+            } else {
+                console.log('selectedImg :' + this.selectedImg.size)
             }
-            
+
         },
 
         // choose weight to upload
         uploadWeight(event) {
             //console.log('event :'+event.target.files[0].name)
             this.selectedWeight = event.target.files[0]
-            console.log('selectedWeight :'+this.selectedWeight.size)
+            console.log('selectedWeight :' + this.selectedWeight.size)
+            
         },
 
         //add product to database
@@ -141,7 +148,7 @@ export default {
                 data.append('model', document.getElementById("pmodel").value);
                 data.append('detail', document.getElementById("pdetail").value);
                 data.append('price', document.getElementById("price").value);
-                
+
 
                 //console.log(data)
 
@@ -157,7 +164,9 @@ export default {
                     config
                 ).then(
                     async (response) => {
-                        alert('image upload response >' + response.data['status'])
+                        alert('product upload response >' + response.data['status'])
+                        let path = "/market/newest"
+                        window.location.href = path
                     }
                 ).catch(err => {
                     alert(err)

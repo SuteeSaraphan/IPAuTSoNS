@@ -66,7 +66,7 @@ export default {
                 )
                     .then(response => {
                         this.$store.commit('setToken',response.data.jwt);
-                        this.$store.commit('setName',[response.data.fname,response.data.lname]);
+                        this.$store.commit('setUserData',[response.data.fname,response.data.lname,response.data.storage,response.data.credit]);
                         router.push('/home');
                     }).catch(error => {
                         console.log(error);

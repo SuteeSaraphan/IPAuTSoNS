@@ -14,8 +14,6 @@ import os
 from pathlib import Path
 
 
-
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
@@ -182,9 +180,9 @@ print(BASE_DIR)
 
 STATIC_URL = '/static/'
 
-MEDIA_URL='/nas_sim/ipautsons/'
+MEDIA_URL='nas_sim/ipautsons/' #for deploy
 
-MEDIA_ROOT = os.path.join(BASE_DIR,'nas_sim','ipautsons')
+MEDIA_ROOT = os.path.join(BASE_DIR,'nas_sim','ipautsons') #for test in loacal
 
 
 # Default primary key field type

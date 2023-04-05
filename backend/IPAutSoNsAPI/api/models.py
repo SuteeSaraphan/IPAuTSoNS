@@ -55,39 +55,9 @@ class Folder_img(models.Model):
     def __str__(self):
         return self.folder_id
 
-    
-
-class Job(models.Model):
-    job_id = models.CharField(max_length=100, primary_key=True) #sent for check and connect
-    user_id = models.ForeignKey(User,on_delete=models.CASCADE) #sent for check and connect
-    app_id = models.CharField(max_length=100 ,default="00", null=False)
-    path = models.CharField(max_length=200, null=False) #sent for access image folder 
-    num_img = models.IntegerField(default=0, null=False) #sent 
-    img_selected = models.CharField(max_length=500, null=False) #sent path of image file 
-    persent = models.IntegerField(default=0, null=False) #modifi update when process job
-    job_status = models.CharField(max_length=100,default=0, null=False) #modifi update when process job
-    create_time = models.DateTimeField(editable=False, auto_now_add=True) 
-
-    def __str__(self):
-        return self.job_id
-
-
-
-class Image_app(models.Model):
-    app_id = models.CharField(primary_key=True,unique=True,max_length=100)
-    app_name = models.CharField(unique=True,max_length=100)
-    app_type = models.CharField(max_length=50, null=False)
-    parameter = models.IntegerField(default=80)
-    model_type = models.CharField(max_length=50, null=True)
-    app_path = models.FileField(upload_to=upload_path_weight)
-
-    def __str__(self):
-        return self.app_id
-
 class Product(models.Model):
     product_id = models.CharField(primary_key=True,unique=True,max_length=100)
     user_id = models.ForeignKey(User,on_delete=models.CASCADE)
-    vertify = models.BooleanField(default=False) # false : wait for vetify , true : already vertify and on sale
     product_name = models.CharField(unique=True,max_length=100, null=False)
     product_type = models.CharField(max_length=100, null=False)
     model = models.CharField(max_length=100, null=False)
@@ -100,17 +70,35 @@ class Product(models.Model):
     def __str__(self):
         return self.product_id
 
+class Payment(models.Model):
+    payment_id = models.CharField(primary_key=True,unique=True,max_length=100)
+    user_id = models.ForeignKey(User,on_delete=models.CASCADE)
+    product_id = models.ForeignKey(Product,on_delete=models.CASCADE)
+    type = models.CharField(max_length=50, null=False) # type 0 = + # type 1 = - 
+    pay_time = models.DateTimeField(editable=False, auto_now_add=True)
+    credit =  models.FloatField(max_length=100,null=False)
+
+class Job(models.Model):
+    job_id = models.CharField(max_length=100, primary_key=True) #sent for check and connect
+    user_id = models.ForeignKey(User,on_delete=models.CASCADE) #sent for check and connect
+    product_id = models.ForeignKey(Product,on_delete=models.CASCADE,default=00)
+    payment_id = models.ForeignKey(Payment,on_delete=models.CASCADE,default=00)
+    path = models.CharField(max_length=200, null=False) #sent for access image folder 
+    num_img = models.IntegerField(default=0, null=False) #sent for check job status
+    img_selected = models.CharField(max_length=500, null=False) #image id of omage in preview
+    persent = models.IntegerField(default=0, null=False) #modifi update when process job
+    job_status = models.CharField(max_length=100,default=0, null=False) #modifi update when process job
+    create_time = models.DateTimeField(editable=False, auto_now_add=True) 
+
+    def __str__(self):
+        return self.job_id
+
 class Login_log(models.Model):
     login_log_id = models.CharField(primary_key=True,unique=True,max_length=100)
     user_id = models.ForeignKey(User,on_delete=models.CASCADE)
     login_time = models.DateTimeField(editable=False, auto_now_add=True, null=False)
 
-class Payment(models.Model):
-    payment_id = models.CharField(primary_key=True,unique=True,max_length=100)
-    user_id = models.ForeignKey(User,on_delete=models.CASCADE)
-    product_id = models.ForeignKey(Product,on_delete=models.CASCADE)
-    type = models.CharField(max_length=50, null=False)
-    pay_time = models.DateTimeField(editable=False, auto_now_add=True) 
-    # proof = models.ImageField(upload_to = upload_path_proof, null=False) 
+
+
 
 
