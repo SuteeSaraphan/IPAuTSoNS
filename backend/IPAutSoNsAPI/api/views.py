@@ -401,7 +401,7 @@ class FolderView(APIView):
             return Response(data={'status': '!!! Something is wrong try again !!!'}, status=503)
         else:
             folder_data = {
-                'folder_id': request.data['folder_id'],
+                'folder_id': ''.join(random.choices(string.ascii_lowercase + string.digits, k=6)),
                 'user_id': payload['id'],
                 'folder_name': request.data['folder_name'],
                 'path': folder_path,

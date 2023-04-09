@@ -106,7 +106,6 @@ export default {
                 axios.post('folder_img',
                     {
                         'jwt': this.$store.state.jwt,
-                        "folder_id": Math.random().toString(36).slice(2),
                         "folder_name": newFolderName
                     }
                 ).then(async response => {
