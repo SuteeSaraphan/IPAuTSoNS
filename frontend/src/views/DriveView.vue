@@ -135,6 +135,9 @@ export default {
                     .then(async res => {
                         alert(res.data['status']);
                         location.reload();
+                    }).catch(error =>{
+                        console.log(error)
+                        alert("delete folder fail");
                     })
             }
         }

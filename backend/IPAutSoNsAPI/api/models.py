@@ -15,9 +15,6 @@ def upload_path_weight(instance,filename):
 def upload_product_img(instance,filename):
     return os.path.join("%s" % instance.user_id,"weight",instance.product_id,filename)
 
-def upload_path_proof(instance,filename):
-    return os.path.join("%s" % instance.user_id,"proof","%s",filename)
-
 
 class User(AbstractBaseUser):
     user_id = models.CharField(primary_key=True,unique=True,max_length=100)
@@ -73,7 +70,7 @@ class Product(models.Model):
 class Payment(models.Model):
     payment_id = models.CharField(primary_key=True,unique=True,max_length=100)
     user_id = models.ForeignKey(User,on_delete=models.CASCADE)
-    product_id = models.ForeignKey(Product,on_delete=models.CASCADE)
+    product_id = models.CharField(max_length=100,default=0)
     type = models.CharField(max_length=50, null=False) # type 0 = + # type 1 = - 
     pay_time = models.DateTimeField(editable=False, auto_now_add=True)
     credit =  models.FloatField(max_length=100,null=False)

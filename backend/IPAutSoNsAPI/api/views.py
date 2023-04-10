@@ -33,7 +33,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(
 
 class VersionCheck(APIView):
     def get(self, request):
-        return Response({"version": "1.5"})
+        return Response({"version": "1.6"})
 
 # for Authentication user with JWT
 
@@ -75,6 +75,45 @@ def get_size(file_size, unit='bytes'):
         return round(size, 3)
 
 
+
+def add_credit(user_id,credit,product_id=None):
+    print("run add credit")
+    payment_data = {
+        'payment_id': ''.join(random.choices(string.ascii_lowercase + string.digits, k=25)),
+        'product_id': product_id,
+        'user_id': user_id,
+        'type': 0,
+        'credit': credit,
+        'pay_time': datetime.datetime.utcnow()
+    }
+    try:
+        serializer = PaymentSerializer(data=payment_data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return 1
+    except Exception as error:
+        print(error)
+        return error
+
+
+def sub_credit(user_id,credit,product_id=None):
+    payment_data = {
+        'payment_id': ''.join(random.choices(string.ascii_lowercase + string.digits, k=25)),
+        'product_id': product_id,
+        'user_id': user_id,
+        'type': 1,
+        'credit': credit,
+        'pay_time': datetime.datetime.utcnow()
+    }
+    try:
+        serializer= PaymentSerializer(data=payment_data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return 1
+    except Exception as error:
+        return error
+
+
 def credit_check(user_id):
     all_payment = Payment.objects.all().filter(
         user_id=user_id).order_by('pay_time')
@@ -96,6 +135,9 @@ class RegisterView(APIView):
         serializer = UserSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+        add_credit_result = add_credit(request.data['user_id'],1000,0)
+        if(add_credit_result != 1):
+            Response(data={"status": "ERROR Register fail ", "cause": add_credit_result}, status=503)
         return Response(serializer.data)
 
 # for user login
@@ -208,7 +250,8 @@ class ImageView(APIView):
             for i in img_serializer.data:
                 file_type = (i['img_type'].split('/'))[1]
                 try:
-                    with Image.open(str(BASE_DIR)+str(Path(i['path']))) as image_file_temp:
+                    #with Image.open(str(BASE_DIR)+str(Path(i['path']))) as image_file_temp:#local test
+                    with Image.open(str(Path(i['path']))) as image_file_temp: #depoly
                         fixed_height = 200
                         height_percent = (
                             fixed_height / float(image_file_temp.size[1]))
@@ -233,6 +276,7 @@ class ImageView(APIView):
 
                 except BaseException as error:
                     print(error)
+                    logger.error(error)
 
             return Response(temp_respond)
 
@@ -242,7 +286,8 @@ class ImageView(APIView):
                 Image_file.objects.get(img_id=folder_id))
             file_type = (img_serializer.data['img_type'].split('/'))[1]
             try:
-                with Image.open(str(BASE_DIR)+str(Path(img_serializer.data['path']))) as image_file_temp:
+                #with Image.open(str(BASE_DIR)+str(Path(img_serializer.data['path']))) as image_file_temp: #local test
+                with Image.open(str(Path(img_serializer.data['path']))) as image_file_temp: #deploy
                     buffer = BytesIO()
                     image_file_temp.save(buffer, format=file_type)
                     image_data = base64.b64encode(buffer.getvalue())
@@ -260,6 +305,7 @@ class ImageView(APIView):
 
             except BaseException as error:
                 print(error)
+                logger.error(error)
                 return Response(data={'status': 'something wrong'}, status=503)
 
         # count image to create page list in web
@@ -303,7 +349,13 @@ class ImageView(APIView):
                     try:
                         file_type = (
                             img_serializer.data[i]['img_type'].split('/'))[1]
-                        with Image.open(str(BASE_DIR)+str(Path(img_serializer.data[i]['path']))) as image_file_temp:
+                        if (file_type.lower() == "jpg" or file_type.lower() == "jpeg"):
+                            file_type = "jpeg"
+                        else:
+                            file_type = "png"
+
+                        #with Image.open(str(BASE_DIR)+str(Path(img_serializer.data[i]['path']))) as image_file_temp: #localtest
+                        with Image.open(str(Path(img_serializer.data[i]['path']))) as image_file_temp: #deploy
                             percentage = 0.25
                             width, height = image_file_temp.size
                             resized_dimensions = (
@@ -327,7 +379,7 @@ class ImageView(APIView):
                             temp_respond.append(temp_img_data)
 
                     except BaseException as error:
-                        print(error)
+                        logger.error(error)
 
             return Response(temp_respond)
 
@@ -353,6 +405,7 @@ class ImageView(APIView):
             serializer.save()
         except Exception as error:
             print(error)
+            logger.error(error)
             return Response(data={"status": "file "+request.FILES['img_file'].name+" upload fail"}, status=503)
         else:
             return Response({"status": "file "+request.FILES['img_file'].name+" upload done"})
@@ -365,7 +418,8 @@ class ImageView(APIView):
         image = Image_file.objects.get(img_id=img_id)
         try:
             del_path = os.path.join(
-                BASE_DIR, "nas_sim/ipautsons", str(image.path))
+            #    BASE_DIR, "nas_sim\ipautsons", str(image.path))#localtest
+                "ipautsons", str(image.path))#deploy
             os.remove(del_path)
         except BaseException as error:
             print(error)
@@ -392,10 +446,11 @@ class FolderView(APIView):
         user_id = payload['id']
         folder_name = request.data['folder_name']
         folder_path = os.path.join(
-            BASE_DIR, "nas_sim/ipautsons", user_id, "root", folder_name)
+            #BASE_DIR, "nas_sim\ipautsons", user_id, "root", folder_name)#localtest
+            "ipautsons", user_id, "root", folder_name)#deploy
 
         try:
-            os.makedirs(folder_path)
+            os.makedirs("""\\"""+folder_path)
         except OSError as error:
             print(error)
             return Response(data={'status': '!!! Something is wrong try again !!!'}, status=503)
@@ -426,11 +481,12 @@ class FolderView(APIView):
         token = request.META['HTTP_JWT']
         payload = Authentication(token)
         folder_img = Folder_img.objects.get(folder_id=folder_id)
+        print(str(type(folder_img.path)))
         try:
-            shutil.rmtree(folder_img.path)
+            shutil.rmtree("""\\"""+folder_img.path)
         except BaseException as error:
             print(error)
-            return Response(data={"status": "Delete fail ! try again"}, status=503)
+            return Response(data={"status": "Delete fail ! try again" , "cause":str(error)}, status=503)
         else:
             print(folder_img.folder_name)
             del_img = Image_file.objects.all().filter(img_folder=folder_img.folder_name)
@@ -455,7 +511,8 @@ class FeedView(APIView):
             else:
                 file_type = 'png'
             try:
-                with Image.open(str(BASE_DIR)+str(Path(i['product_img']))) as image_file_temp:
+                #with Image.open(str(BASE_DIR)+str(Path(i['product_img']))) as image_file_temp:#localtest
+                with Image.open(str(Path(i['product_img']))) as image_file_temp:#deploy
                     percentage = 0.25
                     width, height = image_file_temp.size
                     resized_dimensions = (
@@ -498,11 +555,12 @@ class ProductView(APIView):
 
             file_type = (product.data['product_img'].split('.'))[-1]
 
-            if (file_type == 'JPG' or file_type == 'JPEG' or file_type == 'jpg' or file_type == 'jpeg'):
+            if (file_type.lower() == 'jpg' or file_type.lower() == 'jpeg'):
                 file_type = 'jpeg'
             else:
                 file_type = 'png'
-            with Image.open(str(BASE_DIR)+str(Path(product.data['product_img']))) as image_file_temp:
+            #with Image.open(str(BASE_DIR)+str(Path(product.data['product_img']))) as image_file_temp:#localtest
+            with Image.open(str(Path(product.data['product_img']))) as image_file_temp:#deploy
                 percentage = 0.25
                 width, height = image_file_temp.size
                 resized_dimensions = (
@@ -552,7 +610,8 @@ class ProductView(APIView):
                 else:
                     file_type = 'png'
                 try:
-                    with Image.open(str(BASE_DIR)+str(Path(i['product_img']))) as image_file_temp:
+                    #with Image.open(str(BASE_DIR)+str(Path(i['product_img']))) as image_file_temp:#localtest
+                    with Image.open(str(Path(i['product_img']))) as image_file_temp:#deploy
                         percentage = 0.25
                         width, height = image_file_temp.size
                         resized_dimensions = (
@@ -652,7 +711,8 @@ class PreviewNormalView(APIView):
             Image_file.objects.get(img_id=request.data['img_id']))
         file_type = (img_serializer.data['img_type'].split('/'))[1]
         try:
-            with open(str(BASE_DIR)+str(Path(img_serializer.data['path'])), 'rb') as image_file:
+            #with open(str(BASE_DIR)+str(Path(img_serializer.data['path'])), 'rb') as image_file:#localtest
+            with open(str(Path(img_serializer.data['path'])), 'rb') as image_file:#deploy
                 preview = PreviewAPI(
                     image_file, file_type, request.data['filter_id'], request.data['filter_value'])
                 img_preview = preview.do_preview()
@@ -685,7 +745,8 @@ class PreviewAdvanceView(APIView):
             Image_file.objects.get(img_id=request.data['img_id']))
         file_type = (img_serializer.data['img_type'].split('/'))[1]
         try:
-            with Image.open(str(BASE_DIR)+str(Path(img_serializer.data['path']))) as image_file:
+            #with Image.open(str(BASE_DIR)+str(Path(img_serializer.data['path']))) as image_file:#localtest
+            with Image.open(str(Path(img_serializer.data['path']))) as image_file:#deploy
                 buffer = BytesIO()
                 image_file.save(buffer, format=file_type)
                 image_data = base64.b64encode(buffer.getvalue())
@@ -825,67 +886,32 @@ class MakeDockerFile(APIView):
         img_path = img_path.split('/')
        
         num_img = Image_file.objects.all().filter(user_id=payload['id']).filter(img_folder=img_path[2]).count()
+        add_result = None
+        sub_result = None
         try:
             product_on_job = Product.objects.get(product_id=request.data['filter_id'])
-            total_credit_use = num_img*product_on_job.price
-            
+        except Exception as error:
+            total_credit_use = num_img*5
             user_credit = credit_check(user)
             if(user_credit < total_credit_use):
                 return Response(data={"status": "ERROR create job file fail", "cause": "Do not have enough credit point"}, status=503)
+            sub_result = sub_credit(user,total_credit_use,00)
+            add_result = add_credit(00,total_credit_use,00)
+        else:
+            total_credit_use = num_img*product_on_job.price
+            user_credit = credit_check(user)
+            if(user_credit < total_credit_use):
+                return Response(data={"status": "ERROR create job file fail", "cause": "Do not have enough credit point"}, status=503)
+            sub_result = sub_credit(user,total_credit_use,product_on_job.product_id)
+            add_result = add_credit(product_on_job.user_id,total_credit_use,product_on_job.product_id)
             
-            payment_buyyer_data = {
-                    'payment_id': buyyer_payment_id,
-                    'product_id': product_on_job.product_id,
-                    'user_id': user,
-                    'type': 0,
-                    'credit': total_credit_use,
-                    'pay_time': datetime.datetime.utcnow()
-                    }
-
-            payment_seller_data = {
-                    'payment_id': seller_payment_id,
-                    'product_id': product_on_job.product_id,
-                    'user_id': product_on_job.user_id,
-                    'type': 1,
-                    'credit': total_credit_use,
-                    'pay_time': datetime.datetime.utcnow()
-                    }
-        except Exception as error:
-            total_credit_use = num_img*5
-            payment_buyyer_data = {
-                    'payment_id': buyyer_payment_id,
-                    'product_id': 00,
-                    'user_id': user,
-                    'type': 0,
-                    'credit' : total_credit_use,
-                    'pay_time': datetime.datetime.utcnow()
-                    }
-
-            payment_seller_data = {
-                    'payment_id': seller_payment_id,
-                    'product_id': 00,
-                    'user_id': 00,
-                    'type': 1,
-                    'credit' : total_credit_use,
-                    'pay_time': datetime.datetime.utcnow()
-                    }
-            
-        try:
-            serializer_buyyer = PaymentSerializer(data=payment_buyyer_data)
-            serializer_buyyer.is_valid(raise_exception=True)
-            serializer_buyyer.save()
-
-            serializer_seller = PaymentSerializer(data=payment_seller_data)
-            serializer_seller.is_valid(raise_exception=True)
-            serializer_seller.save()
-        except Exception as error:
-            print(error)
-            return Response(data={"status": "ERROR create job file fail", "cause": str(x)}, status=503)
+        if(sub_result != 1 or add_result != 1):
+            return Response(data={"status": "ERROR create job file fail", "cause": add_result+" and "+sub_result}, status=503)
 
         path = "/ipautsons/"+img_path[0]+"/"+img_path[1]+"/"+img_path[2]
         
         job_id_temp = '"'+job_id+'"'
-        path_temp =  '"'+path +'"'
+        path_temp =  '"'+path+'"'
         template = """apiVersion: batch/v1
 
 kind: Job
