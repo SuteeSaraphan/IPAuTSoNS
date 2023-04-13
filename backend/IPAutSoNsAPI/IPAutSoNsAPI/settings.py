@@ -176,13 +176,11 @@ USE_TZ = True
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
-print(BASE_DIR)
-
 STATIC_URL = '/static/'
+MEDIA_URL='/ipautsons/' #for deploy
 
-MEDIA_URL='nas_sim/ipautsons/' #for deploy
-
-MEDIA_ROOT = os.path.join(BASE_DIR,'nas_sim','ipautsons') #for test in loacal
+#MEDIA_URL='nas_sim/ipautsons/' #for test in loacal
+MEDIA_ROOT = '/ipautsons/' #for test in loacal
 
 
 # Default primary key field type

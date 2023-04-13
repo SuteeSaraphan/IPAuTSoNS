@@ -273,7 +273,7 @@ export default {
         // for show image name by cut it out from path
         showImgName(path) {
             let temp = path.split("/");
-            return temp[6]
+            return temp[temp.length - 1]
         },
 
         goToPage() {
