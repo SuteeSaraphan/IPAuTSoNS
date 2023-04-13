@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+
+kind: Job
+
+metadata:
+
+  name: yolotest2
+
+spec:
+
+  template:
+
+    spec:
+
+      containers:
+
+      - name: yolotest2
+
+        image: ultralytics/yolov5:latest-cpu
+        volumeMounts:
+            - name: nfs-share
+              mountPath: /ipautsons
+
+        command: ["python","detect.py","--weights yolov5s.pt","--source","/ipautsons/img","--project","/ipautsons/img"]
+
+      restartPolicy: Never
+      volumes:
+      - name: nfs-share
+        persistentVolumeClaim: 
+          claimName: example

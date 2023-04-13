@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: backend
+  name: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: backend
+    spec:
+      containers:
+      - image: chinglew27/ipautsons-backend:v1.6
+        name: ipautsons
+        ports:
+            - containerPort: 8000
+        resources: {}
+        volumeMounts:
+              - name: nfs-share
+                mountPath: /ipautsons
+        command: ["python3","manage.py", "runserver", "0.0.0.0:8000"] 
+      volumes:
+        - name: nfs-share
+          persistentVolumeClaim: 
+            claimName: example
+status: {}
