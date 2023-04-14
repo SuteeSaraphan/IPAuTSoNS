@@ -33,10 +33,16 @@
                         <input id="pname" name="pname" type="text" required>
 
                         <label for="ptype">Product type :</label>
-                        <input id="ptype" name="ptype" type="text" required>
+                        <select id="ptype" style="color:#000 ; " required>
+                            <option style="color:#000 ;"> Object detection </option>
+                            <option style="color:#000 ;"> Image enhancer </option>
+                        </select>
 
                         <label for="pmodel">Product model :</label>
-                        <input id="pmodel" name="pmodel" type="text" required>
+                        <select id="pmodel" style="color:#000 ; " required>
+                            <option style="color:#000 ;"> YOLOv5 </option>
+                            <option style="color:#000 ;"> GANs </option>
+                        </select>
 
                         <label for="pdetail">Product detail :</label>
                         <textarea id="pdetail" name="pdetail" type="text" required></textarea>
@@ -50,12 +56,10 @@
                         <label for="pweight">Weight file : </label>
                         <input id="pweight" name="pweight" type="file" accept="" @change="uploadWeight($event)" required>
 
-
+                        <button style="background-color: #5294e2; padding: 0.3%; margin-top: 1%;" @click="addProduct" type="button"> Add product </button>
                     </form>
-                    <button style="background-color: #5294e2; padding: 0.3%; margin-top: 1%;" @click="addProduct"
-                        type="button"> Add product </button>
+                    
 
-                    <p id="output"></p>
                 </div>
 
             </main>
@@ -68,6 +72,14 @@
     margin: auto;
     width: 70%;
     padding: 2%;
+}
+.product-form form{
+    display: flex;
+    flex-direction: column;
+}
+
+.product-form form label{
+    padding: 0.5%;
 }
 
 textarea {
@@ -110,7 +122,7 @@ export default {
     },
     methods: {
 
-        
+
 
 
 
@@ -132,12 +144,12 @@ export default {
             //console.log('event :'+event.target.files[0].name)
             this.selectedWeight = event.target.files[0]
             console.log('selectedWeight :' + this.selectedWeight.size)
-            
+
         },
 
         //add product to database
         addProduct() {
-            //console.log(this.folder.folder_name)
+            console.log("type : "+document.getElementById("ptype").value)
             if (this.selectedImg != null & this.selectedWeight != null) {
                 this.isLoading = true
                 let data = new FormData();
@@ -148,7 +160,8 @@ export default {
                 data.append('model', document.getElementById("pmodel").value);
                 data.append('detail', document.getElementById("pdetail").value);
                 data.append('price', document.getElementById("price").value);
-
+                
+                console.log("data of product : "+data)
 
                 //console.log(data)
 

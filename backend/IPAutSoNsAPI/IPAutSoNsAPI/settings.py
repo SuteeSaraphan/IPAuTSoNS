@@ -23,7 +23,7 @@ SECRET_KEY = 'django-insecure-_cdb2lx^gqg#udg28o_0j&1*pc*1*k-)wyc_-1!(%-+rkoqvcu
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -58,7 +58,6 @@ REST_FRAMEWORK = {
         # 'rest_framework_simplejwt.authentication.JWTAuthentication',
     ]
 }
-ALLOWED_HOSTS = ['*']
 
 CORS_ORIGIN_ALLOW_ALL = True
 
@@ -176,6 +175,7 @@ USE_TZ = True
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+print(BASE_DIR)
 STATIC_URL = '/static/'
 MEDIA_URL='/ipautsons/' #for deploy
 

@@ -184,6 +184,7 @@ export default {
                 .then(res => {
                     this.payments = res.data;
                     this.isLoading = false; 
+                    console.log(this.payments[0])
                 })
                 .catch(err => {
                     this.isLoading = false

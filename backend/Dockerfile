@@ -24,6 +24,6 @@ COPY . /backend
 
 WORKDIR /backend/IPAutSoNsAPI
 
-ENTRYPOINT ["python3","manage.py", "runserver", "0.0.0.0:8000"] 
+ENTRYPOINT ["python3","manage.py", "runserver", "192.168.1.134:8000"] 
 
 

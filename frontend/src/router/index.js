@@ -84,7 +84,7 @@ const routes = [
 
 
   {
-    path: "/market/:keyword",
+    path: "/market/:type/:model/:sort",
     name: "market",
     component: MaketView,
   },

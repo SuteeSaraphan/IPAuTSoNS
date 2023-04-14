@@ -35,10 +35,29 @@
 
                 <!-- filter history here  -->
                 <div class="sort-btn" style="padding:5px;">
-                    <button type="button" @click="goSort('1')">sort by newest </button>
-                    <button type="button" @click="goSort('2')">sort by oldest</button>
-                    <input type="date" id="search" @change="goSearch">
+                    <div>
+                        <button type="button" @click="goSort('1')">sort by newest </button>
+                        <button type="button" @click="goSort('2')">sort by oldest</button>
+                        <input type="date" id="search" @change="goSearch">
+                    </div>
+                    <div>
+                        Type :
+                        <select id="typeSel" style="color:#000 ; width: 15rem;" @change="selType">
+                            <option style="color:#000 ;"> All </option>
+                            <option style="color:#000 ;" > Object detection </option>
+                            <option style="color:#000 ;"> Image enhancer </option>
+                        </select>
+                
+                        Model :
+                        <select id="modelSel" style="color:#000 ; width: 15rem;" @change="selModel">
+                            <option style="color:#000 ;"> All </option>
+                            <option style="color:#000 ;"> YOLOv5 </option>
+                            <option style="color:#000 ;"> GANs </option>
+                        </select>
+                    </div>
                 </div>
+
+
 
 
                 <!-- show all products here -->
@@ -74,6 +93,23 @@
     </div>
 </template>
 <style>
+.sort-btn{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: left;
+
+}
+@media (max-width: 800px) {
+    .sort-btn{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: left;
+
+}
+    
+}
 .card-single {
     border-radius: 15px;
     background-color: white;
@@ -144,22 +180,33 @@ export default {
             let path = "/product/" + product_id
             window.location.href = path
         },
-
-        goSort(type) {
-            if (type == "1") {
-                let path = "/market/" + "newest"
+        //---/market/:type/:model/:sort---
+        goSort(sort) {
+            if (sort == "1") {
+                let path = "/market/"+this.$route.params.type+"/"+this.$route.params.model+"/newest"
                 window.location.href = path;
-            } else if (type == "2") {
-                let path = "/market/" + "oldest"
+            } else if (sort == "2") {
+                let path = "/market/"+this.$route.params.type+"/"+this.$route.params.model+"/oldest"
                 window.location.href = path;
             }
 
         },
 
         goSearch() {
-            let path = "/history/" + document.getElementById("search_by_date").value
+            let path = "/market/" + document.getElementById("search_by_date").value
             window.location.href = path;
         },
+
+        selType(){
+            let path = "/market/"+document.getElementById("typeSel").value+"/"+this.$route.params.model+"/"+this.$route.params.sort
+            window.location.href = path;
+        },
+
+        selModel(){
+            let path = "/market/"+this.$route.params.type+"/"+document.getElementById("modelSel").value+"/"+this.$route.params.sort
+            window.location.href = path;
+        },
+
 
 
 
@@ -171,9 +218,13 @@ export default {
         //VueSlideBar
     },
     async created() {
-        console.log(this.$route.params.keyword)
+        console.log(this.$route.params.sort)
+        console.log(this.$route.params.type)
+        console.log(this.$route.params.model)
+        
+        //---/market/:type/:model/:sort---
         axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
-        await axios.get('product/all/'+this.$route.params.keyword)
+        await axios.get('market/'+ this.$route.params.type+'_'+this.$route.params.model+'_'+this.$route.params.sort)
             .then(res => {
                 console.log(res.data)
                 this.isLoading = false;
