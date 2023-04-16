@@ -15,6 +15,7 @@ import ProductHistoryView from "@/views/ProductHistoryView";
 import HistoryView from "@/views/HistoryView";
 import AdminView from "@/views/AdminView";
 import EditProductView from "@/views/EditProductView";
+import JobHistoryView from "@/views/JobHistoryView";
 
 const routes = [
   {
@@ -117,6 +118,12 @@ const routes = [
     path: "/history/:type",
     name: "history",
     component: HistoryView,  
+  },
+
+  {
+    path: "/job_history/:type",
+    name: "job_history",
+    component: JobHistoryView,  
   },
 
 

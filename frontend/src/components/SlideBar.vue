@@ -6,6 +6,7 @@
       <div class="brand-flex">
         <img src="../img/logo.png" width="70" alt="">
         <div class="brand-icons">
+          <span class="las la-tasks" @click="goToJobHistory"></span>
           <span class="las la-history" @click="goToHistory"></span>
         </div>
       </div>
@@ -156,6 +157,12 @@ export default {
 
     goToHistory() {
       let path = "/history/" + "newest"
+      window.location.href = path;
+
+    },
+
+    goToJobHistory() {
+      let path = "/job_history/" + "newest"
       window.location.href = path;
 
     },

@@ -857,6 +857,41 @@ class UserHistoryView(APIView):
             return Response(serializer.data)
         else:
             return Response({'status': 'no record found'}, status=503)
+        
+
+class JobHistoryView(APIView):
+    def get(self, request, type):
+        token = request.META['HTTP_JWT']
+        payload = Authentication(token)
+        record_total = 0
+        match type:
+            case 'newest':
+                serializer = JobSerializer(
+                    Job.objects.all().filter(user_id=str(payload['id'])).order_by('-create_time'), many=True
+                )
+                for i in serializer.data:
+                    record_total += 1
+            case 'oldest':
+                serializer = JobSerializer(
+                    Job.objects.all().filter(user_id=str(payload['id'])).order_by('create_time'), many=True
+                )
+                for i in serializer.data:
+                    record_total += 1
+            case _:
+                date_search = str(type).split("-")
+                print(date_search)
+                serializer = JobSerializer(
+                    Job.objects.all()
+                    .filter(user_id=str(payload['id']))
+                    .filter(create_time__gte=datetime.date(int(date_search[0]), int(date_search[1]), int(date_search[2])))
+                    .order_by('create_time'), many=True
+                )
+                for i in serializer.data:
+                    record_total += 1
+        if (record_total > 0):
+            return Response(serializer.data)
+        else:
+            return Response({'status': 'no record found'}, status=503)
 
 
 class PaymentView(APIView):
@@ -938,7 +973,7 @@ class MakeDockerFile(APIView):
             string.ascii_lowercase + string.digits, k=25))
 
         job_id = ''.join(random.choices(
-            string.ascii_lowercase + string.digits, k=6))
+            string.ascii_lowercase + string.digits, k=15))
         img_sel = Image_file.objects.get(img_id=request.data['img_id'])
         img_selected = img_sel.img_id
         img_path = str(img_sel.path)
