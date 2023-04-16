@@ -16,7 +16,7 @@
                 <span class="bars"></span>
 
                 <div style="color:#000 ;">
-                    Payment history
+                    Job history
                 </div>
             </header>
 
