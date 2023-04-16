@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+
+kind: Job
+
+metadata:
+
+  name: testdemo
+
+spec:
+
+  template:
+
+    spec:
+
+      containers:
+
+      - name: testdemo
+
+        image: suteesaraphan27/demo
+        volumeMounts:
+            - name: myvolume
+              mountPath: /www
+
+        command: ["python","com.py"]
+
+      restartPolicy: Never
+      volumes:
+      - name: myvolume
+        persistentVolumeClaim: 
+          claimName: mypvc

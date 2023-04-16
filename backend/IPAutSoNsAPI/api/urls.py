@@ -3,7 +3,7 @@ from . import views
 
 urlpatterns = [
     path('make_docker_file', views.MakeDockerFile.as_view()),
-    path('version',views.VersionCheck.as_view()),
+    path('version', views.VersionCheck.as_view()),
 
     path('register', views.RegisterView.as_view()),
     path('login', views.LoginView.as_view()),
@@ -20,11 +20,14 @@ urlpatterns = [
     path('product', views.ProductView.as_view()),
     path('product/<str:type>/<str:key>', views.ProductView.as_view()),
 
+    path('market/<str:key>', views.MarketView.as_view()),
+
     path('payment', views.PaymentView.as_view()),
     path('feed', views.FeedView.as_view()),
 
     path('user_history/<str:type>', views.UserHistoryView.as_view()),
-    path('product_history/<str:product_id>/<str:type>', views.ProductHistoryView.as_view()),
+    path('product_history/<str:product_id>/<str:type>',
+         views.ProductHistoryView.as_view()),
 
     path('preview', views.PreviewNormalView.as_view()),
     path('preview_adv', views.PreviewAdvanceView.as_view())
