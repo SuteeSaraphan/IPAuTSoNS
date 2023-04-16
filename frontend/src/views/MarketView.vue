@@ -43,16 +43,22 @@
                     <div>
                         Type :
                         <select id="typeSel" style="color:#000 ; width: 15rem;" @change="selType">
-                            <option style="color:#000 ;"> All </option>
-                            <option style="color:#000 ;" > Object detection </option>
-                            <option style="color:#000 ;"> Image enhancer </option>
+                            <option style="color:#000 ;" v-if="this.$route.params.type != 'All'"> All </option>
+                            <option style="color:#000 ;" v-if="this.$route.params.type == 'All'" selected> All </option>
+                            <option style="color:#000 ;" v-if="this.$route.params.type != 'Object detection'"> Object detection </option>
+                            <option style="color:#000 ;" v-if="this.$route.params.type == 'Object detection'" selected> Object detection </option>
+                            <option style="color:#000 ;" v-if="this.$route.params.type != 'Image enhancer'"> Image enhancer </option>
+                            <option style="color:#000 ;" v-if="this.$route.params.type == 'Image enhancer'" selected> Image enhancer </option>
                         </select>
                 
                         Model :
                         <select id="modelSel" style="color:#000 ; width: 15rem;" @change="selModel">
-                            <option style="color:#000 ;"> All </option>
-                            <option style="color:#000 ;"> YOLOv5 </option>
-                            <option style="color:#000 ;"> GANs </option>
+                            <option style="color:#000 ;" v-if="this.$route.params.model != 'All'"> All </option>
+                            <option style="color:#000 ;" v-if="this.$route.params.model == 'All'" selected> All </option>
+                            <option style="color:#000 ;" v-if="this.$route.params.model != 'YOLOv5'"> YOLOv5 </option>
+                            <option style="color:#000 ;" v-if="this.$route.params.model == 'YOLOv5'" selected> YOLOv5 </option>
+                            <option style="color:#000 ;" v-if="this.$route.params.model != 'GANs'"> GANs </option>
+                            <option style="color:#000 ;" v-if="this.$route.params.model == 'GANs'" selected> GANs </option>
                         </select>
                     </div>
                 </div>

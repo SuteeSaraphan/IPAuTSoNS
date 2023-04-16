@@ -91,7 +91,7 @@ class Job(models.Model):
     # sent for check and connect
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     product_id = models.ForeignKey(
-        Product, on_delete=models.CASCADE, default=00)
+        Product, on_delete=models.CASCADE, default=00,null=True)
     payment_id = models.ForeignKey(
         Payment, on_delete=models.CASCADE, default=00)
     # sent for access image folder

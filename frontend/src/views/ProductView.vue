@@ -171,7 +171,10 @@ export default {
                 console.log(res.data);
                 this.product = res.data;
             }).catch(err => {
-                alert(err);
+                console.log(err)
+                alert(err.response['data']['status']);
+                let path = "/market/All/All/newest"
+                window.location.href = path
             })
     }
 

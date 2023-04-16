@@ -75,10 +75,9 @@ def get_size(file_size, unit='bytes'):
         return round(size, 3)
 
 
-def add_credit(user_id, credit, product_id=None):
-    print("run add credit")
+def add_credit(payment_id,user_id, credit, product_id=None):
     payment_data = {
-        'payment_id': ''.join(random.choices(string.ascii_lowercase + string.digits, k=25)),
+        'payment_id': payment_id,
         'product_id': product_id,
         'user_id': user_id,
         'type': 0,
@@ -91,13 +90,12 @@ def add_credit(user_id, credit, product_id=None):
         serializer.save()
         return 1
     except Exception as error:
-        print(error)
         return error
 
 
-def sub_credit(user_id, credit, product_id=None):
+def sub_credit(payment_id,user_id, credit, product_id=None):
     payment_data = {
-        'payment_id': ''.join(random.choices(string.ascii_lowercase + string.digits, k=25)),
+        'payment_id': payment_id,
         'product_id': product_id,
         'user_id': user_id,
         'type': 1,
@@ -112,6 +110,12 @@ def sub_credit(user_id, credit, product_id=None):
     except Exception as error:
         return error
 
+def del_payment(payment_id):
+    payment_to_del = Payment.objects.get(payment_id = payment_id)
+    payment_to_del.delete()
+    print("del payment compl :" +payment_id)
+    return False
+       
 
 def credit_check(user_id):
     all_payment = Payment.objects.all().filter(
@@ -127,6 +131,22 @@ def credit_check(user_id):
     return credit_total
 
 # for doing register new user
+
+def discount_calculate(num_img):
+    if(num_img>=1000):
+            return 0.1
+    elif(num_img>=500):
+            return 0.25
+    elif(num_img>=250):
+            return 0.40
+    elif(num_img>=100):
+            return 0.50
+    elif(num_img>=50):
+            return 0.75
+    elif(num_img>=25):
+            return 0.90
+    else:
+        return 1
 
 
 class RegisterView(APIView):
@@ -548,9 +568,11 @@ class ProductView(APIView):
         payload = Authentication(token)
 
         if (type == 'once'):
-
-            product = ProductSerializer(
-                Product.objects.get(product_id=key))
+            try:
+                product = ProductSerializer(
+                    Product.objects.get(product_id=key))
+            except Exception as error :
+                return Response({"status":"Can't find product,try again"},status=503)
             ownner = UserSerializer(User.objects.get(
                 user_id=product.data['user_id']))
 
@@ -807,7 +829,6 @@ class UserHistoryView(APIView):
         token = request.META['HTTP_JWT']
         payload = Authentication(token)
         record_total = 0
-        sort_type, search_model, product_type = str(type).split["-"]
         match type:
             case 'newest':
                 serializer = PaymentSerializer(
@@ -931,24 +952,58 @@ class MakeDockerFile(APIView):
             product_on_job = Product.objects.get(
                 product_id=request.data['filter_id'])
         except Exception as error:
-            total_credit_use = num_img*5
+            discount = discount_calculate(num_img)
+            total_credit_use = (int(num_img)*5)*float(discount)
             user_credit = credit_check(user)
             if (user_credit < total_credit_use):
-                return Response(data={"status": "ERROR create job file fail", "cause": "Do not have enough credit point"}, status=503)
-            sub_result = sub_credit(user, total_credit_use, 00)
-            add_result = add_credit(00, total_credit_use, 00)
+                return Response(data={"status": "ERROR953 create job file fail", "cause": "Do not have enough credit point"}, status=503)
+            try:
+                sub_result = sub_credit(buyyer_payment_id,user, total_credit_use, 0)
+                add_result = add_credit(seller_payment_id,0, total_credit_use, 0)
+            except Exception as err:
+                buyyer_payment_del_sta = True
+                seller_payment_del_sta = True
+                while(buyyer_payment_del_sta or seller_payment_del_sta ):
+                    try:
+                        buyyer_payment_del_sta = del_payment(buyyer_payment_id)
+                        seller_payment_del_sta = del_payment(seller_payment_id)
+                    except :
+                        pass
+                return Response(data={"status": "ERROR960 create job file fail", "cause": str(err)}, status=503)
+            
         else:
-            total_credit_use = num_img*product_on_job.price
+            discount = discount_calculate(num_img)
+            total_credit_use = (int(num_img)*product_on_job.price)*float(discount)
             user_credit = credit_check(user)
             if (user_credit < total_credit_use):
-                return Response(data={"status": "ERROR create job file fail", "cause": "Do not have enough credit point"}, status=503)
-            sub_result = sub_credit(
-                user, total_credit_use, product_on_job.product_id)
-            add_result = add_credit(
-                product_on_job.user_id, total_credit_use, product_on_job.product_id)
+                return Response(data={"status": "ERROR967 create job file fail", "cause": "Do not have enough credit point"}, status=503)
+            try:
+                sub_result = sub_credit(
+                    buyyer_payment_id,user, total_credit_use, product_on_job.product_id)
+                add_result = add_credit(
+                    seller_payment_id,product_on_job.user_id, total_credit_use, product_on_job.product_id)
+            except Exception as err:
+                buyyer_payment_del_sta = True
+                seller_payment_del_sta = True
+                while(buyyer_payment_del_sta or seller_payment_del_sta ):
+                    try:
+                        buyyer_payment_del_sta = del_payment(buyyer_payment_id)
+                        seller_payment_del_sta = del_payment(seller_payment_id)
+                    except :
+                        pass
+                return Response(data={"status": "ERROR974 create job file fail", "cause": str(err)}, status=503)
+        
 
-        if (sub_result != 1 or add_result != 1):
-            return Response(data={"status": "ERROR create job file fail", "cause": add_result+" and "+sub_result}, status=503)
+        if (sub_result != 1  or add_result != 1):
+            buyyer_payment_del_sta = True
+            seller_payment_del_sta = True
+            while(buyyer_payment_del_sta or seller_payment_del_sta ):
+                try:
+                    buyyer_payment_del_sta = del_payment(buyyer_payment_id)
+                    seller_payment_del_sta = del_payment(seller_payment_id)
+                except :
+                    pass
+            return Response(data={"status": "ERROR977 create job file fail", "cause": str(add_result)+" and "+str(sub_result)}, status=503)
 
         path = "/ipautsons/"+img_path[0]+"/"+img_path[1]+"/"+img_path[2]
 
@@ -1005,7 +1060,6 @@ spec:
                 'num_img': num_img,
                 'img_selected': img_selected,
                 'job_status': "0",
-                'product_id': 00,
                 'payment_id': buyyer_payment_id
             }
 
@@ -1014,8 +1068,15 @@ spec:
             serializer.is_valid(raise_exception=True)
             serializer.save()
         except Exception as error:
-            print(error)
-            return Response(data={"status": "ERROR create job file fail", "cause": error}, status=503)
+            buyyer_payment_del_sta = True
+            seller_payment_del_sta = True
+            while(buyyer_payment_del_sta or seller_payment_del_sta ):
+                try:
+                    buyyer_payment_del_sta = del_payment(buyyer_payment_id)
+                    seller_payment_del_sta = del_payment(seller_payment_id)
+                except :
+                    pass
+            return Response(data={"status": "ERROR1044 create job file fail", "cause": str(error)}, status=503)
         try:
 
             with open('yaml_file/'+job_id+'.yaml', 'w') as yfile:
@@ -1026,7 +1087,23 @@ spec:
             if (x == 1):
                 return Response(data={"status": "File is made!"})
             else:
-                return Response(data={"status": "ERROR create job file fail", "cause": str(x)}, status=503)
+                buyyer_payment_del_sta = True
+                seller_payment_del_sta = True
+                while(buyyer_payment_del_sta or seller_payment_del_sta ):
+                    try:
+                        buyyer_payment_del_sta = del_payment(buyyer_payment_id)
+                        seller_payment_del_sta = del_payment(seller_payment_id)
+                    except :
+                        pass
+                return Response(data={"status": "ERROR1055 create job file fail", "cause": str(x)}, status=503)
         except Exception as error:
             print(error)
-            return Response(data={"status": "ERROR create job file fail", "cause": error}, status=503)
+            buyyer_payment_del_sta = True
+            seller_payment_del_sta = True
+            while(buyyer_payment_del_sta or seller_payment_del_sta ):
+                try:
+                    buyyer_payment_del_sta = del_payment(buyyer_payment_id)
+                    seller_payment_del_sta = del_payment(seller_payment_id)
+                except :
+                    pass
+            return Response(data={"status": "ERROR1058 create job file fail", "cause": str(error)}, status=503)

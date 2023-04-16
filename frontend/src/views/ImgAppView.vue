@@ -247,6 +247,7 @@ export default {
             axios.defaults.headers.post['jwt'] = this.$store.state.jwt;
 
             let exportData = null
+            if(this.importFilter != null){
                 if (this.importFilter['product_name'] == this.filter) {
                     console.log('use import filter')
                     exportData = {
@@ -264,7 +265,15 @@ export default {
                         'filter_id': this.filterValue
                     }
                 }
-
+            }else{
+                    console.log('use normal filter')
+                    exportData = {
+                        'img_path': this.imgShowSrc.path,
+                        'img_id': this.imgShowSrc.img_id,
+                        'img_selected': 'all',
+                        'filter_id': this.filterValue
+                    }
+                }
                 
             await axios.post(URL_JOB, exportData)
                 .then(async res => {
@@ -295,23 +304,37 @@ export default {
                 this.isLoading = true
                 this.filterValue = document.getElementById("myRange").value;
                 let img_preview = null
-                if (this.importFilter['product_name'] == this.filter) {
-                    console.log('use import filter')
-                    img_preview = {
-                        'img_id': this.imgShowSrc.img_id,
-                        'filter_id': this.importFilter['product_id'],
-                        'filter_value': this.filterValue
+                let url_preview = null
+
+                if(this.importFilter != null){
+                    if (this.importFilter['product_name'] == this.filter) {
+                        console.log('use import filter')
+                        url_preview = 'preview_adv'
+                        img_preview = {
+                            'img_id': this.imgShowSrc.img_id,
+                            'filter_id': this.importFilter['product_id'],
+                            'filter_value': this.filterValue
+                        }
+                    } else {
+                        console.log('use normal filter')
+                        url_preview = 'preview'
+                        img_preview = {
+                            'img_id': this.imgShowSrc.img_id,
+                            'filter_id': this.filter,
+                            'filter_value': this.filterValue
+                        }
                     }
-                } else {
+                }else{
                     console.log('use normal filter')
-                    img_preview = {
-                        'img_id': this.imgShowSrc.img_id,
-                        'filter_id': this.filter,
-                        'filter_value': this.filterValue
-                    }
+                        url_preview = 'preview'
+                        img_preview = {
+                            'img_id': this.imgShowSrc.img_id,
+                            'filter_id': this.filter,
+                            'filter_value': this.filterValue
+                        }
                 }
                 axios.defaults.headers.post['jwt'] = this.$store.state.jwt;
-                axios.post('preview', img_preview)
+                axios.post(url_preview, img_preview)
                     .then(res => {
                         this.isLoading = false
                         this.imgShowSrc = res.data
@@ -334,24 +357,35 @@ export default {
                 document.getElementById("myRange").value = 80
                 let img_preview = null
                 let url_preview = null
-                if (this.importFilter['product_name'] == filter_id) {
-                    console.log('use import filter')
-                    url_preview = 'preview_adv'
-                    img_preview = {
-                        'img_id': this.imgShowSrc.img_id,
-                        'filter_id': this.importFilter['product_id'],
-                        'filter_value': this.filterValue
-                    }
-                } else {
-                    console.log('use normal filter')
-                    url_preview = 'preview'
-                    img_preview = {
-                        'img_id': this.imgShowSrc.img_id,
-                        'filter_id': this.filter,
-                        'filter_value': this.filterValue
-                    }
-                }
 
+                if(this.importFilter != null){
+                    if (this.importFilter['product_name'] == filter_id) {
+                        console.log('use import filter')
+                        url_preview = 'preview_adv'
+                        img_preview = {
+                            'img_id': this.imgShowSrc.img_id,
+                            'filter_id': this.importFilter['product_id'],
+                            'filter_value': this.filterValue
+                        }
+                    } else {
+                        console.log('use normal filter')
+                        url_preview = 'preview'
+                        img_preview = {
+                            'img_id': this.imgShowSrc.img_id,
+                            'filter_id': this.filter,
+                            'filter_value': this.filterValue
+                        }
+                    }
+                }else{
+                    console.log('use normal filter')
+                        url_preview = 'preview'
+                        img_preview = {
+                            'img_id': this.imgShowSrc.img_id,
+                            'filter_id': this.filter,
+                            'filter_value': this.filterValue
+                        }
+                }
+                console.log("call api preview at : " + url_preview)
                 axios.defaults.headers.post['jwt'] = this.$store.state.jwt;
                 axios.post(url_preview, img_preview)
                     .then(res => {
