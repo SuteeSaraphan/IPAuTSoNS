@@ -5,7 +5,6 @@ import os
 import psutil
 import json
 import datetime
-import cv2
 import torch
 import pymongo
 
@@ -81,7 +80,7 @@ job_id = sys.argv[1]
 job = None
 folder = sys.argv[2]
 folder = folder+"/*"
-All_files = glob(folder)
+All_files = glob(folder+'.png') + glob(folder+'.jpg') + glob(folder+'.jpeg') + glob(folder+'.tiff')  
 
 
 client = pymongo.MongoClient("mongodb+srv://ipautsons:J0iZfrxW49cFOr4U@cluster0.lbe3op6.mongodb.net/?retryWrites=true&w=majority")
