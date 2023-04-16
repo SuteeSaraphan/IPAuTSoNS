@@ -105,6 +105,6 @@ class PaymentSerializer(serializers.ModelSerializer):
             'type',
             'pay_time',
             'credit'
-            
+
         )
         model = Payment

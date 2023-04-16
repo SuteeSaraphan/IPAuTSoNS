@@ -414,18 +414,19 @@ class ImageView(APIView):
 
     # delete image
     def delete(self, request, folder_id):
+        print("run")
         token = request.META['HTTP_JWT']
         payload = Authentication(token)
         img_id = folder_id
         image = Image_file.objects.get(img_id=img_id)
         try:
-            del_path = os.path.join(
-                #    BASE_DIR, "nas_sim\ipautsons", str(image.path))#localtest
-                "ipautsons", str(image.path))  # deploy
+            del_path = "/ipautsons/"+str(image.path)  # deploy
+                #    os.path.join(BASE_DIR, "nas_sim\ipautsons", str(image.path))#localtest
+                
             os.remove(del_path)
         except BaseException as error:
             print(error)
-            return Response(data={"status": "Delete fail !!! try again"}, status=503)
+            return Response(data={"status": "Delete fail !!! try again","cause":str(error)}, status=503)
         else:
             image.delete()
             return Response({"status": "Delete done!"})
@@ -483,14 +484,12 @@ class FolderView(APIView):
         token = request.META['HTTP_JWT']
         payload = Authentication(token)
         folder_img = Folder_img.objects.get(folder_id=folder_id)
-        print(str(type(folder_img.path)))
         try:
             shutil.rmtree("""\\"""+folder_img.path)
         except BaseException as error:
             print(error)
             return Response(data={"status": "Delete fail ! try again", "cause": str(error)}, status=503)
         else:
-            print(folder_img.folder_name)
             del_img = Image_file.objects.all().filter(img_folder=folder_img.folder_name)
             folder_img.delete()
             del_img.delete()
@@ -659,12 +658,12 @@ class ProductView(APIView):
 
 
 class MarketView(APIView):
-    print("call MarketView")
-    def get(self,request,key):
+
+    def get(self, request, key):
         token = request.META['HTTP_JWT']
         payload = Authentication(token)
-        
-        product_type , model , sort = str(key).split("_")
+
+        product_type, model, sort = str(key).split("_")
 
         if (product_type == "All" and model == "All"):
             if (sort == 'newest'):

@@ -20,7 +20,7 @@ urlpatterns = [
     path('product', views.ProductView.as_view()),
     path('product/<str:type>/<str:key>', views.ProductView.as_view()),
 
-    path('market/<str:key>',views.MarketView.as_view()),
+    path('market/<str:key>', views.MarketView.as_view()),
 
     path('payment', views.PaymentView.as_view()),
     path('feed', views.FeedView.as_view()),

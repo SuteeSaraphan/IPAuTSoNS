@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+
+kind: Job
+
+metadata:
+
+  name: testblackwhite1
+
+spec:
+
+  template:
+
+    spec:
+
+      containers:
+
+      - name: testblackwhite1
+
+        image: suteesaraphan27/blackwhite
+        volumeMounts:
+            - name: myvolume
+              mountPath: /www
+
+        command: ["python","blackwhite.py","1","/www/ea"]
+
+      restartPolicy: Never
+      volumes:
+      - name: myvolume
+        persistentVolumeClaim: 
+          claimName: mypvc

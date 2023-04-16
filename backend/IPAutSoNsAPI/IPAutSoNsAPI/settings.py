@@ -66,7 +66,6 @@ CORS_ORIGIN_ALLOW_ALL = True
 #     'http://localhost:8000',
 #     'http://127.0.0.1:8000',
 #     'http://161.246.5.53:8000',
-
 # ]
 
 
@@ -174,13 +173,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 print(BASE_DIR)
 STATIC_URL = '/static/'
-MEDIA_URL='/ipautsons/' #for deploy
+MEDIA_URL = '/ipautsons/'  # for deploy
 
-#MEDIA_URL='nas_sim/ipautsons/' #for test in loacal
-MEDIA_ROOT = '/ipautsons/' #for test in loacal
+# MEDIA_URL='nas_sim/ipautsons/' #for test in loacal
+MEDIA_ROOT = '/ipautsons/'  # for test in loacal
 
 
 # Default primary key field type
@@ -222,10 +222,10 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
-        'ipautsons.api':{
-            'handlers' : ['console'],
-            'level' : 'DEBUG',
-            'progate' : True
+        'ipautsons.api': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'progate': True
         }
     },
 }
