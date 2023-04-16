@@ -1,7 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  creationTimestamp: null
   labels:
     app: frontend
   name: frontend
@@ -13,14 +12,12 @@ spec:
   strategy: {}
   template:
     metadata:
-      creationTimestamp: null
       labels:
         app: frontend
     spec:
       containers:
-      - image: chinglew27/ipautsons-frontend:v1.6
+      - image: chinglew27/ipautsons-frontend:v1.5
         name: ipautsons
-        resources: {}
         volumeMounts:
               - name: nfs-share
                 mountPath: /ipautsons
@@ -29,4 +26,3 @@ spec:
       - name: nfs-share
         persistentVolumeClaim: 
           claimName: example
-status: {}
