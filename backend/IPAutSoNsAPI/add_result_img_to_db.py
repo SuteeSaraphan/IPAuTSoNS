@@ -12,25 +12,12 @@ client = pymongo.MongoClient(
 db = client.ipautsons
 
 img_file_col = db['api_image_file']
-folder_img_col = db['api_folder_img']
+
 
 user_id = "p5mltrbi9ar" #user ownner of this image
 img_folder = "test_processed" #folder name of image
-folder_path = os.path.join(BASE_DIR, "nas_sim\ipautsons", user_id, "root", img_folder)
+folder_path = os.path.join("ipautsons", user_id, "root", img_folder) #path of image folder
 
-folder_data = {
-                'folder_id': ''.join(random.choices(string.ascii_lowercase + string.digits, k=10)),
-                'user_id_id': user_id,
-                'folder_name': img_folder,
-                'path': folder_path,
-                'is_hidden': False
-            }
-
-try:
-    result = folder_img_col.insert_one(folder_data)
-    print(result)
-except Exception as error:
-    print(error)
 
 onlyfiles = listdir(folder_path)
 list_add_db = []
