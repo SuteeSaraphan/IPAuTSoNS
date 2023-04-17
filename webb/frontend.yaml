@@ -16,7 +16,7 @@ spec:
         app: frontend
     spec:
       containers:
-      - image: chinglew27/ipautsons-frontend:v1.5
+      - image: chinglew27/ipautsons-frontend:v1.8
         name: ipautsons
         volumeMounts:
               - name: nfs-share

@@ -1,7 +1,7 @@
-numpy==1.21.5
+numpy
 psutil==5.8.0
 opencv-python==4.5.5.62
-tensorflow==2.7.0
+tensorflow
 Pillow==8.4.0
-scipy==1.7.3
-keras==2.6.0
+scipy
+keras

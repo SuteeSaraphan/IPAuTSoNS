@@ -1,4 +1,12 @@
-numpy==1.22.3
-psutil==5.9.1
-rembg==2.0.21
+glob2
+psutil 
+tensorflow
+keras
+Pillow
+torch
+torchvision
+torchaudio
+matplotlib
+pymongo[srv]
+numpy
 

@@ -81,7 +81,7 @@ job_id = sys.argv[1]
 job = None
 folder = sys.argv[2]
 folder = folder+"/*"
-All_files = glob(folder+'.png') + glob(folder+'.jpg') + glob(folder+'.jpeg') + glob(folder+'.tiff')  
+All_files = glob(folder+'.png') + glob(folder+'.PNG') + glob(folder+'.jpg') + glob(folder+'.jpeg') + glob(folder+'.JPG') + glob(folder+'.JPEG') + glob(folder+'.tiff') + glob(folder+'.TIFF')  
 
 print(All_files)
 
