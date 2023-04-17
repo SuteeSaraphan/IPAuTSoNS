@@ -245,7 +245,7 @@ export default {
         async exportImg() {
             console.log(this.imgShowSrc)
             axios.defaults.headers.post['jwt'] = this.$store.state.jwt;
-
+            console.log("filter :" +this.filter)
             let exportData = null
             if(this.importFilter != null){
                 if (this.importFilter['product_name'] == this.filter) {
@@ -262,7 +262,7 @@ export default {
                         'img_path': this.imgShowSrc.path,
                         'img_id': this.imgShowSrc.img_id,
                         'img_selected': 'all',
-                        'filter_id': this.filterValue
+                        'filter_id': this.filter
                     }
                 }
             }else{
@@ -271,7 +271,7 @@ export default {
                         'img_path': this.imgShowSrc.path,
                         'img_id': this.imgShowSrc.img_id,
                         'img_selected': 'all',
-                        'filter_id': this.filterValue
+                        'filter_id': this.filter
                     }
                 }
                 

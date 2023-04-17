@@ -154,7 +154,8 @@ class RegisterView(APIView):
         serializer = UserSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        add_credit_result = add_credit(request.data['user_id'], 1000, 0)
+        add_credit_result = add_credit(''.join(random.choices(
+            string.ascii_lowercase + string.digits, k=25)),request.data['user_id'], 1000, 0)
         if (add_credit_result != 1):
             Response(data={"status": "ERROR Register fail ",
                      "cause": add_credit_result}, status=503)
@@ -471,12 +472,11 @@ class FolderView(APIView):
         folder_path = os.path.join(
             # BASE_DIR, "nas_sim\ipautsons", user_id, "root", folder_name)#localtest
             "ipautsons", user_id, "root", folder_name)  # deploy
-
         try:
             os.makedirs("""\\"""+folder_path)
         except OSError as error:
             print(error)
-            return Response(data={'status': '!!! Something is wrong try again !!!'}, status=503)
+            return Response(data={'status': 'ERROR481 Create folder fail !!!'}, status=503)
         else:
             folder_data = {
                 'folder_id': ''.join(random.choices(string.ascii_lowercase + string.digits, k=6)),
@@ -964,6 +964,7 @@ class ProductHistoryView(APIView):
 class MakeDockerFile(APIView):
     def post(self, request):
         logger.error('Running YAMLRunner at '+str(datetime.datetime.now()))
+        print("filter_id : " + str(request.data['filter_id']))
         token = request.META['HTTP_JWT']
         payload = Authentication(token)
         user = User.objects.get(user_id=payload['id'])
@@ -983,10 +984,12 @@ class MakeDockerFile(APIView):
             user_id=payload['id']).filter(img_folder=img_path[2]).count()
         add_result = None
         sub_result = None
+        product_on_job = None
         try:
             product_on_job = Product.objects.get(
                 product_id=request.data['filter_id'])
         except Exception as error:
+            product_on_job = None
             discount = discount_calculate(num_img)
             total_credit_use = (int(num_img)*5)*float(discount)
             user_credit = credit_check(user)
@@ -1041,7 +1044,35 @@ class MakeDockerFile(APIView):
             return Response(data={"status": "ERROR977 create job file fail", "cause": str(add_result)+" and "+str(sub_result)}, status=503)
 
         path = "/ipautsons/"+img_path[0]+"/"+img_path[1]+"/"+img_path[2]
+        if (product_on_job != None):
+            result_path = "ipautsons/"+img_path[0]+"/"+img_path[1]+"/"+img_path[2]+'_'+product_on_job.product_name
+            folder_name_result = img_path[2]+'_'+product_on_job.product_name
+        else:
+            result_path = "ipautsons/"+img_path[0]+"/"+img_path[1]+"/"+img_path[2]+'_'+request.data['filter_id']
+            folder_name_result = img_path[2]+'_'+request.data['filter_id']
 
+        try:
+            os.makedirs("""\\"""+result_path)
+        except Exception as error:
+            print(error)
+            return Response(data={'status': 'ERROR1058 Create folder fail !!!','cause':str(error)}, status=503)
+        else:
+            try:
+                folder_data = {
+                    'folder_id': ''.join(random.choices(string.ascii_lowercase + string.digits, k=6)),
+                    'user_id': payload['id'],
+                    'folder_name': folder_name_result,
+                    'path': result_path,
+                    'is_hidden': False
+                }
+
+                serializer = FolderImageSerializer(data=folder_data)
+                serializer.is_valid(raise_exception=True)
+                serializer.save()
+            except Exception as error:
+                print(error)
+                return Response(data={'status': 'ERROR1058 Create folder fail !!!','cause':str(error)}, status=503)
+        
         job_id_temp = '"'+job_id+'"'
         path_temp = '"'+path+'"'
         template = """apiVersion: batch/v1

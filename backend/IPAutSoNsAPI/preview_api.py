@@ -2,7 +2,7 @@ import requests
 
 class PreviewAPI():
     def __init__(self,img,img_type,filter_id,filter_value):
-        self.url = 'http://localhost:'
+        self.url = 'http://192.168.1.46:'
         self.img = img
         self.img_type = img_type
         self.filter_id = filter_id
@@ -14,11 +14,11 @@ class PreviewAPI():
     def do_preview(self):
         print('do preview')
         if(self.filter_id == 'Black and White'):
-            docker_url = self.url+'4000/blackwhite'
+            docker_url = self.url+'4020/blackwhite'
         elif(self.filter_id == 'ASCII'):
-            docker_url = self.url+'4000/ascii'
+            docker_url = self.url+'4020/ascii'
         elif(self.filter_id == 'PixelArt'):
-            docker_url = self.url+'4000/pixelart'
+            docker_url = self.url+'4020/pixelart'
         elif(self.filter_id == 'Object-detection'):
             docker_url = self.url+'8000/detect-to-img'
         try:
