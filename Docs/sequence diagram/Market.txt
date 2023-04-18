@@ -1,5 +1,3 @@
-title การใช้งานแอพพลิเคชันบน Market Place
-
 participant ผู้ใช้
 participant Front-End
 participant Back-End

@@ -1,5 +1,3 @@
-title การใช้งาน Marketplace สำหรับขาย Weight ที่ผู้ใช้ได้ทำการ Train
-
 participant ผู้ใช้
 participant Front-End
 participant Back-End
