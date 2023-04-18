@@ -7,7 +7,6 @@ import RegisView from "@/views/RegisView.vue";
 import SettingView from "@/views/SettingView";
 import ChangePassView from "@/views/ChangePassView";
 import ImgFolderView from "@/views/ImgFolderView";
-import DemoExportView from "@/views/DemoExportView";
 import MaketView from "@/views/MarketView";
 import ProductView from "@/views/ProductView";
 import AddProductView from "@/views/AddProductView";
@@ -75,12 +74,6 @@ const routes = [
     path: "/changepass",
     name: "changepass",
     component: ChangePassView,
-  },
-
-  {
-    path: "/demoexport",
-    name: "demoexport",
-    component: DemoExportView,
   },
 
 

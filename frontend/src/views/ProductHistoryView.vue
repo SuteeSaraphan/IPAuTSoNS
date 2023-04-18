@@ -15,14 +15,14 @@
                 <span class="bars"></span>
 
                 <div style="color:#000 ;">
-                    Payment history
+                    Product use history
                 </div>
             </header>
 
 
             <main>
                 <div class="loading" v-if="this.isLoading">Loading&#8230;</div>
-                <h1>Payment history</h1>
+                <h1>Product use history</h1>
 
 
                 <!-- filter history here  -->

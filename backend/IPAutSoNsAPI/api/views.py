@@ -33,7 +33,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(
 
 class VersionCheck(APIView):
     def get(self, request):
-        return Response({"version": "1.7"})
+        return Response({"version": "1.9"})
 
 # for Authentication user with JWT
 
@@ -158,7 +158,7 @@ class RegisterView(APIView):
             string.ascii_lowercase + string.digits, k=25)),request.data['user_id'], 1000, 0)
         if (add_credit_result != 1):
             Response(data={"status": "ERROR Register fail ",
-                     "cause": add_credit_result}, status=503)
+                     "cause": str(add_credit_result)}, status=503)
         return Response(serializer.data)
 
 # for user login
@@ -1075,6 +1075,9 @@ class MakeDockerFile(APIView):
         
         job_id_temp = '"'+job_id+'"'
         path_temp = '"'+path+'"'
+        result_path_temp = '"'+result_path+'"'
+        user_id_temp = '"'+str(payload['id'])+'"'
+
         template = """apiVersion: batch/v1
 
 kind: Job
@@ -1098,7 +1101,7 @@ spec:
             - name: nfs-share
               mountPath: /ipautsons
 
-        command: ["python","ASCII.py","""+str(job_id_temp)+""","""+str(path_temp)+"""]
+        command: ["python","ASCII.py","""+str(job_id_temp)+""","""+str(user_id_temp)+""","""+str(path_temp)+""","""+str(result_path_temp)+"""]
 
       restartPolicy: Never
       volumes:
