@@ -31,8 +31,8 @@ for i in onlyfiles:
                 'img_id': ''.join(random.choices(string.ascii_lowercase + string.digits, k=6)),
                 'user_id_id': user_id,
                 'img_type': img_type,
-                'img_folder': img_folder,
-                'path': user_id+"/root/"+img_folder+"/"+i,
+                'img_folder': img_folder.split("/")[-1],
+                'path': img_folder+"/"+i,
                 'img_size': str(file_size)
                 }
 

@@ -443,7 +443,7 @@ class ImageView(APIView):
         try:
             del_path = "/ipautsons/"+str(image.path)  # deploy
                 #    os.path.join(BASE_DIR, "nas_sim\ipautsons", str(image.path))#localtest
-                
+            
             os.remove(del_path)
         except BaseException as error:
             print(error)
@@ -473,7 +473,7 @@ class FolderView(APIView):
             # BASE_DIR, "nas_sim\ipautsons", user_id, "root", folder_name)#localtest
             "ipautsons", user_id, "root", folder_name)  # deploy
         try:
-            os.makedirs("""\\"""+folder_path)
+            os.makedirs("/"+folder_path)
         except OSError as error:
             print(error)
             return Response(data={'status': 'ERROR481 Create folder fail !!!'}, status=503)
@@ -505,7 +505,7 @@ class FolderView(APIView):
         payload = Authentication(token)
         folder_img = Folder_img.objects.get(folder_id=folder_id)
         try:
-            shutil.rmtree("""\\"""+folder_img.path)
+            shutil.rmtree("/"+folder_img.path)
         except BaseException as error:
             print(error)
             return Response(data={"status": "Delete fail ! try again", "cause": str(error)}, status=503)
@@ -1052,7 +1052,7 @@ class MakeDockerFile(APIView):
             folder_name_result = img_path[2]+'_'+request.data['filter_id']
 
         try:
-            os.makedirs("""\\"""+result_path)
+            os.makedirs("/"+result_path)
         except Exception as error:
             print(error)
             return Response(data={'status': 'ERROR1058 Create folder fail !!!','cause':str(error)}, status=503)
@@ -1075,7 +1075,7 @@ class MakeDockerFile(APIView):
         
         job_id_temp = '"'+job_id+'"'
         path_temp = '"'+path+'"'
-        result_path_temp = '"'+result_path+'"'
+        result_path_temp = '"/'+result_path+'"'
         user_id_temp = '"'+str(payload['id'])+'"'
 
         template = """apiVersion: batch/v1
