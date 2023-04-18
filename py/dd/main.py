@@ -6,14 +6,10 @@ from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont
 import base64
 from collections import Counter
-import json
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.responses import StreamingResponse
-import sys
 import numpy as np
-import os
-import datetime
 import psutil
 import torch
 
@@ -48,12 +44,12 @@ def convert_tensor_to_image(img_pt):
 app = FastAPI(
     title="API ipautsons Basic App",
     description="""Basic App""",
-    version="1.0.2",
+    version="1.0.3",
 )
 
 origins = [
     "http://localhost",
-    "http://localhost:8000",
+    "http://localhost:4020",
     "*"
 ]
 

@@ -1,4 +1,4 @@
-FROM tiangolo/uvicorn-gunicorn:python3.9-slim
+FROM python:3.9-slim
 
 LABEL maintainer="team-erc"
 
@@ -9,14 +9,16 @@ ENV TIMEOUT="200"
 
 RUN mkdir /binAPI
 
-COPY requirements.txt /binAPI
+COPY requirements.txt /binAPI/
 
-COPY . /binAPI
+COPY . /binAPI/
 
 WORKDIR /binAPI
 
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt && \
+    rm -rf /var/cache/apt/* /tmp/* /var/tmp/*
 
-EXPOSE 8000
+EXPOSE 4020
 
-CMD ["uvicorn", "main:app", "--host", "127.0.0.1", "--port", "8000"]
+CMD ["uvicorn", "main:app", "--host", "127.0.0.1", "--port", "4020"]
