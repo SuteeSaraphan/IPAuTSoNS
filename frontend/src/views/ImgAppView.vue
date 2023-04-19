@@ -206,7 +206,7 @@ export default {
 
 
         goToFolder() {
-
+            this.isLoading = true
             for (let i in this.folders) {
                 if (this.folders[i].folder_name == document.getElementById("folder_sel").value) {
                     console.log('found')
@@ -243,6 +243,7 @@ export default {
         },
 
         async exportImg() {
+            this.isLoading = true
             console.log(this.imgShowSrc)
             axios.defaults.headers.post['jwt'] = this.$store.state.jwt;
             console.log("filter :" +this.filter)
@@ -278,28 +279,18 @@ export default {
             await axios.post(URL_JOB, exportData)
                 .then(async res => {
                     console.log(res)
+                    this.isLoading = false
                     alert("Job is on processing")
                 })
                 .catch(async err => {
+                    this.isLoading = false
                     alert(err.response.data['status'] +' because '+ err.response.data['cause'])
                 })
         },
 
-        getImageOnPage(page) {
-            // get image data from database
-            this.page_sel = page;
-            console.log(this.page_sel)
-            axios.defaults.headers.post['jwt'] = this.$store.state.jwt;
-            axios.get(URL_GET_IMG + "/" + page + "/" + this.$route.params.folder_id)
-                .then(res => {
-                    console.log(res.data)
-                    this.isLoading = false
-                    this.images = res.data[0]
-                })
-
-        },
 
         filterAdjusting() {
+            this.isLoading = true
             if (this.imgShowSrc != null) {
                 this.isLoading = true
                 this.filterValue = document.getElementById("myRange").value;
@@ -351,6 +342,7 @@ export default {
         },
 
         changeFilter(filter_id) {
+            this.isLoading = true
             if (this.imgShowSrc != null) {
                 this.isLoading = true
                 this.filter = filter_id;
