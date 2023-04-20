@@ -25,7 +25,7 @@
             
 
             <div class="box">
-              <h3>20</h3>
+              <h3>2</h3>
               <span>Product ownner</span>
             </div>
 

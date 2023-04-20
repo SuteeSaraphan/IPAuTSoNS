@@ -191,7 +191,7 @@ export default {
     data() {
         return {
             filterNoneCpu: ['Black and White', 'ASCII', 'PixelArt'],
-            filterOnCpu: ['Mosaic', 'Object-detection'],
+            filterOnCpu: ['Mosaic'],
             isLoading: true,
             imgBarWidth: '175',
             folders: [],

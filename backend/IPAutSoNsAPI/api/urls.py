@@ -13,6 +13,7 @@ urlpatterns = [
     path('image', views.ImageView.as_view()),
     path('image/<str:folder_id>', views.ImageView.as_view()),
     path('image/<str:type>/<str:folder_id>', views.ImageView.as_view()),
+    
     path('all_images', views.AllImageView.as_view()),
     path('folder_img', views.FolderView.as_view()),
     path('folder_img/<str:folder_id>', views.FolderView.as_view()),

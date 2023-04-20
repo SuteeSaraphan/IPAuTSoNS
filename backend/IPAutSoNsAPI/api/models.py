@@ -68,7 +68,7 @@ class Product(models.Model):
     detail = models.TextField(max_length=1000, null=False)
     path = models.FileField(upload_to=upload_path_weight, null=False)
     product_img = models.ImageField(upload_to=upload_product_img, null=False)
-    last_update = models.DateTimeField(auto_now_add=True, null=False)
+    last_update = models.DateTimeField(auto_now_add=True, null=False,editable=True)
 
     def __str__(self):
         return self.product_id

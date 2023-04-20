@@ -628,13 +628,21 @@ class ProductView(APIView):
         product_edit.detail = request.data['detail']
         product_edit.last_update = datetime.datetime.utcnow()
 
-        weight_file = request.FILES.get('weight_file')
-        if (weight_file != None):
-            product_edit.path = weight_file
+        try:
+            weight_file = request.FILES.get('weight_file')
+        except Exception:
+            pass
+        else:
+            if (weight_file != None):
+                product_edit.path = weight_file
 
-        product_img = request.FILES.get('product_img')
-        if (product_img != None):
-            product_edit.product_img = product_img
+        try:
+            product_img = request.FILES.get('product_img')
+        except Exception:
+            pass
+        else:
+            if (product_img != None):
+                product_edit.product_img = product_img
 
         try:
             product_edit.save()
@@ -648,29 +656,28 @@ class ProductView(APIView):
         token = request.META['HTTP_JWT']
         print(request)
         payload = Authentication(token)
-        weight_file = request.FILES.get('weight_file')
-        product_img = request.FILES.get('product_img')
-        print(weight_file)
-        print(product_img)
-        product_data = {
-            'product_id': ''.join(random.choices(string.ascii_lowercase + string.digits, k=6)),
-            'user_id': payload['id'],
-            'product_name': request.data['name'],
-            'product_type': request.data['type'],
-            'model': request.data['model'],
-            'price': request.data['price'],
-            'detail': request.data['detail'],
-            'path': weight_file,
-            'product_img': product_img,
-            'last_update': datetime.datetime.utcnow()
-
-        }
-
         try:
+            weight_file = request.FILES.get('weight_file')
+            product_img = request.FILES.get('product_img')
+            print(weight_file)
+            print(product_img)
+            product_data = {
+                'product_id': ''.join(random.choices(string.ascii_lowercase + string.digits, k=6)),
+                'user_id': payload['id'],
+                'product_name': request.data['name'],
+                'product_type': request.data['type'],
+                'model': request.data['model'],
+                'price': request.data['price'],
+                'detail': request.data['detail'],
+                'path': weight_file,
+                'product_img': product_img,
+                'last_update': datetime.datetime.utcnow()
+
+            }
+
             serializer = ProductSerializer(data=product_data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
-            print("file "+weight_file.name+" upload done")
 
         except (BaseException) as error:
             print(error)
