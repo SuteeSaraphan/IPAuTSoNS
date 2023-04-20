@@ -178,7 +178,7 @@ export default {
                 ).then(
                     async (response) => {
                         alert('product upload response >' + response.data['status'])
-                        let path = "/market/newest"
+                        let path = "/market/All/All/newest"
                         window.location.href = path
                     }
                 ).catch(err => {

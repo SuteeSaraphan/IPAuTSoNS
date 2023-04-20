@@ -960,6 +960,21 @@ class ProductHistoryView(APIView):
         else:
             return Response({'status': 'no record found'}, status=503)
 
+class PriceCheckView(APIView):
+    def get(self,request,product_id,folder_name):
+        token = request.META['HTTP_JWT']
+        payload = Authentication(token)
+        try:
+            product = Product.objects.get(product_id = product_id)
+            product_price = product.price
+        except Exception as error :
+            product_price = 5
+        num_img_in_folder = Image_file.objects.all().filter(user_id=payload['id'], img_folder=folder_name).count()
+        print(num_img_in_folder)
+        discount = discount_calculate(num_img_in_folder)
+        total_price = product_price*num_img_in_folder*discount
+
+        return Response({'total_price':total_price})
 
 class MakeDockerFile(APIView):
     def post(self, request):
@@ -994,7 +1009,7 @@ class MakeDockerFile(APIView):
             total_credit_use = (int(num_img)*5)*float(discount)
             user_credit = credit_check(user)
             if (user_credit < total_credit_use):
-                return Response(data={"status": "ERROR953 create job file fail", "cause": "Do not have enough credit point"}, status=503)
+                return Response(data={"status": "ERROR1012 create job file fail", "cause": "Do not have enough credit point"}, status=503)
             try:
                 sub_result = sub_credit(buyyer_payment_id,user, total_credit_use, 0)
                 add_result = add_credit(seller_payment_id,0, total_credit_use, 0)
@@ -1007,14 +1022,14 @@ class MakeDockerFile(APIView):
                         seller_payment_del_sta = del_payment(seller_payment_id)
                     except :
                         pass
-                return Response(data={"status": "ERROR960 create job file fail", "cause": str(err)}, status=503)
+                return Response(data={"status": "ERROR1025 create job file fail", "cause": str(err)}, status=503)
             
         else:
             discount = discount_calculate(num_img)
             total_credit_use = (int(num_img)*product_on_job.price)*float(discount)
             user_credit = credit_check(user)
             if (user_credit < total_credit_use):
-                return Response(data={"status": "ERROR967 create job file fail", "cause": "Do not have enough credit point"}, status=503)
+                return Response(data={"status": "ERROR1032 create job file fail", "cause": "Do not have enough credit point"}, status=503)
             try:
                 sub_result = sub_credit(
                     buyyer_payment_id,user, total_credit_use, product_on_job.product_id)
@@ -1029,7 +1044,7 @@ class MakeDockerFile(APIView):
                         seller_payment_del_sta = del_payment(seller_payment_id)
                     except :
                         pass
-                return Response(data={"status": "ERROR974 create job file fail", "cause": str(err)}, status=503)
+                return Response(data={"status": "ERROR1074 create job file fail", "cause": str(err)}, status=503)
         
 
         if (sub_result != 1  or add_result != 1):
@@ -1041,7 +1056,7 @@ class MakeDockerFile(APIView):
                     seller_payment_del_sta = del_payment(seller_payment_id)
                 except :
                     pass
-            return Response(data={"status": "ERROR977 create job file fail", "cause": str(add_result)+" and "+str(sub_result)}, status=503)
+            return Response(data={"status": "ERROR1059 create job file fail", "cause": str(add_result)+" and "+str(sub_result)}, status=503)
 
         path = "/ipautsons/"+img_path[0]+"/"+img_path[1]+"/"+img_path[2]
         if (product_on_job != None):
@@ -1154,7 +1169,8 @@ spec:
                 yaml_run = YamlRunner(job_id)
                 x = yaml_run.run_yaml()
             if (x == 1):
-                return Response(data={"status": "File is made!"})
+                credit_check(user.user_id)
+                return Response(data={"status": "File is made!","credit_left":credit_check(user.user_id)})
             else:
                 buyyer_payment_del_sta = True
                 seller_payment_del_sta = True

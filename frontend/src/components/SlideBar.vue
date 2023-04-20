@@ -17,8 +17,8 @@
         <img src="../img/profile.jpg" alt="">
         <div class="info-profile">
           <div v-if="fname !=null & lname !=null" style="display: flex; flex-direction: row; justify-content: space-around;"><h3>{{fname}}</h3> <h3>{{lname}}</h3></div>
-          <span>Credit : {{creditTotal}}</span>
-          <span>Usage Total : {{storageSize}} GB</span>
+          <span>Credit balance: {{creditTotal}}</span>
+          <span>Storage usage total : {{storageSize}} GB</span>
           <span>{{ Math.round((100 * (storageSize/5.0))) }} % of storage</span>
           <!-- About -->
           <div class="about">
