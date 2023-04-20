@@ -173,7 +173,8 @@ import axios from 'axios';
 const URL_IMG_FOLDER = 'folder_img';
 const URL_GET_IMG = 'image';
 const URL_JOB = 'make_docker_file';
-const URL_GET_PRODUCT = "product/filter/"
+const URL_GET_PRODUCT = "product/filter/";
+const URL_GET_PRICE = "price_check/";
 
 
 export default {
@@ -194,6 +195,7 @@ export default {
             isLoading: true,
             imgBarWidth: '175',
             folders: [],
+            folder_id : null,
             images: [],
             imgShowSrc: null,
             filter: "none",
@@ -209,7 +211,6 @@ export default {
             this.isLoading = true
             for (let i in this.folders) {
                 if (this.folders[i].folder_name == document.getElementById("folder_sel").value) {
-                    console.log('found')
                     axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
                     axios.get(URL_GET_IMG + "/all/" + this.folders[i].folder_id)
                         .then(res => {
@@ -244,48 +245,79 @@ export default {
 
         async exportImg() {
             this.isLoading = true
-            console.log(this.imgShowSrc)
-            axios.defaults.headers.post['jwt'] = this.$store.state.jwt;
-            console.log("filter :" +this.filter)
-            let exportData = null
+            let price = 0
+            let filter2PriceCheck = null
             if(this.importFilter != null){
-                if (this.importFilter['product_name'] == this.filter) {
-                    console.log('use import filter')
-                    exportData = {
-                        'img_path': this.imgShowSrc.path,
-                        'img_id': this.imgShowSrc.img_id,
-                        'filter_id': this.importFilter['product_id'],
-                        'filter_value': this.filterValue
+                    if (this.importFilter['product_name'] == this.filter) {
+                        console.log('use import filter')
+                        filter2PriceCheck = this.importFilter['product_id']
+                    } else {
+                        console.log('use normal filter')
+                        filter2PriceCheck = this.filter
+                       
                     }
-                } else {
+                }else{
                     console.log('use normal filter')
-                    exportData = {
-                        'img_path': this.imgShowSrc.path,
-                        'img_id': this.imgShowSrc.img_id,
-                        'img_selected': 'all',
-                        'filter_id': this.filter
-                    }
+                    filter2PriceCheck = this.filter
                 }
-            }else{
-                    console.log('use normal filter')
-                    exportData = {
-                        'img_path': this.imgShowSrc.path,
-                        'img_id': this.imgShowSrc.img_id,
-                        'img_selected': 'all',
-                        'filter_id': this.filter
-                    }
+            axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
+            await axios.get(URL_GET_PRICE+filter2PriceCheck+"/"+document.getElementById("folder_sel").value)
+            .then(res =>{
+                console.log(res.data)
+                price = res.data['total_price']
+                if(confirm("Is job will cost "+ price +" credit. Do you want to process export ?")){
+                    console.log(this.imgShowSrc)
+                    axios.defaults.headers.post['jwt'] = this.$store.state.jwt;
+                    console.log("filter :" +this.filter)
+                    let exportData = null
+                    if(this.importFilter != null){
+                        if (this.importFilter['product_name'] == this.filter) {
+                            console.log('use import filter')
+                            exportData = {
+                                'img_path': this.imgShowSrc.path,
+                                'img_id': this.imgShowSrc.img_id,
+                                'filter_id': this.importFilter['product_id'],
+                                'filter_value': this.filterValue
+                            }
+                        } else {
+                            console.log('use normal filter')
+                            exportData = {
+                                'img_path': this.imgShowSrc.path,
+                                'img_id': this.imgShowSrc.img_id,
+                                'img_selected': 'all',
+                                'filter_id': this.filter
+                            }
+                        }
+                    }else{
+                            console.log('use normal filter')
+                            exportData = {
+                                'img_path': this.imgShowSrc.path,
+                                'img_id': this.imgShowSrc.img_id,
+                                'img_selected': 'all',
+                                'filter_id': this.filter
+                            }
+                        }
+                        
+                    axios.post(URL_JOB, exportData)
+                        .then(async res => {
+                            console.log(res)
+                            this.isLoading = false
+                            this.$store.commit('setCredit',res.data['credit_left']);
+                            alert("Job is on processing")
+                        })
+                        .catch(async err => {
+                            this.isLoading = false
+                            alert(err.response.data['status'] +' because '+ err.response.data['cause'])
+                        })
+                }else{
+                    this.isLoading = false
                 }
-                
-            await axios.post(URL_JOB, exportData)
-                .then(async res => {
-                    console.log(res)
-                    this.isLoading = false
-                    alert("Job is on processing")
-                })
-                .catch(async err => {
-                    this.isLoading = false
-                    alert(err.response.data['status'] +' because '+ err.response.data['cause'])
-                })
+            }).catch(err=>{
+                console.log(err)
+                this.isLoading = false
+                alert("Can't get product price, try again")
+            })
+            
         },
 
 
@@ -342,7 +374,6 @@ export default {
         },
 
         changeFilter(filter_id) {
-            this.isLoading = true
             if (this.imgShowSrc != null) {
                 this.isLoading = true
                 this.filter = filter_id;

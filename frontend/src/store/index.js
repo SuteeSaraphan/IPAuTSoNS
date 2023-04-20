@@ -27,6 +27,12 @@ export default createStore({
       state.creditTotal = data[3];
     },
 
+    setCredit(state, data) {
+      state.creditTotal = data;
+    },
+
+    
+
     logout(state) {
       state.jwt = ''
       state.isAuthenticated = false

@@ -23,6 +23,7 @@ urlpatterns = [
     path('market/<str:key>', views.MarketView.as_view()),
 
     path('payment', views.PaymentView.as_view()),
+    path('price_check/<str:product_id>/<str:folder_name>', views.PriceCheckView.as_view()),
     path('feed', views.FeedView.as_view()),
 
     path('user_history/<str:type>', views.UserHistoryView.as_view()),
