@@ -3,28 +3,32 @@ apiVersion: batch/v1
 kind: Job
 
 metadata:
-
   name: testascii389
 
 spec:
-
   template:
-
     spec:
-
+      nodeName: mt01 # schedule pod to specific node
       containers:
+        - name: testascii2
 
-      - name: testascii2
-
-        image: suteesaraphan27/ascii
-        volumeMounts:
+          image: suteesaraphan27/ascii
+          volumeMounts:
             - name: nfs-share
               mountPath: /ipautsons
 
-        command: ["python","ASCII.py","test_02","/ipautsons/img"]
+          command:
+            [
+              "python",
+              "ASCII.py",
+              "xvvxrlljtgf2h2y",
+              "vfl4j21hwfi",
+              "/ipautsons/vfl4j21hwfi/root/test1",
+              "ipautsons/vfl4j21hwfi/root/test1_none",
+            ]
 
       restartPolicy: Never
       volumes:
-      - name: nfs-share
-        persistentVolumeClaim: 
-          claimName: example
+        - name: nfs-share
+          persistentVolumeClaim:
+            claimName: example
