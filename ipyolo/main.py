@@ -8,7 +8,9 @@ from collections import Counter
 import json
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
-
+import glob
+from glob import glob
+import pymongo
 
 
 
