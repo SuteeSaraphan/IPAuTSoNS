@@ -6,6 +6,9 @@ import psutil
 import datetime
 import cv2
 import tensorflow as tf
+import random
+import string
+from os import *
 
 from glob import glob
 from numpy import load
@@ -63,18 +66,21 @@ def test():
             index = closet_tiles[h,w]
             main_photo[h_tile:int(h_tile+tile_size[0]), y_tile:(y_tile+tile_size[1]),:] = tiles[int(index)]
     im = Image.fromarray(imgselect)
-    im.save(selected_img)    
+    filename, extension = os.path.splitext(os.path.basename(selected_img))
+    im.save(newfolder+"/"+filename+extension)
 
 
 
     
 #command in cmd
 job_id = sys.argv[1]
+useridparam = sys.argv[2]
 job = None
-selected_img = sys.argv[2] 
 folder = sys.argv[3]
+selected_img = sys.argv[4]
+newfolder = sys.argv[5]
 folder = folder+"/*"
-All_files = glob(folder+'.png') + glob(folder+'.jpg') + glob(folder+'.jpeg') + glob(folder+'.tiff')  
+All_files = glob(folder+'.png') + glob(folder+'.PNG') + glob(folder+'.jpg') + glob(folder+'.jpeg') + glob(folder+'.JPG') + glob(folder+'.JPEG') + glob(folder+'.tiff') + glob(folder+'.TIFF') 
 
 
 print(All_files)
@@ -93,6 +99,36 @@ try:
                                                             {'job_status' : 1
                                                             }
                                                         },upsert=True)
+        img_file_col = db['api_image_file']
+
+
+    user_id = useridparam #user ownner of this image
+    img_folder = newfolder #folder name of image
+    folder_path = os.path.join("ipautsons", user_id, "root", img_folder) #path of image folder
+    path_for_add_db = img_folder.split("/")[-3:]
+    onlyfiles = listdir(folder_path)
+    list_add_db = []
+    for i in onlyfiles:
+        dict_temp = {}
+        img_type = "image/"+i.split('.')[-1]
+        file_size = os.path.getsize(folder_path+"/"+i)
+
+        dict_temp = {
+                    'img_id': ''.join(random.choices(string.ascii_lowercase + string.digits, k=6)),
+                    'user_id_id': user_id,
+                    'img_type': img_type,
+                    'img_folder': img_folder.split("/")[-1],
+                    'path': path_for_add_db[0]+"/"+path_for_add_db[1]+"/"+path_for_add_db[2]+"/"+i,
+                    'img_size': str(file_size)
+                    }
+
+        list_add_db.append(dict_temp)
+
+    try:
+        result = img_file_col.insert_many(list_add_db)
+        print(result)
+    except Exception as error:
+        print(error)
 except:
   print("An exception asd")
   if job != None and type(job) == dict:

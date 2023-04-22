@@ -4,6 +4,8 @@
 #
 #    pip-compile requirements.in
 #
+torch
+pymongo
 aiofiles==0.7.0
     # via -r requirements.in
 asgiref==3.4.1

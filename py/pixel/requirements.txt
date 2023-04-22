@@ -7,6 +7,6 @@ torch
 torchvision
 torchaudio
 matplotlib
-pymongo[srv]
 numpy
+pymongo[srv]
 

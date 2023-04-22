@@ -1,3 +1,20 @@
+# Stage 1: Build stage
+FROM python:3.9-slim-buster AS build
+
+RUN apt-get update && \
+    apt-get install -y build-essential && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY requirements.txt .
+
+RUN pip install --user --no-cache-dir --upgrade pip && \
+    pip install --user --no-cache-dir --requirement requirements.txt
+
+COPY . .
+
+# Stage 2: Runtime stage
 FROM tiangolo/uvicorn-gunicorn:python3.9-slim
 
 LABEL maintainer="team-erc"
@@ -7,16 +24,12 @@ ENV MAX_WORKERS=24
 ENV LOG_LEVEL="warning"
 ENV TIMEOUT="200"
 
-RUN mkdir /binAPI
+WORKDIR /app
 
-COPY requirements.txt /binAPI
+COPY --from=build /root/.local /root/.local
 
-COPY . /binAPI
+COPY . .
 
-WORKDIR /binAPI
+EXPOSE 4020
 
-RUN pip install -r requirements.txt
-
-EXPOSE 8000
-
-CMD ["uvicorn", "main:app", "--host", "127.0.0.1", "--port", "8000"]
+CMD ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "4020"]

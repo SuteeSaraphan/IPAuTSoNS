@@ -91,11 +91,9 @@ try:
     user_id = useridparam #user ownner of this image
     img_folder = newfolder #folder name of image
     folder_path = os.path.join("ipautsons", user_id, "root", img_folder) #path of image folder
-
-
+    path_for_add_db = img_folder.split("/")[-3:]
     onlyfiles = listdir(folder_path)
     list_add_db = []
-
     for i in onlyfiles:
         dict_temp = {}
         img_type = "image/"+i.split('.')[-1]
@@ -106,7 +104,7 @@ try:
                     'user_id_id': user_id,
                     'img_type': img_type,
                     'img_folder': img_folder.split("/")[-1],
-                    'path': img_folder+"/"+i,
+                    'path': path_for_add_db[0]+"/"+path_for_add_db[1]+"/"+path_for_add_db[2]+"/"+i,
                     'img_size': str(file_size)
                     }
 

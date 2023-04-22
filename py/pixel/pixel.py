@@ -3,7 +3,6 @@ import glob
 import numpy as np
 import os
 import psutil
-import json
 import datetime
 import torch
 import pymongo
@@ -37,7 +36,11 @@ def test():
         imageinput = All_files[x]
         output = All_files[x]
         kernel_size = 10
-        pixel_size = 16
+        if newpixelsize == None:
+           newpixelsize = 0
+           pixel_size = 16
+        else:
+            pixel_size = int(newpixelsize)
         edge_thresh = 100
 
         img_input = Image.open(imageinput)
@@ -53,28 +56,8 @@ def test():
                 param_edge_thresh=edge_thresh
             )
         img_output = convert_tensor_to_image(img_pt_output)
-        img_output.save(newfolder+"/"+output)
- 
-def saveLog():
-    # Data to be written
-    dictionary = {
-        "id": iduser,
-        "job": command,
-        "date": str(datetime.datetime.now()),
-        "folder": folder,
-        "countfiles": len(All_files),
-        "files": All_files
-    }
-     
-    # Serializing json
-    json_object = json.dumps(dictionary, indent=4)
-     
-    # Writing to sample.json
-    dt = datetime.datetime.today()
-    namefile = str(iduser)+""+str(dt.day)+""+str(dt.month)+""+str(dt.year)
-    with open(str(namefile)+".json", "a+") as outfile:
-        outfile.write(json_object)
-
+        filename, extension = os.path.splitext(os.path.basename(output))
+        img_output.save(newfolder+"/"+filename+extension)
     
 #command in cmd
 
@@ -83,8 +66,9 @@ useridparam = sys.argv[2]
 job = None
 folder = sys.argv[3]
 newfolder = sys.argv[4]
+newpixelsize = sys.argv[5]
 folder = folder+"/*"
-All_files = glob(folder+'.png') + glob(folder+'.jpg') + glob(folder+'.jpeg') + glob(folder+'.tiff')  
+All_files = glob(folder+'.png') + glob(folder+'.PNG') + glob(folder+'.jpg') + glob(folder+'.jpeg') + glob(folder+'.JPG') + glob(folder+'.JPEG') + glob(folder+'.tiff') + glob(folder+'.TIFF')
 
 
 client = pymongo.MongoClient("mongodb+srv://ipautsons:J0iZfrxW49cFOr4U@cluster0.lbe3op6.mongodb.net/?retryWrites=true&w=majority")
@@ -103,20 +87,15 @@ try:
                                                         {'job_status' : 1
                                                         }
                                                     },upsert=True)
-    client = pymongo.MongoClient("mongodb+srv://ipautsons:J0iZfrxW49cFOr4U@cluster0.lbe3op6.mongodb.net/?retryWrites=true&w=majority")
-    db = client.ipautsons
-
     img_file_col = db['api_image_file']
 
 
     user_id = useridparam #user ownner of this image
     img_folder = newfolder #folder name of image
     folder_path = os.path.join("ipautsons", user_id, "root", img_folder) #path of image folder
-
-
+    path_for_add_db = img_folder.split("/")[-3:]
     onlyfiles = listdir(folder_path)
     list_add_db = []
-
     for i in onlyfiles:
         dict_temp = {}
         img_type = "image/"+i.split('.')[-1]
@@ -126,8 +105,8 @@ try:
                     'img_id': ''.join(random.choices(string.ascii_lowercase + string.digits, k=6)),
                     'user_id_id': user_id,
                     'img_type': img_type,
-                    'img_folder': img_folder,
-                    'path': user_id+"/root/"+img_folder+"/"+i,
+                    'img_folder': img_folder.split("/")[-1],
+                    'path': path_for_add_db[0]+"/"+path_for_add_db[1]+"/"+path_for_add_db[2]+"/"+i,
                     'img_size': str(file_size)
                     }
 

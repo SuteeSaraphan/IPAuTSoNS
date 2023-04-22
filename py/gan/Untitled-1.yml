@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: yoloapi
+  name: yoloapi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: yoloapi
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: yoloapi
+    spec:
+      containers:
+        - image: suteesaraphan27/yoloapi
+          name: ipautsons
+          ports:
+            - containerPort: 4050
+          resources: {}
+          volumeMounts:
+            - name: nfs-share
+              mountPath: /ipautsons
+      volumes:
+        - name: nfs-share
+          persistentVolumeClaim:
+            claimName: example
+status: {}

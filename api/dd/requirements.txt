@@ -4,8 +4,8 @@
 #
 #    pip-compile requirements.in
 #
-keras==2.6.0
-tensorflow==2.7.0
+keras
+tensorflow
 aiofiles==0.7.0
     # via -r requirements.in
 asgiref==3.4.1

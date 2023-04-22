@@ -53,7 +53,7 @@ app = FastAPI(
 
 origins = [
     "http://localhost",
-    "http://localhost:8000",
+    "http://localhost:4020",
     "*"
 ]
 
@@ -73,11 +73,11 @@ async def root():
 
 
 @app.post("/pixelart")
-async def convert_image_to_pixelart(file: bytes = File(...)):
+async def convert_image_to_pixelart(file: bytes = File(...), pixel = 16):
     img_input = get_image_from_bytes(file)
     kernel_size = 8
-    pixel_size = 16
     edge_thresh = 70
+    pixel_size = int(pixel)
     img_pt_input = convert_image_to_tensor(img_input)
     model = Photo2PixelModel()
     model.eval()
@@ -123,10 +123,10 @@ async def convert_image_to_blackwhite(file: bytes = File(...)):
 async def convert_image_to_mosaig(file: bytes = File(...), folders = ""):
     imgselect = get_image_from_bytes(file)
     folder = folders+"/*"
-    All_files = glob(folder+'.png') + glob(folder+'.jpg') + glob(folder+'.jpeg') + glob(folder+'.tiff')
-    tile_size = [5,5]
+    All_files = glob(folder+'.png') + glob(folder+'.PNG') + glob(folder+'.jpg') + glob(folder+'.jpeg') + glob(folder+'.JPG') + glob(folder+'.JPEG') + glob(folder+'.tiff') + glob(folder+'.TIFF')
     imgselect = np.array(imgselect)
     h,w,c = imgselect.shape
+    tile_size = [5,5]
     h_tile = int(h/tile_size[0])
     w_tile = int(w/tile_size[1])
     tile = np.zeros((h_tile,w_tile,c))
