@@ -1075,8 +1075,8 @@ class MakeDockerFile(APIView):
             docker_image_name = '"'+"..."+'"'
             in_command_file_name = '"'+"..."+'"'
         else:
-            result_path = "ipautsons/"+img_path[0]+"/"+img_path[1]+"/"+img_path[2]+'_'+request.data['product_id']
-            folder_name_result = img_path[2]+'_'+request.data['product_id']
+            result_path = "ipautsons/"+img_path[0]+"/"+img_path[1]+"/"+img_path[2]+'_'+(request.data['product_id'].replace(" ", "_"))
+            folder_name_result = img_path[2]+'_'+(request.data['product_id'].replace(" ", "_"))
             match request.data['product_id']:
                 case 'Black and White':
                     docker_image_name = "blackwhite"
