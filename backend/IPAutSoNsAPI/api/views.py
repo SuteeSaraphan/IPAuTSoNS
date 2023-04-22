@@ -611,7 +611,7 @@ class ProductView(APIView):
 
             return response
 
-        elif (type == 'filter'):
+        elif (type == 'img_app'):
 
             product = ProductSerializer(
                 Product.objects.get(product_id=key))
@@ -679,9 +679,9 @@ class ProductView(APIView):
             serializer.is_valid(raise_exception=True)
             serializer.save()
 
-        except (BaseException) as error:
-            print(error)
-            return Response(data={"status": "Fail to add product try again."}, status=503)
+        except (Exception) as error:
+            print(str(error))
+            return Response(data={"status": "Fail to add product try again.","cause":str(error)}, status=503)
         else:
             return Response({"status": "Add product successful"})
 

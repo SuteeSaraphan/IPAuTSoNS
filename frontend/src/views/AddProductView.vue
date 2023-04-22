@@ -182,7 +182,7 @@ export default {
                         window.location.href = path
                     }
                 ).catch(err => {
-                    alert(err)
+                    alert(err.response.data['status'] + ' because ' + err.response.data['cause'])
                 })
             } else {
                 alert('Please upload image and weight before add product')

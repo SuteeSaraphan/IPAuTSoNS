@@ -12,7 +12,6 @@ class PreviewAPI():
         return str(self.img)
 
     def do_preview(self):
-        print('do preview')
         if(self.filter_id == 'Black and White'):
             docker_url = self.url+'4020/blackwhite'
         elif(self.filter_id == 'ASCII'):

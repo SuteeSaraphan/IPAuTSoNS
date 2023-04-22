@@ -24,22 +24,20 @@
                 <div style="display: flex;flex-direction: row;">
                     <div class="loading" v-if="this.isLoading">Loading&#8230;</div>
                     <input type="checkbox" name="" id="sidebar-toggle">
-                    <!----------------------------------------------------- filter bar ----------------------------------------------------->
+                    <!----------------------------------------------------- product bar ----------------------------------------------------->
                     <div style="width : 20%;
-                                                              padding-right: 10px;
-                                                              height: 100%;
-                                                              background-color: #383C4A;
-                                                              overflow-y: scroll;">
+                            padding-right: 10px;
+                            height: 100%;
+                            background-color: #383C4A;">
 
-                        <input type="text" v-model="search" placeholder="Search" />
                         <div class="sidebar-main">
                             <div class="sidebar-menu">
 
                                 <div class="menu-head">
-                                    <span>Basic filter</span>
+                                    <span>Basic product</span>
                                 </div>
                                 <ul>
-                                    <li v-for=" i in this.filterNoneCpu" v-bind:key="i"
+                                    <li v-for=" i in this.basicProduct" v-bind:key="i"
                                         style="background-color: #4B5162;padding: 10px;" @click="changeFilter(i)">
                                         <a>
                                             <span class="ri-function-line"></span>
@@ -49,14 +47,18 @@
 
                                 </ul>
                                 <div class="menu-head">
-                                    <span>Advance Filter</span>
+                                    <span>Marketplace product</span>
                                 </div>
                                 <ul>
-                                    <li v-for=" i in this.filterOnCpu" v-bind:key="i"
+                                    <li v-if="this.marketplaceProduct == null"
+                                        style="background-color: #4B5162;padding: 10px;">
+                                        <a> Don't have product from marketplace. </a>
+                                    </li>
+                                    <li v-if="this.marketplaceProduct != null"
                                         style="background-color: #4B5162;padding: 10px;" @click="changeFilter(i)">
                                         <a>
                                             <span class="ri-function-line"></span>
-                                            {{ i }}
+                                            {{ this.marketplaceProduct }}
                                         </a>
                                     </li>
 
@@ -65,7 +67,7 @@
                             </div>
                         </div>
                     </div>
-                    <!----------------------------------------------------- end of filter bar ----------------------------------------------------->
+                    <!----------------------------------------------------- end of product bar ----------------------------------------------------->
 
 
                     <!-- image list show -->
@@ -92,7 +94,6 @@
                         <div style="display: flex;
                                                                 flex-direction: row; 
                                                                 width: 100%;
-                            
                                                                 padding:10px;
                                                                 overflow-x: scroll;
                                                                 align-items: center;
@@ -120,10 +121,14 @@
 
                         </div>
                         <div v-if="this.imgShowSrc != null"
-                            style="display: flex; flex-direction: row; justify-items:flex-start; align-items: center;">
-
-                            <div style=" width: 15%; text-align: center;">Filter :</div>
+                            style="
+                            display: flex;
+                            flex-direction: column;
+                            justify-items:flex-end;
+                            align-items: flex-end;
+                            padding-bottom: 2%;">
                             <!-- sliding bar -->
+                            <!-- <div style=" width: 15%; text-align: center;">Filter :</div>
                             <div class="slidecontainer" style="width: 100%;
                                                                                         display: flex; 
                                                                                         flex-direction: column; 
@@ -133,18 +138,13 @@
                                                     ">
                                 <input type="range" min="1" max="100" value="80" class="slider" id="myRange"
                                     @change="filterAdjusting" style="width: 100%;">
-                            </div>
+                            </div> -->
                             <!-- end of sliding bar -->
 
                             <!-- Export botton -->
-                            <div style="
-                                                                    display: flex;
-                                                                    flex-direction: row;
-                                                                    justify-content: flex-end;
-                                                                    padding:20px;">
+                            <div>
                                 <button type="button" @click="exportImg" style="
                                                                   font-weight: bold;
-
                                                                   color: #000;
                                                                   padding: 10px;">
                                     Export
@@ -173,7 +173,7 @@ import axios from 'axios';
 const URL_IMG_FOLDER = 'folder_img';
 const URL_GET_IMG = 'image';
 const URL_JOB = 'make_docker_file';
-const URL_GET_PRODUCT = "product/filter/";
+const URL_GET_PRODUCT = "product/img_app/";
 const URL_GET_PRICE = "price_check/";
 
 
@@ -190,17 +190,16 @@ export default {
     },
     data() {
         return {
-            filterNoneCpu: ['Black and White', 'ASCII', 'PixelArt'],
-            filterOnCpu: ['Mosaic'],
+            basicProduct: ['Black and White', 'ASCII', 'PixelArt', 'Mosaic'],
+            marketplaceProduct: null,
             isLoading: true,
-            imgBarWidth: '175',
             folders: [],
-            folder_id : null,
+            folder_id: null,
             images: [],
             imgShowSrc: null,
-            filter: "none",
-            filterValue: 80,
-            importFilter: null
+            product: null,
+            adjValue: 80,
+            importProduct: null
 
         }
     },
@@ -230,12 +229,15 @@ export default {
 
 
         changeImg(img_id) {
+            this.isLoading = true
             this.imgShowSrc = null
             axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
             axios.get(URL_GET_IMG + "/once/" + img_id)
                 .then(res => {
+                    this.isLoading = false
                     this.imgShowSrc = res.data[0]
                 }).catch(error => {
+                    this.isLoading = false
                     console.log(error)
                     alert("Something went wrong try again")
 
@@ -247,77 +249,77 @@ export default {
             this.isLoading = true
             let price = 0
             let filter2PriceCheck = null
-            if(this.importFilter != null){
-                    if (this.importFilter['product_name'] == this.filter) {
-                        console.log('use import filter')
-                        filter2PriceCheck = this.importFilter['product_id']
-                    } else {
-                        console.log('use normal filter')
-                        filter2PriceCheck = this.filter
-                       
-                    }
-                }else{
-                    console.log('use normal filter')
-                    filter2PriceCheck = this.filter
+            if (this.importProduct != null) {
+                if (this.importProduct['product_name'] == this.product) {
+                    console.log('use import product')
+                    filter2PriceCheck = this.importProduct['product_id']
+                } else {
+                    console.log('use normal product')
+                    filter2PriceCheck = this.product
+
                 }
+            } else {
+                console.log('use normal product')
+                filter2PriceCheck = this.product
+            }
             axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
-            await axios.get(URL_GET_PRICE+filter2PriceCheck+"/"+document.getElementById("folder_sel").value)
-            .then(res =>{
-                console.log(res.data)
-                price = res.data['total_price']
-                if(confirm("Is job will cost "+ price +" credit. Do you want to process export ?")){
-                    console.log(this.imgShowSrc)
-                    axios.defaults.headers.post['jwt'] = this.$store.state.jwt;
-                    console.log("filter :" +this.filter)
-                    let exportData = null
-                    if(this.importFilter != null){
-                        if (this.importFilter['product_name'] == this.filter) {
-                            console.log('use import filter')
-                            exportData = {
-                                'img_path': this.imgShowSrc.path,
-                                'img_id': this.imgShowSrc.img_id,
-                                'filter_id': this.importFilter['product_id'],
-                                'filter_value': this.filterValue
+            await axios.get(URL_GET_PRICE + filter2PriceCheck + "/" + document.getElementById("folder_sel").value)
+                .then(res => {
+                    console.log(res.data)
+                    price = res.data['total_price']
+                    if (confirm("Is job will cost " + price + " credit. Do you want to process export ?")) {
+                        console.log(this.imgShowSrc)
+                        axios.defaults.headers.post['jwt'] = this.$store.state.jwt;
+                        console.log("product :" + this.product)
+                        let exportData = null
+                        if (this.importProduct != null) {
+                            if (this.importProduct['product_name'] == this.product) {
+                                console.log('use import product')
+                                exportData = {
+                                    'img_path': this.imgShowSrc.path,
+                                    'img_id': this.imgShowSrc.img_id,
+                                    'filter_id': this.importProduct['product_id'],
+                                    'filter_value': this.adjValue
+                                }
+                            } else {
+                                console.log('use normal product')
+                                exportData = {
+                                    'img_path': this.imgShowSrc.path,
+                                    'img_id': this.imgShowSrc.img_id,
+                                    'img_selected': 'all',
+                                    'filter_id': this.product
+                                }
                             }
                         } else {
-                            console.log('use normal filter')
+                            console.log('use normal product')
                             exportData = {
                                 'img_path': this.imgShowSrc.path,
                                 'img_id': this.imgShowSrc.img_id,
                                 'img_selected': 'all',
-                                'filter_id': this.filter
+                                'filter_id': this.product
                             }
                         }
-                    }else{
-                            console.log('use normal filter')
-                            exportData = {
-                                'img_path': this.imgShowSrc.path,
-                                'img_id': this.imgShowSrc.img_id,
-                                'img_selected': 'all',
-                                'filter_id': this.filter
-                            }
-                        }
-                        
-                    axios.post(URL_JOB, exportData)
-                        .then(async res => {
-                            console.log(res)
-                            this.isLoading = false
-                            this.$store.commit('setCredit',res.data['credit_left']);
-                            alert("Job is on processing")
-                        })
-                        .catch(async err => {
-                            this.isLoading = false
-                            alert(err.response.data['status'] +' because '+ err.response.data['cause'])
-                        })
-                }else{
+
+                        axios.post(URL_JOB, exportData)
+                            .then(async res => {
+                                console.log(res)
+                                this.isLoading = false
+                                this.$store.commit('setCredit', res.data['credit_left']);
+                                alert("Job is on processing")
+                            })
+                            .catch(async err => {
+                                this.isLoading = false
+                                alert(err.response.data['status'] + ' because ' + err.response.data['cause'])
+                            })
+                    } else {
+                        this.isLoading = false
+                    }
+                }).catch(err => {
+                    console.log(err)
                     this.isLoading = false
-                }
-            }).catch(err=>{
-                console.log(err)
-                this.isLoading = false
-                alert("Can't get product price, try again")
-            })
-            
+                    alert("Can't get product price, try again")
+                })
+
         },
 
 
@@ -325,36 +327,36 @@ export default {
             this.isLoading = true
             if (this.imgShowSrc != null) {
                 this.isLoading = true
-                this.filterValue = document.getElementById("myRange").value;
+                this.adjValue = document.getElementById("myRange").value;
                 let img_preview = null
                 let url_preview = null
 
-                if(this.importFilter != null){
-                    if (this.importFilter['product_name'] == this.filter) {
-                        console.log('use import filter')
+                if (this.importProduct != null) {
+                    if (this.importProduct['product_name'] == this.product) {
+                        console.log('use import product')
                         url_preview = 'preview_adv'
                         img_preview = {
                             'img_id': this.imgShowSrc.img_id,
-                            'filter_id': this.importFilter['product_id'],
-                            'filter_value': this.filterValue
+                            'filter_id': this.importProduct['product_id'],
+                            'filter_value': this.adjValue
                         }
                     } else {
-                        console.log('use normal filter')
+                        console.log('use normal product')
                         url_preview = 'preview'
                         img_preview = {
                             'img_id': this.imgShowSrc.img_id,
-                            'filter_id': this.filter,
-                            'filter_value': this.filterValue
+                            'filter_id': this.product,
+                            'filter_value': this.adjValue
                         }
                     }
-                }else{
-                    console.log('use normal filter')
-                        url_preview = 'preview'
-                        img_preview = {
-                            'img_id': this.imgShowSrc.img_id,
-                            'filter_id': this.filter,
-                            'filter_value': this.filterValue
-                        }
+                } else {
+                    console.log('use normal product')
+                    url_preview = 'preview'
+                    img_preview = {
+                        'img_id': this.imgShowSrc.img_id,
+                        'filter_id': this.product,
+                        'filter_value': this.adjValue
+                    }
                 }
                 axios.defaults.headers.post['jwt'] = this.$store.state.jwt;
                 axios.post(url_preview, img_preview)
@@ -376,37 +378,37 @@ export default {
         changeFilter(filter_id) {
             if (this.imgShowSrc != null) {
                 this.isLoading = true
-                this.filter = filter_id;
+                this.product = filter_id;
                 document.getElementById("myRange").value = 80
                 let img_preview = null
                 let url_preview = null
 
-                if(this.importFilter != null){
-                    if (this.importFilter['product_name'] == filter_id) {
-                        console.log('use import filter')
+                if (this.importProduct != null) {
+                    if (this.importProduct['product_name'] == filter_id) {
+                        console.log('use import product')
                         url_preview = 'preview_adv'
                         img_preview = {
                             'img_id': this.imgShowSrc.img_id,
-                            'filter_id': this.importFilter['product_id'],
-                            'filter_value': this.filterValue
+                            'filter_id': this.importProduct['product_id'],
+                            'filter_value': this.adjValue
                         }
                     } else {
-                        console.log('use normal filter')
+                        console.log('use normal product')
                         url_preview = 'preview'
                         img_preview = {
                             'img_id': this.imgShowSrc.img_id,
-                            'filter_id': this.filter,
-                            'filter_value': this.filterValue
+                            'filter_id': this.product,
+                            'filter_value': this.adjValue
                         }
                     }
-                }else{
-                    console.log('use normal filter')
-                        url_preview = 'preview'
-                        img_preview = {
-                            'img_id': this.imgShowSrc.img_id,
-                            'filter_id': this.filter,
-                            'filter_value': this.filterValue
-                        }
+                } else {
+                    console.log('use normal product')
+                    url_preview = 'preview'
+                    img_preview = {
+                        'img_id': this.imgShowSrc.img_id,
+                        'filter_id': this.product,
+                        'filter_value': this.adjValue
+                    }
                 }
                 console.log("call api preview at : " + url_preview)
                 axios.defaults.headers.post['jwt'] = this.$store.state.jwt;
@@ -453,9 +455,9 @@ export default {
         if (this.$route.params.product_id != "0") {
             axios.get(URL_GET_PRODUCT + this.$route.params.product_id)
                 .then(res => {
-                    this.importFilter = res.data
-                    console.log(this.importFilter)
-                    this.filterOnCpu.push(res.data['product_name'])
+                    this.importProduct = res.data
+                    console.log(this.importProduct)
+                    this.marketplaceProduct = res.data['product_name']
                 }).catch(err => {
                     console.log(err)
                     alert("Filter loading fail, try again")
