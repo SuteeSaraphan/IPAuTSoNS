@@ -77,8 +77,8 @@ export default {
 
     },
     methods: {
-        editProfile() {
-            axios.put('/user',
+        async editProfile() {
+            await axios.put('/user',
                 {
                     'jwt': this.cookies.get('jwt'),
                     'first_name': document.getElementById("first_name").value,
@@ -100,9 +100,9 @@ export default {
             document.getElementById("last_name").value = ""
         }
     },
-    created() {
+    async created() {
         axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
-        axios.get('user').then(async res => {
+        await axios.get('user').then(async res => {
             document.getElementById("email").value = res.data.email
             document.getElementById("first_name").value = res.data.first_name
             document.getElementById("last_name").value = res.data.last_name

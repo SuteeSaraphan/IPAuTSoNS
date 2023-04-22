@@ -97,13 +97,13 @@ export default {
     },
     methods: {
 
-        addNewFolder() {
+        async addNewFolder() {
             let newFolderName = prompt('Enter folder name');
             if (newFolderName.length == 0) {
                 alert("Folder name is empty")
             } else {
                 axios.defaults.headers.post['jwt'] = this.$store.state.jwt;
-                axios.post('folder_img',
+                await axios.post('folder_img',
                     {
                         'jwt': this.$store.state.jwt,
                         "folder_name": newFolderName
@@ -128,10 +128,10 @@ export default {
         },
 
 
-        deleteFolder(folder_id) {
+        async deleteFolder(folder_id) {
             if (confirm("Are you sure to delete this folder ?")) {
                 axios.defaults.headers.delete['jwt'] = this.$store.state.jwt;
-                axios.delete("folder_img/" + folder_id)
+                await axios.delete("folder_img/" + folder_id)
                     .then(async res => {
                         alert(res.data['status']);
                         location.reload();
@@ -149,10 +149,10 @@ export default {
     components: {
         SlideBar
     },
-    created() {
+    async created() {
         axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
         const URL = 'folder_img';
-        axios.get(URL)
+        await axios.get(URL)
             .then(res => {
                 this.files = res.data;
                 this.isLoading = false

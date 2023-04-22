@@ -141,7 +141,7 @@ export default {
         },
 
         //add product to database
-        editProduct() {
+        async editProduct() {
             //console.log(this.folder.folder_name)
             this.isLoading = true
             let data = new FormData();
@@ -169,7 +169,7 @@ export default {
                 }
             }
             axios.defaults.headers.put['jwt'] = this.$store.state.jwt;
-            axios.put(
+            await axios.put(
                 URL_PRODUCT,
                 data,
                 config
@@ -201,11 +201,11 @@ export default {
         SlideBar,
         //VueSlideBar
     },
-    created() {
+    async created() {
         console.log(this.$route.params.product_id)
         // count image in from data base
         axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
-        axios.get(URL_PRODUCT + '/once/' + this.$route.params.product_id)
+        await axios.get(URL_PRODUCT + '/once/' + this.$route.params.product_id)
             .then(res => {
                 //console.log('image : ' + res.data)
                 console.log(res.data);

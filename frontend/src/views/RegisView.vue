@@ -76,7 +76,7 @@ export default {
     },
     methods: {
 
-        register() {
+        async register() {
             if (document.getElementById("email").value.length == 0) {
                 alert("Email is empty")
             } else if (document.getElementById("password").value.length == 0) {
@@ -89,7 +89,7 @@ export default {
                 alert("Lastname is empty")
             } else {
                 if (this.user.password == document.getElementById("password_confirm").value) {
-                    axios.post('register',
+                    await axios.post('register',
                         {
                             'user_id': Math.random().toString(36).slice(2),
                             'email': this.user.email,

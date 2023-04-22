@@ -161,11 +161,11 @@ export default {
         SlideBar,
         //VueSlideBar
     },
-    created() {
+    async created() {
         console.log(this.$route.params.product_id)
         // count image in from data base
         axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
-        axios.get(URL_GET_PRODUCT + '/once/' + this.$route.params.product_id)
+        await axios.get(URL_GET_PRODUCT + '/once/' + this.$route.params.product_id)
             .then(res => {
                 //console.log('image : ' + res.data)
                 console.log(res.data);

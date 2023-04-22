@@ -176,10 +176,10 @@ export default {
         SlideBar,
         //VueSlideBar
     },
-    created() {
+    async created() {
         console.log(this.$route.params.type);
         axios.defaults.headers.get['jwt']= this.$store.state.jwt;
-        axios.get(URL_PRODUCT_HISTORY+"/"+this.$route.params.product_id+"/"+this.$route.params.type)
+        await axios.get(URL_PRODUCT_HISTORY+"/"+this.$route.params.product_id+"/"+this.$route.params.type)
             .then(res => {
                 this.payments = res.data
                 this.isLoading = false

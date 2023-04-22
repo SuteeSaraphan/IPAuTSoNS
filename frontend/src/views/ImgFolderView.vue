@@ -235,11 +235,11 @@ export default {
         },
 
         //view full resolution image
-        fullImageView(img_id) {
+        async fullImageView(img_id) {
             this.fullImage = null
             this.fullShow = true
             axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
-            axios.get(URL_IMG + "/once/" + img_id)
+            await axios.get(URL_IMG + "/once/" + img_id)
                 .then(res => {
                     this.fullImage = res.data[0]
                     console.log(this.fullImage)
@@ -247,27 +247,15 @@ export default {
         },
 
         //delete image 
-        deleteImage(img_id) {
+        async deleteImage(img_id) {
             if (confirm("Are you sure to delete this image ?")) {
                 axios.defaults.headers.delete['jwt'] = this.$store.state.jwt;
-                axios.delete(URL_IMG + "/" + img_id)
+                await axios.delete(URL_IMG + "/" + img_id)
                     .then(async res => {
                         alert(res.data['status']);
                         location.reload();
                     })
             }
-        },
-
-        // edit image name
-        editImgName() {
-            let text;
-            let person = prompt("Please enter your name:", "Harry Potter");
-            if (person == null || person == "") {
-                text = "User cancelled the prompt.";
-            } else {
-                text = "Hello " + person + "! How are you today?";
-            }
-            document.getElementById("demo").innerHTML = text;
         },
 
         // for show image name by cut it out from path
@@ -283,11 +271,12 @@ export default {
 
         },
 
-        getImageOnPage(page) {
+        async getImageOnPage(page) {
             // get image data from data base
             this.pageSel = page;
             //console.log(this.pageSel)
-            axios.get(URL_IMG + "/" + page + "/" + this.$route.params.folder_id)
+            axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
+            await axios.get(URL_IMG + "/" + page + "/" + this.$route.params.folder_id)
                 .then(res => {
                     this.isLoading = false
                     this.images = res.data
@@ -304,10 +293,10 @@ export default {
         SlideBar,
         RadialProgressBar
     },
-    created() {
+    async created() {
         axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
         //check rights in this folder
-        axios.get(URL_IMG_FOLDER)
+        await axios.get(URL_IMG_FOLDER)
             .then(res => {
                 for (let i in res.data) {
                     if (this.$route.params.folder_id == res.data[i].folder_id) {

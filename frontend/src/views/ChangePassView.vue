@@ -73,8 +73,8 @@ export default {
 
     },
     methods: {
-        editPassword() {
-            axios.put('password',
+        async editPassword() {
+            await axios.put('password',
                 {
                     'jwt': this.$store.state.jwt,
                     'oldPassword': document.getElementById("oldPassword").value,
@@ -98,10 +98,10 @@ export default {
         }
 
     },
-    created() {
+    async created() {
 
         axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
-        axios.get('user')
+        await axios.get('user')
             .then(res => res)
             .catch(err => {
                 alert('Can not change password now try again later')

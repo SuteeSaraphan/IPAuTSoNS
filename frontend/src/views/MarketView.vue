@@ -224,10 +224,6 @@ export default {
         //VueSlideBar
     },
     async created() {
-        console.log(this.$route.params.sort)
-        console.log(this.$route.params.type)
-        console.log(this.$route.params.model)
-        
         //---/market/:type/:model/:sort---
         axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
         await axios.get('market/'+ this.$route.params.type+'_'+this.$route.params.model+'_'+this.$route.params.sort)

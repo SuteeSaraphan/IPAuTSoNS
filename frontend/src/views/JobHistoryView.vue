@@ -190,9 +190,9 @@ export default {
         SlideBar,
         //VueSlideBar
     },
-    created() {
+    async created() {
             axios.defaults.headers.get['jwt'] = this.$store.state.jwt
-            axios.get(URL_JOB_HISTORY+"/"+this.$route.params.type)
+            await axios.get(URL_JOB_HISTORY+"/"+this.$route.params.type)
                 .then(res => {
                     this.jobs = res.data;
                     this.isLoading = false; 

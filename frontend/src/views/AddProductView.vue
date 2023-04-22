@@ -148,7 +148,7 @@ export default {
         },
 
         //add product to database
-        addProduct() {
+        async addProduct() {
             console.log("type : "+document.getElementById("ptype").value)
             if (this.selectedImg != null & this.selectedWeight != null) {
                 this.isLoading = true
@@ -171,7 +171,7 @@ export default {
                     }
                 }
                 axios.defaults.headers.post['jwt'] = this.$store.state.jwt;
-                axios.post(
+                await axios.post(
                     URL_ADD_PRODUCT,
                     data,
                     config

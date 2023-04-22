@@ -228,11 +228,11 @@ export default {
 
 
 
-        changeImg(img_id) {
+        async changeImg(img_id) {
             this.isLoading = true
             this.imgShowSrc = null
             axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
-            axios.get(URL_GET_IMG + "/once/" + img_id)
+            await axios.get(URL_GET_IMG + "/once/" + img_id)
                 .then(res => {
                     this.isLoading = false
                     this.imgShowSrc = res.data[0]
@@ -323,7 +323,7 @@ export default {
         },
 
 
-        filterAdjusting() {
+        async filterAdjusting() {
             this.isLoading = true
             if (this.imgShowSrc != null) {
                 this.isLoading = true
@@ -359,7 +359,7 @@ export default {
                     }
                 }
                 axios.defaults.headers.post['jwt'] = this.$store.state.jwt;
-                axios.post(url_preview, img_preview)
+                await axios.post(url_preview, img_preview)
                     .then(res => {
                         this.isLoading = false
                         this.imgShowSrc = res.data
@@ -375,7 +375,7 @@ export default {
 
         },
 
-        changeFilter(product_id) {
+        async changeFilter(product_id) {
             if (this.imgShowSrc != null) {
                 this.isLoading = true
                 this.product = product_id;
@@ -412,7 +412,7 @@ export default {
                 }
                 console.log("call api preview at : " + url_preview)
                 axios.defaults.headers.post['jwt'] = this.$store.state.jwt;
-                axios.post(url_preview, img_preview)
+                await axios.post(url_preview, img_preview)
                     .then(res => {
                         this.isLoading = false
                         this.imgShowSrc = res.data
@@ -438,9 +438,9 @@ export default {
         SlideBar,
         //VueSlideBar
     },
-    created() {
+    async created() {
         axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
-        axios.get(URL_IMG_FOLDER)
+        await axios.get(URL_IMG_FOLDER)
             .then(res => {
                 this.folders = res.data;
                 this.isLoading = false
@@ -453,7 +453,7 @@ export default {
 
 
         if (this.$route.params.product_id != "0") {
-            axios.get(URL_GET_PRODUCT + this.$route.params.product_id)
+            await axios.get(URL_GET_PRODUCT + this.$route.params.product_id)
                 .then(res => {
                     this.importProduct = res.data
                     console.log(this.importProduct)
