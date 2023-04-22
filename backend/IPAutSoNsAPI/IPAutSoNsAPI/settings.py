@@ -173,9 +173,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
-print(BASE_DIR)
 STATIC_URL = '/static/'
 MEDIA_URL = '/ipautsons/'  # for deploy
 

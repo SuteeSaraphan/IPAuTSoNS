@@ -33,7 +33,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(
 
 class VersionCheck(APIView):
     def get(self, request):
-        return Response({"version": "1.9"})
+        return Response({"version": "1.10"})
 
 # for Authentication user with JWT
 

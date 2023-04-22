@@ -4,9 +4,6 @@ import pymongo
 import os
 from os import *
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
-
 client = pymongo.MongoClient(
     "mongodb+srv://ipautsons:J0iZfrxW49cFOr4U@cluster0.lbe3op6.mongodb.net/?retryWrites=true&w=majority")
 db = client.ipautsons
