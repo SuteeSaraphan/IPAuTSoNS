@@ -4,7 +4,8 @@ FROM python:3.6 AS build
 COPY requirements.txt .
 
 RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+    pip install --no-cache-dir -r requirements.txt \
+    pip install --no-cache-dir numpy
 
 # Final stage
 FROM python:3.6-slim

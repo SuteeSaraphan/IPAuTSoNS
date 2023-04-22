@@ -1,6 +1,5 @@
 import sys
 import glob
-import numpy as np
 import os
 import psutil
 import datetime
@@ -8,6 +7,7 @@ import torch
 import pymongo
 import random
 import string
+import numpy as np
 from os import *
 from glob import glob
 from PIL import Image, ImageDraw, ImageFont
