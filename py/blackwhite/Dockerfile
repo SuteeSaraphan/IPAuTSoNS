@@ -7,7 +7,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install --no-cache-dir --upgrade pip \
-    && pip install --no-cache-dir glob2 Pillow pymongo[srv]
+    && pip install --no-cache-dir glob2 Pillow \
+    && pip install --no-cache-dir pymongo[srv]
 
 # Stage 2: Build the final image
 FROM python:3.6-slim

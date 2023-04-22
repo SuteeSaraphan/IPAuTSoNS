@@ -56,7 +56,8 @@ def ASCII():
         #out_f = out_f.resize((1280,720))
         #can't jpg
         out_f = All_files[x]
-        newImg.save(newfolder+"/"+out_f)
+        filename, extension = os.path.splitext(os.path.basename(out_f))
+        newImg.save(newfolder+"/"+filename+extension)
 
 #command in cmd
 job_id = sys.argv[1]
@@ -84,10 +85,6 @@ try:
                                                             {'job_status' : 1
                                                             }
                                                         },upsert=True)
-    client = pymongo.MongoClient(
-    "mongodb+srv://ipautsons:J0iZfrxW49cFOr4U@cluster0.lbe3op6.mongodb.net/?retryWrites=true&w=majority")
-    db = client.ipautsons
-
     img_file_col = db['api_image_file']
 
 
@@ -108,8 +105,8 @@ try:
                     'img_id': ''.join(random.choices(string.ascii_lowercase + string.digits, k=6)),
                     'user_id_id': user_id,
                     'img_type': img_type,
-                    'img_folder': img_folder,
-                    'path': user_id+"/root/"+img_folder+"/"+i,
+                    'img_folder': img_folder.split("/")[-1],
+                    'path': img_folder+"/"+i,
                     'img_size': str(file_size)
                     }
 
@@ -120,8 +117,8 @@ try:
         print(result)
     except Exception as error:
         print(error)
-except:
-  print("An exception asd")
+except Exception as error:
+  print("error because : "+str(error))
   if job != None and type(job) == dict:
     job = db.api_job.find_one_and_update({'job_id' : job_id},
                                                     {"$set":
