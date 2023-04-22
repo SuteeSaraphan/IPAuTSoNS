@@ -36,11 +36,8 @@ def test():
         imageinput = All_files[x]
         output = All_files[x]
         kernel_size = 10
-        if newpixelsize == None:
-           newpixelsize = 0
-           pixel_size = 16
-        else:
-            pixel_size = int(newpixelsize)
+        print("hell")
+        pixel_size = int(newpixelsize)
         edge_thresh = 100
 
         img_input = Image.open(imageinput)
@@ -66,7 +63,10 @@ useridparam = sys.argv[2]
 job = None
 folder = sys.argv[3]
 newfolder = sys.argv[4]
-newpixelsize = sys.argv[5]
+if len(sys.argv) > 5:
+    newpixelsize = sys.argv[5]
+else:
+    newpixelsize = 16  # default value
 folder = folder+"/*"
 All_files = glob(folder+'.png') + glob(folder+'.PNG') + glob(folder+'.jpg') + glob(folder+'.jpeg') + glob(folder+'.JPG') + glob(folder+'.JPEG') + glob(folder+'.tiff') + glob(folder+'.TIFF')
 
@@ -117,8 +117,8 @@ try:
         print(result)
     except Exception as error:
         print(error)
-except:
-  print("An exception occurred")
+except Exception as error:
+  print(error)
   if job != None and type(job) == dict:
     job = db.api_job.find_one_and_update({'job_id' : job_id},
                                                     {"$set":
