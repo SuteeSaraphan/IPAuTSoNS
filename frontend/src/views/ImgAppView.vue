@@ -128,7 +128,7 @@
                             align-items: flex-end;
                             padding-bottom: 2%;">
                             <!-- sliding bar -->
-                            <!-- <div style=" width: 15%; text-align: center;">Filter :</div>
+                            <!-- <div style=" width: 15%; text-align: center;">Adjust :</div>
                             <div class="slidecontainer" style="width: 100%;
                                                                                         display: flex; 
                                                                                         flex-direction: column; 
@@ -278,8 +278,8 @@ export default {
                                 exportData = {
                                     'img_path': this.imgShowSrc.path,
                                     'img_id': this.imgShowSrc.img_id,
-                                    'filter_id': this.importProduct['product_id'],
-                                    'filter_value': this.adjValue
+                                    'product_id': this.importProduct['product_id'],
+                                    'product_value': this.adjValue
                                 }
                             } else {
                                 console.log('use normal product')
@@ -287,7 +287,7 @@ export default {
                                     'img_path': this.imgShowSrc.path,
                                     'img_id': this.imgShowSrc.img_id,
                                     'img_selected': 'all',
-                                    'filter_id': this.product
+                                    'product_id': this.product
                                 }
                             }
                         } else {
@@ -296,7 +296,7 @@ export default {
                                 'img_path': this.imgShowSrc.path,
                                 'img_id': this.imgShowSrc.img_id,
                                 'img_selected': 'all',
-                                'filter_id': this.product
+                                'product_id': this.product
                             }
                         }
 
@@ -337,16 +337,16 @@ export default {
                         url_preview = 'preview_adv'
                         img_preview = {
                             'img_id': this.imgShowSrc.img_id,
-                            'filter_id': this.importProduct['product_id'],
-                            'filter_value': this.adjValue
+                            'product_id': this.importProduct['product_id'],
+                            'product_value': this.adjValue
                         }
                     } else {
                         console.log('use normal product')
                         url_preview = 'preview'
                         img_preview = {
                             'img_id': this.imgShowSrc.img_id,
-                            'filter_id': this.product,
-                            'filter_value': this.adjValue
+                            'product_id': this.product,
+                            'product_value': this.adjValue
                         }
                     }
                 } else {
@@ -354,8 +354,8 @@ export default {
                     url_preview = 'preview'
                     img_preview = {
                         'img_id': this.imgShowSrc.img_id,
-                        'filter_id': this.product,
-                        'filter_value': this.adjValue
+                        'product_id': this.product,
+                        'product_value': this.adjValue
                     }
                 }
                 axios.defaults.headers.post['jwt'] = this.$store.state.jwt;
@@ -375,30 +375,30 @@ export default {
 
         },
 
-        changeFilter(filter_id) {
+        changeFilter(product_id) {
             if (this.imgShowSrc != null) {
                 this.isLoading = true
-                this.product = filter_id;
+                this.product = product_id;
                 document.getElementById("myRange").value = 80
                 let img_preview = null
                 let url_preview = null
 
                 if (this.importProduct != null) {
-                    if (this.importProduct['product_name'] == filter_id) {
+                    if (this.importProduct['product_name'] == product_id) {
                         console.log('use import product')
                         url_preview = 'preview_adv'
                         img_preview = {
                             'img_id': this.imgShowSrc.img_id,
-                            'filter_id': this.importProduct['product_id'],
-                            'filter_value': this.adjValue
+                            'product_id': this.importProduct['product_id'],
+                            'product_value': this.adjValue
                         }
                     } else {
                         console.log('use normal product')
                         url_preview = 'preview'
                         img_preview = {
                             'img_id': this.imgShowSrc.img_id,
-                            'filter_id': this.product,
-                            'filter_value': this.adjValue
+                            'product_id': this.product,
+                            'product_value': this.adjValue
                         }
                     }
                 } else {
@@ -406,8 +406,8 @@ export default {
                     url_preview = 'preview'
                     img_preview = {
                         'img_id': this.imgShowSrc.img_id,
-                        'filter_id': this.product,
-                        'filter_value': this.adjValue
+                        'product_id': this.product,
+                        'product_value': this.adjValue
                     }
                 }
                 console.log("call api preview at : " + url_preview)
@@ -460,7 +460,7 @@ export default {
                     this.marketplaceProduct = res.data['product_name']
                 }).catch(err => {
                     console.log(err)
-                    alert("Filter loading fail, try again")
+                    alert("Product loading fail, try again")
                 })
         }
 
