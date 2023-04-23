@@ -24,16 +24,17 @@ from pathlib import Path
 from PIL import Image
 from yaml_run import YamlRunner
 from preview_api import PreviewAPI
+from preview_adv_api import PreviewADVAPI
 import logging
+import requests
+import json
 
 logger = logging.getLogger(__name__)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))))))
 
 
 class VersionCheck(APIView):
     def get(self, request):
-        return Response({"version": "1.10"})
+        return Response({"version": "1.11"})
 
 # for Authentication user with JWT
 
@@ -271,7 +272,6 @@ class ImageView(APIView):
             for i in img_serializer.data:
                 file_type = (i['img_type'].split('/'))[1]
                 try:
-                    # with Image.open(str(BASE_DIR)+str(Path(i['path']))) as image_file_temp:#local test
                     with Image.open(str(Path(i['path']))) as image_file_temp:  # depoly
                         fixed_height = 200
                         height_percent = (
@@ -307,7 +307,6 @@ class ImageView(APIView):
                 Image_file.objects.get(img_id=folder_id))
             file_type = (img_serializer.data['img_type'].split('/'))[1]
             try:
-                # with Image.open(str(BASE_DIR)+str(Path(img_serializer.data['path']))) as image_file_temp: #local test
                 # deploy
                 with Image.open(str(Path(img_serializer.data['path']))) as image_file_temp:
                     buffer = BytesIO()
@@ -376,7 +375,6 @@ class ImageView(APIView):
                         else:
                             file_type = "png"
 
-                        # with Image.open(str(BASE_DIR)+str(Path(img_serializer.data[i]['path']))) as image_file_temp: #localtest
                         # deploy
                         with Image.open(str(Path(img_serializer.data[i]['path']))) as image_file_temp:
                             percentage = 0.25
@@ -442,7 +440,6 @@ class ImageView(APIView):
         image = Image_file.objects.get(img_id=img_id)
         try:
             del_path = "/ipautsons/"+str(image.path)  # deploy
-                #    os.path.join(BASE_DIR, "nas_sim\ipautsons", str(image.path))#localtest
             
             os.remove(del_path)
         except BaseException as error:
@@ -470,7 +467,6 @@ class FolderView(APIView):
         user_id = payload['id']
         folder_name = request.data['folder_name']
         folder_path = os.path.join(
-            # BASE_DIR, "nas_sim\ipautsons", user_id, "root", folder_name)#localtest
             "ipautsons", user_id, "root", folder_name)  # deploy
         try:
             os.makedirs("/"+folder_path)
@@ -532,7 +528,6 @@ class FeedView(APIView):
             else:
                 file_type = 'png'
             try:
-                # with Image.open(str(BASE_DIR)+str(Path(i['product_img']))) as image_file_temp:#localtest
                 with Image.open(str(Path(i['product_img']))) as image_file_temp:  # deploy
                     percentage = 0.25
                     width, height = image_file_temp.size
@@ -582,7 +577,6 @@ class ProductView(APIView):
                 file_type = 'jpeg'
             else:
                 file_type = 'png'
-            # with Image.open(str(BASE_DIR)+str(Path(product.data['product_img']))) as image_file_temp:#localtest
             # deploy
             with Image.open(str(Path(product.data['product_img']))) as image_file_temp:
                 percentage = 0.25
@@ -735,7 +729,6 @@ class MarketView(APIView):
             else:
                 file_type = 'png'
             try:
-                # with Image.open(str(BASE_DIR)+str(Path(i['product_img']))) as image_file_temp:#localtest
                 with Image.open(str(Path(i['product_img']))) as image_file_temp:  # deploy
                     percentage = 0.25
                     width, height = image_file_temp.size
@@ -764,7 +757,7 @@ class MarketView(APIView):
 
         return Response(temp_respond)
 
-
+#---------------------------------PREVIEW-----------------------------------------
 class PreviewNormalView(APIView):
     def post(seld, request):
         token = request.META['HTTP_JWT']
@@ -774,7 +767,6 @@ class PreviewNormalView(APIView):
             Image_file.objects.get(img_id=request.data['img_id']))
         file_type = (img_serializer.data['img_type'].split('/'))[1]
         try:
-            # with open(str(BASE_DIR)+str(Path(img_serializer.data['path'])), 'rb') as image_file:#localtest
             # deploy
             with open(str(Path(img_serializer.data['path'])), 'rb') as image_file:
                 preview = PreviewAPI(
@@ -804,16 +796,24 @@ class PreviewAdvanceView(APIView):
     def post(seld, request):
         token = request.META['HTTP_JWT']
         payload = Authentication(token)
+        print('preview advance')
+
         # preview = PreviewAPI(request.data['img_id'],request.data['product_id'],request.data['product_value'])
+        product_on_job = Product.objects.get(product_id=request.data['product_id'])
+        product_on_job_path = product_on_job.path.path
+        print(product_on_job_path)
         img_serializer = ImageSerializer(
             Image_file.objects.get(img_id=request.data['img_id']))
         file_type = (img_serializer.data['img_type'].split('/'))[1]
         try:
-            # with Image.open(str(BASE_DIR)+str(Path(img_serializer.data['path']))) as image_file:#localtest
             # deploy
-            with Image.open(str(Path(img_serializer.data['path']))) as image_file:
+           with open(str(Path(img_serializer.data['path'])), 'rb') as image_file:
+                preview = PreviewADVAPI(
+                    image_file, file_type, product_on_job.model, product_on_job_path)
+                img_preview = preview.do_preview()
+                image_data = Image.open(BytesIO(img_preview))
                 buffer = BytesIO()
-                image_file.save(buffer, format=file_type)
+                image_data.save(buffer, format=file_type)
                 image_data = base64.b64encode(buffer.getvalue())
                 temp_img_data = {
                     'img_id': img_serializer.data['img_id'],
@@ -827,7 +827,7 @@ class PreviewAdvanceView(APIView):
                 return Response(temp_img_data)
 
         except Exception as error:
-            print(error)
+            print('error840 : '+str(error))
             return Response(data={'status': 'something is wrong'}, status=503)
 
 
@@ -983,6 +983,156 @@ class PriceCheckView(APIView):
 
         return Response({'total_price':total_price})
 
+class YoloExport(APIView):
+    def post(self,request):
+        logger.error('Running Yolo api export at '+str(datetime.datetime.now()))
+        print("product_id : " + str(request.data['product_id']))
+        token = request.META['HTTP_JWT']
+        payload = Authentication(token)
+        user = User.objects.get(user_id=payload['id'])
+        buyyer_payment_id = ''.join(random.choices(
+            string.ascii_lowercase + string.digits, k=25))
+        seller_payment_id = ''.join(random.choices(
+            string.ascii_lowercase + string.digits, k=25))
+        
+        job_id = ''.join(random.choices(
+            string.ascii_lowercase + string.digits, k=15))
+        
+
+        yolo_api_url = 'http://192.168.1.46:4050/detect?'
+
+        img_sel = Image_file.objects.get(img_id=request.data['img_id'])
+        img_selected = img_sel.img_id
+        img_path = str(img_sel.path)
+        img_path = img_path.split('/')
+
+        num_img = Image_file.objects.all().filter(
+            user_id=payload['id']).filter(img_folder=img_path[2]).count()
+        add_result = None
+        sub_result = None
+        product_on_job = None
+
+        try:
+            product_on_job = Product.objects.get(product_id=request.data['product_id'])
+        except Exception as err:
+            return Response(data={"status": "ERROR1014 Export job fail", "cause": str(err)}, status=503)
+        
+
+        discount = discount_calculate(num_img)
+        total_credit_use = (int(num_img)*product_on_job.price)*float(discount)
+        user_credit = credit_check(user)
+        if (user_credit < total_credit_use):
+            return Response(data={"status": "ERROR1016 Export job fail", "cause": "Do not have enough credit point"}, status=503)
+        try:
+            sub_result = sub_credit(
+            buyyer_payment_id,user, total_credit_use, product_on_job.product_id)
+            add_result = add_credit(
+                seller_payment_id,product_on_job.user_id, total_credit_use, product_on_job.product_id)
+        except Exception as err:
+            buyyer_payment_del_sta = True
+            seller_payment_del_sta = True
+            while(buyyer_payment_del_sta or seller_payment_del_sta ):
+                try:
+                    buyyer_payment_del_sta = del_payment(buyyer_payment_id)
+                    seller_payment_del_sta = del_payment(seller_payment_id)
+                except :
+                    pass
+            return Response(data={"status": "ERROR1031 Export job fail", "cause": str(err)}, status=503)
+        
+        if (sub_result != 1  or add_result != 1):
+            buyyer_payment_del_sta = True
+            seller_payment_del_sta = True
+            while(buyyer_payment_del_sta or seller_payment_del_sta ):
+                try:
+                    buyyer_payment_del_sta = del_payment(buyyer_payment_id)
+                    seller_payment_del_sta = del_payment(seller_payment_id)
+                except :
+                    pass
+            return Response(data={"status": "ERROR1059 Export job fail", "cause": str(add_result)+" and "+str(sub_result)}, status=503)
+
+        path = "/ipautsons/"+img_path[0]+"/"+img_path[1]+"/"+img_path[2]
+
+        prodcut_name_no_space = product_on_job.product_name.replace(' ','-')
+        docker_image_name = prodcut_name_no_space
+        now = datetime.datetime.now()
+        time_now = now.strftime("%H")+now.strftime("%M")+now.strftime("%S")
+        result_folder_name = img_path[2]+'-'+prodcut_name_no_space+'-'+time_now
+        result_path = "ipautsons/"+img_path[0]+"/"+img_path[1]+"/"+result_folder_name
+
+        try:
+            os.makedirs("/"+result_path)
+        except Exception as error:
+            print(error)
+            return Response(data={'status': 'ERROR1085 Create folder fail !!!','cause':str(error)}, status=503)
+        else:
+            try:
+                folder_data = {
+                    'folder_id': ''.join(random.choices(string.ascii_lowercase + string.digits, k=6)),
+                    'user_id': payload['id'],
+                    'folder_name': result_folder_name,
+                    'path': result_path,
+                    'is_hidden': False
+                }
+
+                serializer = FolderImageSerializer(data=folder_data)
+                serializer.is_valid(raise_exception=True)
+                serializer.save()
+            except Exception as error:
+                print(error)
+                buyyer_payment_del_sta = True
+                seller_payment_del_sta = True
+                while(buyyer_payment_del_sta or seller_payment_del_sta ):
+                    try:
+                        buyyer_payment_del_sta = del_payment(buyyer_payment_id)
+                        seller_payment_del_sta = del_payment(seller_payment_id)
+                    except :
+                        pass
+                return Response(data={'status': 'ERROR1101 Create folder fail !!!','cause':str(error)}, status=503)
+        
+        name_job = '"'+payload['id']+'-'+img_path[2]+'-'+docker_image_name+'-'+str(time_now)+'"'
+#job_id=p5mltrbi9ar-test-test-1619&useridparam=p5mltrbi9ar&folders=%2Fipautsons%2Fp5mltrbi9ar%2Froot%2Ftest&modelse=yolov5n.pt&newfolder=%2Fipautsons%2Fp5mltrbi9ar%2Froot%2Ftest-testyolo'
+        yolo_api_url = yolo_api_url+"job_id="+name_job+"&useridparam="+payload['id']+"&folders="+path+"&modelse="+product_on_job.path.path+"&newfolder=/"+result_path
+        headers = {'accept': 'application/json'}
+        try:
+            response = requests.post(yolo_api_url, headers=headers)
+        except Exception as error:
+            buyyer_payment_del_sta = True
+            seller_payment_del_sta = True
+            while(buyyer_payment_del_sta or seller_payment_del_sta ):
+                try:
+                    buyyer_payment_del_sta = del_payment(buyyer_payment_id)
+                    seller_payment_del_sta = del_payment(seller_payment_id)
+                except :
+                    pass
+            return Response(data={'status': 'ERROR1089 Export job fail !!!','cause':str(error)}, status=503)
+        res = json.loads(response)
+        if(res['msg']=="OK"):
+            job_data = {
+                    'job_id': job_id,
+                    'user_id': user.user_id,
+                    'path': path,
+                    'num_img': num_img,
+                    'img_selected': img_selected,
+                    'job_status': "0",
+                    'product_id': product_on_job.product_id,
+                    'payment_id': buyyer_payment_id
+            }
+            serializer = JobSerializer(data=job_data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(data={"status": "File is made!","credit_left":credit_check(user.user_id)})
+        else:
+            logger.error('yolo error because : '+str(res['msg']))
+            buyyer_payment_del_sta = True
+            seller_payment_del_sta = True
+            while(buyyer_payment_del_sta or seller_payment_del_sta ):
+                try:
+                    buyyer_payment_del_sta = del_payment(buyyer_payment_id)
+                    seller_payment_del_sta = del_payment(seller_payment_id)
+                except :
+                    pass
+            return Response(data={'status': 'ERROR1089 Export job fail !!!','cause':"server issue"}, status=503)
+
 class MakeDockerFile(APIView):
     def post(self, request):
         logger.error('Running YAMLRunner at '+str(datetime.datetime.now()))
@@ -1016,7 +1166,7 @@ class MakeDockerFile(APIView):
             total_credit_use = (int(num_img)*5)*float(discount)
             user_credit = credit_check(user)
             if (user_credit < total_credit_use):
-                return Response(data={"status": "ERROR1012 create job file fail", "cause": "Do not have enough credit point"}, status=503)
+                return Response(data={"status": "ERROR1012 Export job fail", "cause": "Do not have enough credit point"}, status=503)
             try:
                 sub_result = sub_credit(buyyer_payment_id,user, total_credit_use, 0)
                 add_result = add_credit(seller_payment_id,0, total_credit_use, 0)
@@ -1029,14 +1179,14 @@ class MakeDockerFile(APIView):
                         seller_payment_del_sta = del_payment(seller_payment_id)
                     except :
                         pass
-                return Response(data={"status": "ERROR1025 create job file fail", "cause": str(err)}, status=503)
+                return Response(data={"status": "ERROR1025 Export job fail", "cause": str(err)}, status=503)
             
         else:
             discount = discount_calculate(num_img)
             total_credit_use = (int(num_img)*product_on_job.price)*float(discount)
             user_credit = credit_check(user)
             if (user_credit < total_credit_use):
-                return Response(data={"status": "ERROR1032 create job file fail", "cause": "Do not have enough credit point"}, status=503)
+                return Response(data={"status": "ERROR1032 Export job fail", "cause": "Do not have enough credit point"}, status=503)
             try:
                 sub_result = sub_credit(
                     buyyer_payment_id,user, total_credit_use, product_on_job.product_id)
@@ -1051,7 +1201,7 @@ class MakeDockerFile(APIView):
                         seller_payment_del_sta = del_payment(seller_payment_id)
                     except :
                         pass
-                return Response(data={"status": "ERROR1074 create job file fail", "cause": str(err)}, status=503)
+                return Response(data={"status": "ERROR1074 Export job fail", "cause": str(err)}, status=503)
         
 
         if (sub_result != 1  or add_result != 1):
@@ -1063,21 +1213,23 @@ class MakeDockerFile(APIView):
                     seller_payment_del_sta = del_payment(seller_payment_id)
                 except :
                     pass
-            return Response(data={"status": "ERROR1059 create job file fail", "cause": str(add_result)+" and "+str(sub_result)}, status=503)
+            return Response(data={"status": "ERROR1059 Export job fail", "cause": str(add_result)+" and "+str(sub_result)}, status=503)
 
         path = "/ipautsons/"+img_path[0]+"/"+img_path[1]+"/"+img_path[2]
 
         docker_image_name = None
         in_command_file_name = None
+        now = datetime.datetime.now()
+        time_now = now.strftime("%H")+now.strftime("%M")+now.strftime("%S")
         if (product_on_job != None):
-            result_path = "ipautsons/"+img_path[0]+"/"+img_path[1]+"/"+img_path[2]+'_'+product_on_job.product_name
-            folder_name_result = img_path[2]+'_'+product_on_job.product_name
+            result_folder_name = img_path[2]+'-'+product_on_job.product_name+'-'+time_now
+            result_path = "ipautsons/"+img_path[0]+"/"+img_path[1]+"/"+result_folder_name
             docker_image_name = '"'+"..."+'"'
             in_command_file_name = '"'+"..."+'"'
 
         else:
-            result_path = "ipautsons/"+img_path[0]+"/"+img_path[1]+"/"+img_path[2]+'_'+(request.data['product_id'].replace(" ", "_"))
-            folder_name_result = img_path[2]+'_'+(request.data['product_id'].replace(" ", "_"))
+            result_folder_name = (img_path[2]+'-'+(request.data['product_id'].replace(" ", "-")))+'-'+time_now
+            result_path = "ipautsons/"+img_path[0]+"/"+img_path[1]+"/"+result_folder_name
             match request.data['product_id']:
                 case 'Black and White':
                     docker_image_name = "blackwhite"
@@ -1089,14 +1241,14 @@ class MakeDockerFile(APIView):
                     docker_image_name = "pixel"
                     in_command_file_name = '"'+"pixel.py"+'"'
                 case 'Mosaic':
-                    docker_image_name = "mosaic"
-                    in_command_file_name = '"'+"mosaic.py"+'"'
+                    docker_image_name = "mosaig"
+                    in_command_file_name = '"'+"mosaig.py"+'"'
                     path = "/"+str(request.data['product_value'])
                 case other:
                     return Response(data={'status': 'ERROR1077 Create folder fail !!!','cause':str("can not find product")}, status=503)
 
 
-
+        
         try:
             os.makedirs("/"+result_path)
         except Exception as error:
@@ -1107,7 +1259,7 @@ class MakeDockerFile(APIView):
                 folder_data = {
                     'folder_id': ''.join(random.choices(string.ascii_lowercase + string.digits, k=6)),
                     'user_id': payload['id'],
-                    'folder_name': folder_name_result,
+                    'folder_name': result_folder_name,
                     'path': result_path,
                     'is_hidden': False
                 }
@@ -1119,13 +1271,13 @@ class MakeDockerFile(APIView):
                 print(error)
                 return Response(data={'status': 'ERROR1101 Create folder fail !!!','cause':str(error)}, status=503)
         
-        job_id_temp = '"'+job_id+'"'
+        name_job = '"'+payload['id']+'-'+img_path[2]+'-'+docker_image_name+'-'+str(time_now)+'"'
         path_temp = '"'+path+'"'
         result_path_temp = '"/'+result_path+'"'
         user_id_temp = '"'+str(payload['id'])+'"'
 
         
-
+#---------------------------------------------------mosaic---------------------------------------------#  
     #masaic = job_id ,user_id ,choose_folder ,image_selected ,result_folder
         if (request.data['product_id'] == 'Mosaic'):
             img_path_temp = '"'+'/ipautsons/'+str(img_sel.path)+'"'
@@ -1135,7 +1287,7 @@ kind: Job
 
 metadata:
 
-  name: """+str(job_id_temp)+"""
+  name: """+str(name_job)+"""
 
 spec:
 
@@ -1145,14 +1297,50 @@ spec:
 
       containers:
 
-      - name: """+str(job_id_temp)+"""
+      - name: """+str(name_job)+"""
 
         image: suteesaraphan27/"""+str(docker_image_name)+"""
         volumeMounts:
             - name: nfs-share
               mountPath: /ipautsons
 
-        command: ["python","""+str(in_command_file_name)+""","""+str(job_id_temp)+""","""+str(user_id_temp)+""","""+str(path_temp)+""","""+str(img_path_temp)+""","""+str(result_path_temp)+"""]
+        command: ["python","""+str(in_command_file_name)+""","""+str(name_job)+""","""+str(user_id_temp)+""","""+str(path_temp)+""","""+str(img_path_temp)+""","""+str(result_path_temp)+"""]
+
+      restartPolicy: Never
+      volumes:
+      - name: nfs-share
+        persistentVolumeClaim: 
+          claimName: example"""
+            
+#---------------------------------------------------pixel---------------------------------------------#            
+        elif(request.data['product_id'] == 'PixelArt'):
+            #pixel = job_id ,user_id ,base_folder,result_folder,pixel
+            pixel_per_bit = str(request.data['product_value']).split(" ")[0]
+            pixel_per_bit = '"'+str(pixel_per_bit)+'"'
+            template = """apiVersion: batch/v1
+
+kind: Job
+
+metadata:
+
+  name: """+str(name_job)+"""
+
+spec:
+
+  template:
+
+    spec:
+
+      containers:
+
+      - name: """+str(name_job)+"""
+
+        image: suteesaraphan27/"""+str(docker_image_name)+"""
+        volumeMounts:
+            - name: nfs-share
+              mountPath: /ipautsons
+
+        command: ["python","""+str(in_command_file_name)+""","""+str(name_job)+""","""+str(user_id_temp)+""","""+str(path_temp)+""","""+str(result_path_temp)+""","""+str(pixel_per_bit)+"""]
 
       restartPolicy: Never
       volumes:
@@ -1160,13 +1348,14 @@ spec:
         persistentVolumeClaim: 
           claimName: example"""
         else:
+#---------------------------------------------------normal------------------------------------------------#  
             template = """apiVersion: batch/v1
 
 kind: Job
 
 metadata:
 
-  name: """+str(job_id_temp)+"""
+  name: """+str(name_job)+"""
 
 spec:
 
@@ -1176,14 +1365,14 @@ spec:
 
       containers:
 
-      - name: """+str(job_id_temp)+"""
+      - name: """+str(name_job)+"""
 
         image: suteesaraphan27/"""+str(docker_image_name)+"""
         volumeMounts:
             - name: nfs-share
               mountPath: /ipautsons
 
-        command: ["python","""+str(in_command_file_name)+""","""+str(job_id_temp)+""","""+str(user_id_temp)+""","""+str(path_temp)+""","""+str(result_path_temp)+"""]
+        command: ["python","""+str(in_command_file_name)+""","""+str(name_job)+""","""+str(user_id_temp)+""","""+str(path_temp)+""","""+str(result_path_temp)+"""]
 
       restartPolicy: Never
       volumes:
@@ -1229,7 +1418,7 @@ spec:
                     seller_payment_del_sta = del_payment(seller_payment_id)
                 except :
                     pass
-            return Response(data={"status": "ERROR1175 create job file fail", "cause": str(error)}, status=503)
+            return Response(data={"status": "ERROR1175 Export job fail", "cause": str(error)}, status=503)
         try:
 
             with open('yaml_file/'+job_id+'.yaml', 'w') as yfile:
@@ -1249,7 +1438,7 @@ spec:
                         seller_payment_del_sta = del_payment(seller_payment_id)
                     except :
                         pass
-                return Response(data={"status": "ERROR1195 create job file fail", "cause": str(x)}, status=503)
+                return Response(data={"status": "ERROR1195 Export job fail", "cause": str(x)}, status=503)
         except Exception as error:
             print(error)
             buyyer_payment_del_sta = True
@@ -1260,4 +1449,4 @@ spec:
                     seller_payment_del_sta = del_payment(seller_payment_id)
                 except :
                     pass
-            return Response(data={"status": "ERROR1206 create job file fail", "cause": str(error)}, status=503)
+            return Response(data={"status": "ERROR1206 Export job fail", "cause": str(error)}, status=503)

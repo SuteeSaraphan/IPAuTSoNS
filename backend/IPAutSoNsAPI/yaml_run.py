@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 
 class YamlRunner:
     def __init__(self,job_id):
-        self.yaml_file = 'yaml_file/'+job_id+'.yaml' # v1.5
+        self.yaml_file = 'yaml_file/'+job_id+'.yaml' # stable
     def __self__(self):
         print("runner of "+str(self.yaml_file))
 
