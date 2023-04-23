@@ -120,16 +120,17 @@
                             <img :src="`data:image/jpeg;base64,${this.imgShowSrc.img_data}`" height="350">
 
                         </div>
-                        <div 
-                            style="
+                        <div style="
                             display: flex;
                             flex-direction: row;
                             justify-items:flex-end;
                             align-items: center;
                             padding-bottom: 2%;">
-                            <!-- sliding bar -->
-                            <div style=" width: 15%; text-align: center;">Adjust :</div>
-                            <div v-if="this.product=='PixelArt'" style="width: 100%;
+                            <!-- bottom bar -->
+                            <div v-if="this.product == 'PixelArt' || this.product == 'Mosaic'"
+                                style=" width: 15%; text-align: center;">Adjust :</div>
+                            <!-- choose how many pixel per bit -->
+                            <div v-if="this.product == 'PixelArt'" style="width: 100%;
                                                                                         display: flex; 
                                                                                         flex-direction: column; 
                                                                                         justify-items:center; 
@@ -138,8 +139,28 @@
                             
                                                     ">
 
-                               <select id="paramter_value" style="color:#000 ;" @change="parameterAdjusting">
-                                    <option v-for="i in 8" v-bind:key="i" style="color:#000 ;"> {{(2**i)}} bit </option>
+                                <select id="parameter_value" style="color:#000 ;" @change="parameterAdjusting">
+                                    <option v-for="i in 8" v-bind:key="i" style="color:#000 ;"> {{ (2 ** i) }} pixel/bit
+                                    </option>
+                                </select>
+                            </div>
+                            <!-- choose how many pixel per bit -->
+
+                            <!-- choose what folder to process -->
+                            <div v-if="this.product == 'Mosaic'" style="width: 100%;
+                                                                                        display: flex; 
+                                                                                        flex-direction: column; 
+                                                                                        justify-items:center; 
+                                                                                        align-items: center;
+                                                                                        padding-right: 1%;
+                            
+                                                    ">
+
+                                <select id="parameter_value" style="color:#000 ;" @change="parameterAdjusting">
+                                    <option style="color:#000 ;" selected> --- Seleteced folder --- </option>
+                                    <option v-for="folder in this.folders" :key="folder.folder_id" style="color:#000 ;">
+                                        {{ folder.folder_name }}
+                                    </option>
                                 </select>
                             </div>
                             <!-- end of sliding bar -->
@@ -249,44 +270,55 @@ export default {
         },
 
         async exportImg() {
-            if(this.imgShowSrc ==null || this.product == null){
+            if (this.imgShowSrc == null || this.product == null) {
                 alert("Please choose image and product before export")
-            }else{
+            } else {
 
-            this.isLoading = true
-            let price = 0
-            let filter2PriceCheck = null
-            if (this.importProduct != null) {
-                if (this.importProduct['product_name'] == this.product) {
-                    console.log('use import product')
-                    filter2PriceCheck = this.importProduct['product_id']
+                this.isLoading = true
+                let price = 0
+                let filter2PriceCheck = null
+                if (this.importProduct != null) {
+                    if (this.importProduct['product_name'] == this.product) {
+                        console.log('use import product')
+                        filter2PriceCheck = this.importProduct['product_id']
+                    } else {
+                        console.log('use normal product')
+                        filter2PriceCheck = this.product
+
+                    }
                 } else {
                     console.log('use normal product')
                     filter2PriceCheck = this.product
-
                 }
-            } else {
-                console.log('use normal product')
-                filter2PriceCheck = this.product
-            }
-            axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
-            await axios.get(URL_GET_PRICE + filter2PriceCheck + "/" + document.getElementById("folder_sel").value)
-                .then(res => {
-                    console.log(res.data)
-                    price = res.data['total_price']
-                    if (confirm("Is job will cost " + price + " credit. Do you want to process export ?")) {
-                        console.log(this.imgShowSrc)
-                        axios.defaults.headers.post['jwt'] = this.$store.state.jwt;
-                        console.log("product :" + this.product)
-                        let exportData = null
-                        if (this.importProduct != null) {
-                            if (this.importProduct['product_name'] == this.product) {
-                                console.log('use import product')
-                                exportData = {
-                                    'img_path': this.imgShowSrc.path,
-                                    'img_id': this.imgShowSrc.img_id,
-                                    'product_id': this.importProduct['product_id'],
-                                    'product_value': this.adjValue
+
+                axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
+                await axios.get(URL_GET_PRICE + filter2PriceCheck + "/" + document.getElementById("folder_sel").value)
+                    .then(res => {
+                        console.log(res.data)
+                        price = res.data['total_price']
+                        if (confirm("Is job will cost " + price + " credit. Do you want to process export ?")) {
+                            console.log(this.imgShowSrc)
+                            axios.defaults.headers.post['jwt'] = this.$store.state.jwt;
+                            console.log("product :" + this.product)
+                            let exportData = null
+                            if (this.importProduct != null) {
+                                if (this.importProduct['product_name'] == this.product) {
+                                    console.log('use import product')
+                                    exportData = {
+                                        'img_path': this.imgShowSrc.path,
+                                        'img_id': this.imgShowSrc.img_id,
+                                        'product_id': this.importProduct['product_id'],
+                                        'product_value': this.adjValue
+                                    }
+                                } else {
+                                    console.log('use normal product')
+                                    exportData = {
+                                        'img_path': this.imgShowSrc.path,
+                                        'img_id': this.imgShowSrc.img_id,
+                                        'img_selected': 'all',
+                                        'product_id': this.product,
+                                        'product_value': this.adjValue
+                                    }
                                 }
                             } else {
                                 console.log('use normal product')
@@ -294,51 +326,52 @@ export default {
                                     'img_path': this.imgShowSrc.path,
                                     'img_id': this.imgShowSrc.img_id,
                                     'img_selected': 'all',
-                                    'product_id': this.product
+                                    'product_id': this.product,
+                                    'product_value': this.adjValue
                                 }
                             }
-                        } else {
-                            console.log('use normal product')
-                            exportData = {
-                                'img_path': this.imgShowSrc.path,
-                                'img_id': this.imgShowSrc.img_id,
-                                'img_selected': 'all',
-                                'product_id': this.product
-                            }
-                        }
 
-                        axios.post(URL_JOB, exportData)
-                            .then(async res => {
-                                console.log(res)
-                                this.isLoading = false
-                                this.$store.commit('setCredit', res.data['credit_left']);
-                                alert("Job is on processing")
-                            })
-                            .catch(async err => {
-                                this.isLoading = false
-                                alert(err.response.data['status'] + ' because ' + err.response.data['cause'])
-                            })
-                    } else {
+                            axios.post(URL_JOB, exportData)
+                                .then(async res => {
+                                    console.log(res)
+                                    this.isLoading = false
+                                    this.$store.commit('setCredit', res.data['credit_left']);
+                                    alert("Job is on processing")
+                                })
+                                .catch(async err => {
+                                    this.isLoading = false
+                                    alert(err.response.data['status'] + ' because ' + err.response.data['cause'])
+                                })
+                        } else {
+                            this.isLoading = false
+                        }
+                    }).catch(err => {
+                        console.log(err)
                         this.isLoading = false
-                    }
-                }).catch(err => {
-                    console.log(err)
-                    this.isLoading = false
-                    alert("Can't get product price, try again")
-                })
+                        alert("Can't get product price, try again")
+                    })
             }
 
-        },
 
+        },
 
         async parameterAdjusting() {
             this.isLoading = true
             if (this.imgShowSrc != null) {
                 this.isLoading = true
-                if(this.product == "PixelArt"){
-                    console.log(document.getElementById("paramter_value").value)
-                    this.adjValue = document.getElementById("paramter_value").value;
+
+                console.log(document.getElementById("parameter_value").value)
+                this.adjValue = document.getElementById("parameter_value").value;
+
+                if (this.product == "Mosaic") {
+                    for (let i in this.folders) {
+                        if (this.folders[i].folder_name == document.getElementById("parameter_value").value) {
+                            console.log(this.folders[i].path)
+                            this.adjValue = this.folders[i].path
+                        }
+                    }
                 }
+
                 let img_preview = null
                 let url_preview = null
 
@@ -393,6 +426,13 @@ export default {
                 //document.getElementById("paramter_value").value = 80
                 let img_preview = null
                 let url_preview = null
+                if (this.product == "Mosaic") {
+                    for (let i in this.folders) {
+                        if (this.folders[i].folder_name == document.getElementById("folder_sel").value) {
+                            this.adjValue = this.folders[i].path
+                        }
+                    }
+                }
 
                 if (this.importProduct != null) {
                     if (this.importProduct['product_name'] == product_id) {

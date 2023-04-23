@@ -26,9 +26,9 @@ class PreviewAPI():
         elif(self.filter_id == 'PixelArt'):
             docker_url = self.url+'4020/pixelart'
             docker_url += "?pixel="+str(self.filter_value).split(" ")[0]
-            print(files)
-        elif(self.filter_id == 'Object-detection'):
-            docker_url = self.url+'8000/detect-to-img'
+        elif(self.filter_id == 'Mosaic'):
+            docker_url = self.url+'4020/mosaig?folders=/'+(str(self.filter_value))
+            print(docker_url)
         try:
             headers = {'accept': 'application/json'}
             files = {'file': self.img}

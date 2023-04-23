@@ -1074,6 +1074,7 @@ class MakeDockerFile(APIView):
             folder_name_result = img_path[2]+'_'+product_on_job.product_name
             docker_image_name = '"'+"..."+'"'
             in_command_file_name = '"'+"..."+'"'
+
         else:
             result_path = "ipautsons/"+img_path[0]+"/"+img_path[1]+"/"+img_path[2]+'_'+(request.data['product_id'].replace(" ", "_"))
             folder_name_result = img_path[2]+'_'+(request.data['product_id'].replace(" ", "_"))
@@ -1090,6 +1091,7 @@ class MakeDockerFile(APIView):
                 case 'Mosaic':
                     docker_image_name = "mosaic"
                     in_command_file_name = '"'+"mosaic.py"+'"'
+                    path = "/"+str(request.data['product_value'])
                 case other:
                     return Response(data={'status': 'ERROR1077 Create folder fail !!!','cause':str("can not find product")}, status=503)
 
@@ -1122,7 +1124,43 @@ class MakeDockerFile(APIView):
         result_path_temp = '"/'+result_path+'"'
         user_id_temp = '"'+str(payload['id'])+'"'
 
-        template = """apiVersion: batch/v1
+        
+
+    #masaic = job_id ,user_id ,choose_folder ,image_selected ,result_folder
+        if (request.data['product_id'] == 'Mosaic'):
+            img_path_temp = '"'+'/ipautsons/'+str(img_sel.path)+'"'
+            template = """apiVersion: batch/v1
+
+kind: Job
+
+metadata:
+
+  name: """+str(job_id_temp)+"""
+
+spec:
+
+  template:
+
+    spec:
+
+      containers:
+
+      - name: """+str(job_id_temp)+"""
+
+        image: suteesaraphan27/"""+str(docker_image_name)+"""
+        volumeMounts:
+            - name: nfs-share
+              mountPath: /ipautsons
+
+        command: ["python","""+str(in_command_file_name)+""","""+str(job_id_temp)+""","""+str(user_id_temp)+""","""+str(path_temp)+""","""+str(img_path_temp)+""","""+str(result_path_temp)+"""]
+
+      restartPolicy: Never
+      volumes:
+      - name: nfs-share
+        persistentVolumeClaim: 
+          claimName: example"""
+        else:
+            template = """apiVersion: batch/v1
 
 kind: Job
 
@@ -1152,6 +1190,8 @@ spec:
       - name: nfs-share
         persistentVolumeClaim: 
           claimName: example"""
+
+        
 
         try:
 
