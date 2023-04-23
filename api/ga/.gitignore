@@ -1,0 +1,5 @@
+*.pyc
+venv
+*.mkv
+*.mp4
+models/face*
