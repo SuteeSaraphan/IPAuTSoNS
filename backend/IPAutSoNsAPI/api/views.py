@@ -1095,18 +1095,6 @@ class YoloExport(APIView):
         headers = {'accept': 'application/json'}
         try:
             response = requests.post(yolo_api_url, headers=headers)
-        except Exception as error:
-            buyyer_payment_del_sta = True
-            seller_payment_del_sta = True
-            while(buyyer_payment_del_sta or seller_payment_del_sta ):
-                try:
-                    buyyer_payment_del_sta = del_payment(buyyer_payment_id)
-                    seller_payment_del_sta = del_payment(seller_payment_id)
-                except :
-                    pass
-            return Response(data={'status': 'ERROR1089 Export job fail !!!','cause':str(error)}, status=503)
-        res = json.loads(response)
-        if(res['msg']=="OK"):
             job_data = {
                     'job_id': job_id,
                     'user_id': user.user_id,
@@ -1120,6 +1108,21 @@ class YoloExport(APIView):
             serializer = JobSerializer(data=job_data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
+        except Exception as error:
+            logger.error('error : '+str(error))
+            buyyer_payment_del_sta = True
+            seller_payment_del_sta = True
+            while(buyyer_payment_del_sta or seller_payment_del_sta ):
+                try:
+                    buyyer_payment_del_sta = del_payment(buyyer_payment_id)
+                    seller_payment_del_sta = del_payment(seller_payment_id)
+                except :
+                    pass
+            return Response(data={'status': 'ERROR1089 Export job fail !!!','cause':str(error)}, status=503)
+        logger.error('response.text : '+str(response.text))
+        res = json.loads(response.text)
+
+        if(res['msg']=="OK"):
             return Response(data={"status": "File is made!","credit_left":credit_check(user.user_id)})
         else:
             logger.error('yolo error because : '+str(res['msg']))
