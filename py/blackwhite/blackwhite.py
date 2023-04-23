@@ -34,17 +34,15 @@ except NameError as error:
     job = None
 
 try:
-  BlackWhite()
-  print("done")
-  if job != None and type(job) == dict:
-    job = db.api_job.find_one_and_update({'job_id' : job_id},
-                                                    {"$set":
-                                                        {'job_status' : 1
-                                                        }
-                                                    },upsert=True)
+    BlackWhite()
+    print("done")
+    if job != None and type(job) == dict:
+            job = db.api_job.find_one_and_update({'job_id' : job_id},
+                                                            {"$set":
+                                                                {'job_status' : 1
+                                                                }
+                                                            },upsert=True)
     img_file_col = db['api_image_file']
-
-
     user_id = useridparam #user ownner of this image
     img_folder = newfolder #folder name of image
     folder_path = os.path.join("ipautsons", user_id, "root", img_folder) #path of image folder
@@ -73,11 +71,11 @@ try:
     except Exception as error:
         print(error)
 except:
-  print("An exception occurred")
-  if job != None and type(job) == dict:
-    job = db.api_job.find_one_and_update({'job_id' : job_id},
-                                                    {"$set":
-                                                        {'job_status' : 2
-                                                        }
-                                                    },upsert=True)
+    print("An exception occurred")
+    if job != None and type(job) == dict:
+        job = db.api_job.find_one_and_update({'job_id' : job_id},
+                                                        {"$set":
+                                                            {'job_status' : 2
+                                                            }
+                                                        },upsert=True)
 

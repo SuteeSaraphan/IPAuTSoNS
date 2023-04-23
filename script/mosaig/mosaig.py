@@ -3,6 +3,7 @@ import glob
 import numpy as np
 import os
 import psutil
+import pymongo
 import datetime
 import cv2
 import tensorflow as tf
@@ -99,7 +100,7 @@ try:
                                                             {'job_status' : 1
                                                             }
                                                         },upsert=True)
-        img_file_col = db['api_image_file']
+    img_file_col = db['api_image_file']
 
 
     user_id = useridparam #user ownner of this image
