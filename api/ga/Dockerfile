@@ -1,14 +1,18 @@
 # Stage 1: Build stage
 FROM python:3.9-slim-buster AS build
 
-RUN apt-get update && apt-get install ffmpeg libsm6 libxext6 libgl1-mesa-glx -y
+RUN apt-get update && \
+    apt-get install -y build-essential && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
 COPY requirements.txt .
 
-RUN pip install --user --no-cache-dir --upgrade pip && \
-    pip install --user --no-cache-dir --requirement requirements.txt
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt && \
+    pip install --no-cache-dir pymongo[srv] && \
+    pip install --no-cache-dir --no-build-isolation opencv-python-headless
 
 COPY . .
 
@@ -24,7 +28,9 @@ ENV TIMEOUT="200"
 
 WORKDIR /app
 
-COPY --from=build /root/.local /root/.local
+RUN apt-get update && apt-get install -y libgl1-mesa-glx
+
+COPY --from=build /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
 
 COPY . .
 

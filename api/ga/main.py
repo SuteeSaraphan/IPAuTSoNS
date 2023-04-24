@@ -23,6 +23,12 @@ app = FastAPI(
     version="1.0.0",
 )
 
+origins = [
+    "http://localhost",
+    "http://localhost:4070",
+    "*"
+]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -31,19 +37,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-origins = [
-    "http://localhost",
-    "http://localhost:4070",
-    "*"
-]
-
 
 @app.get("/")
 async def root():
     return dict(msg='OK')
 
 
-@app.post("/ascii")
+@app.post("/gan")
 async def convert_image_to_ascii(file: bytes = File(...),modelse = "models/Shinkai_53.onnx",):
     input_image = get_image_from_bytes(file)
     input_image = np.array(input_image)
