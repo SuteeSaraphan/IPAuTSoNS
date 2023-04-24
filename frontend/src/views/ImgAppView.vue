@@ -31,10 +31,10 @@
                                 <div class="menu-head">
                                     <span>Basic product</span>
                                 </div>
-                                <ul>
+                                <ul class="tab">
                                     <li v-for=" i in this.basicProduct" v-bind:key="i"
-                                        style="background-color: #4B5162;padding: 10px;" @click="changeProduct(i)">
-                                        <a>
+                                        style="background-color: #4B5162;padding: 10px;" @click="changeProduct(i)" type="radio">
+                                        <a :style="[this.product==i ? {'color': '#5294e2'} : {'color': 'white'}]">
                                             <span class="ri-function-line"></span>
                                             {{ i }}
                                         </a>
@@ -52,7 +52,7 @@
                                     <li v-for="i in this.marketplaceProduct" v-bind:key="i"
                                         style="background-color: #4B5162;padding: 10px;"
                                         @click="changeToMarketplaceProduct(i)">
-                                        <a>
+                                        <a :style="[this.product==i ? {'color': '#5294e2'} : {'color': 'white'}]">
                                             <span class="ri-function-line"></span>
                                             {{ i['product_name'] }}
                                         </a>
