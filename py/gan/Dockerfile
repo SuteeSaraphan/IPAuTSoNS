@@ -1,20 +1,26 @@
-# Stage 1: Build the Python dependencies
-FROM python:3.9-slim as builder
+FROM python:3.9 AS build
+
+RUN apt-get update && \
+    apt-get install -y build-essential && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
 
 COPY requirements.txt .
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    libjpeg-dev \
-    && rm -rf /var/lib/apt/lists/*
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt && \
+    pip install --no-cache-dir --no-build-isolation opencv-python-headless
 
-RUN pip install --user --no-cache-dir --upgrade pip && \
-    pip install --user --no-cache-dir --requirement requirements.txt
+COPY . .
 
-# Stage 2: Build the final image
+
+# Second stage: run
 FROM python:3.9-slim
 
-COPY --from=builder /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
+WORKDIR /app
+
+COPY --from=build /usr/local/lib/python3.9/site-packages /usr/local/lib/python3.9/site-packages
 
 COPY . .
 

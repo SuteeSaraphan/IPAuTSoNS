@@ -1,3 +1,4 @@
+import stow
 from engine import Engine
 from animegan import AnimeGAN
 import sys
