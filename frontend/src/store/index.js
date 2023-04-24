@@ -10,7 +10,8 @@ export default createStore({
     jwt: "",
     isAuthenticated: false,
     storageSize : 0,
-    creditTotal : 0
+    creditTotal : 0,
+    productUse : [],
   },
   getters: {},
   mutations: {
@@ -31,10 +32,13 @@ export default createStore({
       state.creditTotal = data;
     },
 
-    
+    addProduct(state, product){
+      state.productUse.push(product)
+    },
 
     logout(state) {
       state.jwt = ''
+      state.productUse = []
       state.isAuthenticated = false
   },
   },

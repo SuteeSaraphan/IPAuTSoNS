@@ -793,6 +793,8 @@ input[type=submit], select {
   justify-content:center;
   align-items: center;
   align-content:center;
+  height: 60%;
+  width: 60%;
 }
 
 .uploading:before {

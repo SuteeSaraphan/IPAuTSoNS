@@ -18,19 +18,20 @@ class PreviewADVAPI():
         headers = {'accept': 'application/json'}
         files = {'file': self.img}
         docker_url = None
-        print("1")
+        logger.error('preview 01')
         if(self.model == 'YOLOv5'):
             print("2")
             docker_url = self.url+'4050/detect-to-img?modelse='+str(self.weight_path)
         elif(self.model == 'GANs'):
-            docker_url = self.url+'4070/detect-to-img?modelse='+str(self.weight_path)
+            logger.error('preview 02')
+            docker_url = self.url+'4070/gan?modelse='+str(self.weight_path)
         try:
+            logger.error('preview 03')
             headers = {'accept': 'application/json'}
             files = {'file': self.img}
-            print("3")
             response = requests.post(docker_url, headers=headers, files=files)
-            print('preview complete')
-            print("respone : "+str(response.content))
+            logger.error('preview 04')
+            logger.error(response.content)
             return response.content
         except Exception as error:
             logger.error('runed preview functions Error : '+str(error))

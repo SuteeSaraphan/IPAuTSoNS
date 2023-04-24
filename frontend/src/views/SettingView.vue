@@ -11,7 +11,7 @@
                 <span class="bars"></span>
 
                 <div style="color:#000 ;">
-                    asd
+                    User profile setting
                 </div>
             </header>
             <main>
