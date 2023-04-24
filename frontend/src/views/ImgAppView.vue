@@ -21,18 +21,13 @@
 
 
             <main>
-                <div style="display: flex;flex-direction: row;">
+                <div class="img-app">
                     <div class="loading" v-if="this.isLoading">Loading&#8230;</div>
                     <input type="checkbox" name="" id="sidebar-toggle">
                     <!----------------------------------------------------- product bar ----------------------------------------------------->
-                    <div style="width : 20%;
-                            padding-right: 10px;
-                            height: 100%;
-                            background-color: #383C4A;">
-
+                    <div class="product-bar">
                         <div class="sidebar-main">
                             <div class="sidebar-menu">
-
                                 <div class="menu-head">
                                     <span>Basic product</span>
                                 </div>
@@ -72,17 +67,9 @@
 
 
                     <!-- image list show -->
-                    <div style="
-                                                      padding-left: 15px;
-                                                      padding-right: 20px;
-                                                      padding-top: 15px;
-                                                      width: 80%;
-                                                      height: 50%;
-                                                      display: flex;
-                                                      flex-direction: column;
-                                                      background-color: #4B5162;">
+                    <div class="img-bar">
                         <h2>Drive >
-                            <a style="align-self: center;width: 350px;">
+                            <a>
                                 <select id="folder_sel" style="color:#000 ;" @change="goToFolder">
                                     <option style="color:#000 ;" selected> --- Seleteced folder --- </option>
                                     <option v-for="folder in this.folders" :key="folder.folder_id" style="color:#000 ;">
@@ -92,33 +79,18 @@
                                 </select>
                             </a>
                         </h2>
-                        <div style="display: flex;
-                                                                flex-direction: row; 
-                                                                width: 100%;
-                                                                padding:10px;
-                                                                overflow-x: scroll;
-                                                                align-items: center;
-                                                                ">
-
+                        <div class="img-list">
                             <div v-for="image in this.images" :key="image.img_id">
-                                <img :src="`data:image/jpeg;base64,${image.img_data}`" style="
-                                                                    padding: 10px;
-                                                                    max-width: 175px;
-                                                                    max-height: 100px;
-                                                                    " @click="changeImg(image.img_id)">
+                                <img :src="`data:image/jpeg;base64,${image.img_data}`" class="img-list-show"
+                                    @click="changeImg(image.img_id)">
                             </div>
 
 
                         </div>
                         <!-- image full show -->
 
-                        <div v-if="this.imgShowSrc != null" style="
-                                                                display: flex;
-                                                                flex-direction: column;
-                                                                justify-content: space-between;
-                                                                align-items: center;
-                                                                padding:20px;">
-                            <img :src="`data:image/jpeg;base64,${this.imgShowSrc.img_data}`" height="350">
+                        <div v-if="this.imgShowSrc != null" class="img-full">
+                            <img :src="`data:image/jpeg;base64,${this.imgShowSrc.img_data}`">
 
                         </div>
                         <div style="
@@ -189,7 +161,131 @@
         </div>
     </div>
 </template>
+<style>
+.product-bar {
+    width: 20%;
+    padding-right: 10px;
+    height: 100%;
+    background-color: #383C4A;
+}
 
+.img-app {
+    display: flex;
+    flex-direction: row;
+}
+
+.img-bar {
+    padding-left: 15px;
+    padding-right: 20px;
+    padding-top: 1%;
+    width: 80%;
+    height: 30%;
+    display: flex;
+    flex-direction: column;
+    background-color: #4B5162;
+}
+
+.img-bar a {
+    align-self: center;
+    width: 35%;
+}
+
+.img-bar select {
+    width: 50%;
+}
+
+.img-bar select option {
+    width: 50%;
+}
+
+.img-list {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    padding: 10px;
+    overflow-x: scroll;
+    align-items: center;
+
+}
+
+.img-list-show {
+    padding: 1%;
+    max-width: 175px;
+    max-height: 100px;
+
+}
+
+.img-full {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+}
+
+.img-full img {
+    max-width: 100%;
+    max-height: 400px;
+}
+
+
+
+@media only screen and (max-width: 1124px) {
+    .product-bar {
+        width: 100%;
+        height: 100%;
+        background-color: #383C4A;
+    }
+
+    .img-app {
+        display: flex;
+        flex-direction: column-reverse;
+    }
+
+    .img-bar {
+        padding-left: 15px;
+        padding-right: 20px;
+        padding-top: 15px;
+        width: 100%;
+        height: 25%;
+        display: flex;
+        flex-direction: column;
+        background-color: #4B5162;
+    }
+
+    .img-bar a {
+        align-self: center;
+        width: 80%;
+    }
+
+    .img-bar select {
+        width: 65%;
+    }
+
+    .img-list-show {
+        padding: 1%;
+        max-width: 150px;
+        max-height: 90px;
+
+    }
+
+    .img-full {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+    }
+
+    .img-full img {
+        width: 120%;
+        max-height: 400px;
+    }
+
+
+
+}
+</style>
 <script>
 import SlideBar from '@/components/SlideBar'
 //import router from '@/router';
@@ -226,7 +322,7 @@ export default {
             imgShowSrc: null,
             product: null,
             adjValue: 30,
-            addMarketProduct : false
+            addMarketProduct: false
 
         }
     },
@@ -276,7 +372,7 @@ export default {
             if (this.imgShowSrc == null || this.product == null) {
                 alert("Please choose image and product before export")
             } else {
-                if(this.marketplaceProduct == []){
+                if (this.marketplaceProduct == []) {
                     this.isLoading = true
                     let price = 0
                     let filter2PriceCheck = null
@@ -329,7 +425,7 @@ export default {
                     let filter2PriceCheck = null
                     console.log('use normal product')
                     filter2PriceCheck = this.product['product_id']
-                    console.log('filter2PriceCheck : '+filter2PriceCheck)
+                    console.log('filter2PriceCheck : ' + filter2PriceCheck)
                     axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
                     await axios.get(URL_GET_PRICE + filter2PriceCheck + "/" + document.getElementById("folder_sel").value)
                         .then(res => {
@@ -383,7 +479,7 @@ export default {
                         .then(res => {
 
 
-//----------------------------------------YOLO--------------------------------------------------------                           
+                            //----------------------------------------YOLO--------------------------------------------------------                           
                             if (this.product['model'] == 'YOLOv5') {
                                 price = res.data['total_price']
                                 console.log('Yolo')
@@ -414,7 +510,7 @@ export default {
                                 }
 
                             }
-//-----------------------------------------------GANS------------------------------------------------------------------                            
+                            //-----------------------------------------------GANS------------------------------------------------------------------                            
                             else if (this.product['model'] == 'GANs') {
                                 price = res.data['total_price']
                                 if (confirm("Is job will cost " + price + " credit. Do you want to process export ?")) {
@@ -577,9 +673,9 @@ export default {
             }
         },
 
-        isInMarketProduct(product_name){
-            this.marketplaceProduct.forEach((item) =>{
-                if(item['product_id']==product_name){
+        isInMarketProduct(product_name) {
+            this.marketplaceProduct.forEach((item) => {
+                if (item['product_id'] == product_name) {
                     return true
                 }
             })
@@ -612,17 +708,17 @@ export default {
 
 
         if (this.$route.params.product_id != "0") {
-            this.marketplaceProduct.forEach((item) =>{
-                if(item['product_id']==this.$route.params.product_id){
+            this.marketplaceProduct.forEach((item) => {
+                if (item['product_id'] == this.$route.params.product_id) {
                     this.addMarketProduct = true
                 }
             })
 
             console.log(this.addMarketProduct)
-            if(this.addMarketProduct == false){
+            if (this.addMarketProduct == false) {
                 await axios.get(URL_GET_PRODUCT + this.$route.params.product_id)
                     .then(res => {
-                        this.$store.commit('addProduct',res.data);
+                        this.$store.commit('addProduct', res.data);
                         this.marketplaceProduct = this.$store.state.productUse
                     }).catch(err => {
                         console.log(err)

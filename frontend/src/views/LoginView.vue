@@ -1,4 +1,5 @@
 <template>
+    <div class="loading" v-if="this.isLoading">Loading&#8230;</div>
     <div style="display: flex; justify-content: center;">
         <div class="login-regis">
             <div class="menu">
@@ -43,18 +44,24 @@ export default {
     data() {
         const [user, setUser] = useState({
             email: "",
-            password: ""
+            password: "",
+            
         });
+        
         return {
             user,
-            setUser
+            setUser,
+            isLoading:false
         }
     },
     methods: {
         async login() {
+            this.isLoading = true
             if (document.getElementById('email').value.length == 0) {
+                this.isLoading = false
                 alert('Email is empty')
             } else if (document.getElementById('password').value.length == 0) {
+                this.isLoading = false
                 alert('Password is empty')
             } else {
                 await axios
@@ -68,8 +75,10 @@ export default {
                         this.$store.commit('setToken',response.data.jwt);
                         this.$store.commit('setUserData',[response.data.fname,response.data.lname,response.data.storage,response.data.credit]);
                         router.push('/home');
+                        this.isLoading = false
                     }).catch(error => {
                         console.log(error);
+                        this.isLoading = false
                         alert("Username or password is wrong try again");
                     })
             }

@@ -1,4 +1,5 @@
 <template>
+    <div class="loading" v-if="this.isLoading">Loading&#8230;</div>
     <div class="login-regis">
         <form style="
         display: flex;
@@ -65,7 +66,8 @@ export default {
             email: "",
             password: "",
             first_name: "",
-            last_name: ""
+            last_name: "",
+            isLoading: false,
 
         });
         return {
@@ -77,6 +79,7 @@ export default {
     methods: {
 
         async register() {
+            this.isLoading = true
             if (document.getElementById("email").value.length == 0) {
                 alert("Email is empty")
             } else if (document.getElementById("password").value.length == 0) {
@@ -101,13 +104,16 @@ export default {
                     ).then(async response => {
                         response.data
                         alert('Regis complete')
+                        this.isLoading = false
                         router.push('login')
                     }).catch(async error => {
                         alert(error.response.data.email)
+                        this.isLoading = false
                         router.push('register')
                     })
 
                 } else {
+                    this.isLoading = false
                     alert("Password is not macth with Password confirm")
                 }
             }

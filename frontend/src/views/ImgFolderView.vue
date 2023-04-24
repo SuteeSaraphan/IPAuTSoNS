@@ -38,13 +38,8 @@
                 <!-- loading -->
                 <div v-if="this.isUploading">
                         <div class="uploading">
-                            <radial-progress-bar :diameter="500" :completed-steps="completedSteps" :total-steps="totalSteps"
-                                :startColor="this.barColor" :stopColor="this.barColor" style="
-                                    align-items: center;
-                                    justify-content:center;
-                                ">
-                                <h2>On Process</h2>
-                                <h1>Completed : {{ completedSteps }} %</h1>
+                            <radial-progress-bar :diameter="300" :completed-steps="completedSteps" :total-steps="totalSteps"
+                                :startColor="this.barColor" :stopColor="this.barColor">
                             </radial-progress-bar>
                         </div>
                     </div>
