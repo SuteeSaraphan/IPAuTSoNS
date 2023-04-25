@@ -202,13 +202,13 @@ export default {
         //VueSlideBar
     },
     async created() {
-        console.log(this.$route.params.product_id)
+        //console.log(this.$route.params.product_id)
         // count image in from data base
         axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
         await axios.get(URL_PRODUCT + '/once/' + this.$route.params.product_id)
             .then(res => {
                 //console.log('image : ' + res.data)
-                console.log(res.data);
+                //console.log(res.data);
                 this.product = res.data;
                 if (this.product['is_ownner'] != true) {
                     alert('Sorry you do not have permission in this product')

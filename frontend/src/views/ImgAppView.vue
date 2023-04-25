@@ -33,8 +33,9 @@
                                 </div>
                                 <ul class="tab">
                                     <li v-for=" i in this.basicProduct" v-bind:key="i"
-                                        style="background-color: #4B5162;padding: 10px;" @click="changeProduct(i)" type="radio">
-                                        <a :style="[this.product==i ? {'color': '#5294e2'} : {'color': 'white'}]">
+                                        style="background-color: #4B5162;padding: 10px;" @click="changeProduct(i)"
+                                        type="radio">
+                                        <a :style="[this.product == i ? { 'color': '#5294e2' } : { 'color': 'white' }]">
                                             <span class="ri-function-line"></span>
                                             {{ i }}
                                         </a>
@@ -52,7 +53,7 @@
                                     <li v-for="i in this.marketplaceProduct" v-bind:key="i"
                                         style="background-color: #4B5162;padding: 10px;"
                                         @click="changeToMarketplaceProduct(i)">
-                                        <a :style="[this.product==i ? {'color': '#5294e2'} : {'color': 'white'}]">
+                                        <a :style="[this.product == i ? { 'color': '#5294e2' } : { 'color': 'white' }]">
                                             <span class="ri-function-line"></span>
                                             {{ i['product_name'] }}
                                         </a>
@@ -296,8 +297,8 @@ const URL_GET_IMG = 'image';
 const URL_JOB = 'make_docker_file';
 const URL_JOB_YOLO = 'yolo_export';
 const URL_JOB_GAN = 'gan_export';
-const URL_GET_PRODUCT = "product/img_app/";
 const URL_GET_PRICE = "price_check/";
+const URL_GET_OPEN_PRODUCT = 'open_product';
 
 
 export default {
@@ -354,6 +355,7 @@ export default {
         async changeImg(img_id) {
             this.isLoading = true
             this.imgShowSrc = null
+            this.product = null
             axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
             await axios.get(URL_GET_IMG + "/once/" + img_id)
                 .then(res => {
@@ -372,24 +374,27 @@ export default {
             if (this.imgShowSrc == null || this.product == null) {
                 alert("Please choose image and product before export")
             } else {
-                if (this.marketplaceProduct == []) {
+                let isMarketProduct = this.isInMarketProduct(this.product)
+                console.log(isMarketProduct)
+                if (!(isMarketProduct)) {
                     this.isLoading = true
                     let price = 0
                     let filter2PriceCheck = null
-                    console.log('use normal product')
+                    //console.log('use normal product')
                     filter2PriceCheck = this.product
+                    //console.log('filter2PriceCheck : ' + filter2PriceCheck)
                     axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
                     await axios.get(URL_GET_PRICE + filter2PriceCheck + "/" + document.getElementById("folder_sel").value)
                         .then(res => {
-                            console.log(res.data)
+                            //console.log(res.data)
                             price = res.data['total_price']
                             if (confirm("Is job will cost " + price + " credit. Do you want to process export ?")) {
-                                console.log(this.imgShowSrc)
+                                //console.log(this.imgShowSrc)
                                 axios.defaults.headers.post['jwt'] = this.$store.state.jwt;
-                                console.log("product :" + this.product)
+                                //console.log("product :" + this.product)
                                 let exportData = null
 
-                                console.log('use normal product')
+                                //console.log('use normal product')
                                 exportData = {
                                     'img_path': this.imgShowSrc.path,
                                     'img_id': this.imgShowSrc.img_id,
@@ -400,7 +405,7 @@ export default {
 
                                 axios.post(URL_JOB, exportData)
                                     .then(async res => {
-                                        console.log(res)
+                                        //console.log(res)
                                         this.isLoading = false
                                         this.$store.commit('setCredit', res.data['credit_left']);
                                         alert("Job is on processing")
@@ -417,61 +422,11 @@ export default {
                             this.isLoading = false
                             alert("Can't get product price, try again")
                         })
-
-                }
-                else if (this.isInMarketProduct(this.product)) {
+                } else {
                     this.isLoading = true
                     let price = 0
                     let filter2PriceCheck = null
-                    console.log('use normal product')
-                    filter2PriceCheck = this.product['product_id']
-                    console.log('filter2PriceCheck : ' + filter2PriceCheck)
-                    axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
-                    await axios.get(URL_GET_PRICE + filter2PriceCheck + "/" + document.getElementById("folder_sel").value)
-                        .then(res => {
-                            console.log(res.data)
-                            price = res.data['total_price']
-                            if (confirm("Is job will cost " + price + " credit. Do you want to process export ?")) {
-                                console.log(this.imgShowSrc)
-                                axios.defaults.headers.post['jwt'] = this.$store.state.jwt;
-                                console.log("product :" + this.product)
-                                let exportData = null
-
-                                console.log('use normal product')
-                                exportData = {
-                                    'img_path': this.imgShowSrc.path,
-                                    'img_id': this.imgShowSrc.img_id,
-                                    'img_selected': 'all',
-                                    'product_id': this.product,
-                                    'product_value': this.adjValue
-                                }
-
-                                axios.post(URL_JOB, exportData)
-                                    .then(async res => {
-                                        console.log(res)
-                                        this.isLoading = false
-                                        this.$store.commit('setCredit', res.data['credit_left']);
-                                        alert("Job is on processing")
-                                    })
-                                    .catch(async err => {
-                                        this.isLoading = false
-                                        alert(err.response.data['status'] + ' because ' + err.response.data['cause'])
-                                    })
-                            } else {
-                                this.isLoading = false
-                            }
-                        }).catch(err => {
-                            console.log(err)
-                            this.isLoading = false
-                            alert("Can't get product price, try again")
-                        })
-                }
-
-                else {
-                    this.isLoading = true
-                    let price = 0
-                    let filter2PriceCheck = null
-                    console.log('use Marketplace product')
+                    //console.log('use Marketplace product')
                     filter2PriceCheck = this.product['product_id']
 
                     axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
@@ -482,7 +437,7 @@ export default {
                             //----------------------------------------YOLO--------------------------------------------------------                           
                             if (this.product['model'] == 'YOLOv5') {
                                 price = res.data['total_price']
-                                console.log('Yolo')
+                                //console.log('Yolo')
                                 if (confirm("Is job will cost " + price + " credit. Do you want to process export ?")) {
                                     axios.defaults.headers.post['jwt'] = this.$store.state.jwt;
                                     let exportData = null
@@ -496,7 +451,7 @@ export default {
 
                                     axios.post(URL_JOB_YOLO, exportData)
                                         .then(async res => {
-                                            console.log(res)
+                                            //console.log(res)
                                             this.isLoading = false
                                             this.$store.commit('setCredit', res.data['credit_left']);
                                             alert("Job is on processing")
@@ -526,7 +481,7 @@ export default {
 
                                     axios.post(URL_JOB_GAN, exportData)
                                         .then(async res => {
-                                            console.log(res)
+                                            //console.log(res)
                                             this.isLoading = false
                                             this.$store.commit('setCredit', res.data['credit_left']);
                                             alert("Job is on processing")
@@ -557,13 +512,13 @@ export default {
             if (this.imgShowSrc != null) {
                 this.isLoading = true
 
-                console.log(document.getElementById("parameter_value").value)
+                //console.log(document.getElementById("parameter_value").value)
                 this.adjValue = document.getElementById("parameter_value").value;
 
                 if (this.product == "Mosaic") {
                     for (let i in this.folders) {
                         if (this.folders[i].folder_name == document.getElementById("parameter_value").value) {
-                            console.log(this.folders[i].path)
+                            //console.log(this.folders[i].path)
                             this.adjValue = this.folders[i].path
                         }
                     }
@@ -572,7 +527,7 @@ export default {
                 let img_preview = null
                 let url_preview = null
 
-                console.log('use normal product')
+                //console.log('use normal product')
                 url_preview = 'preview'
                 img_preview = {
                     'img_id': this.imgShowSrc.img_id,
@@ -598,10 +553,10 @@ export default {
 
         },
 
-        async changeProduct(product_id) {
+        async changeProduct(productID) {
             if (this.imgShowSrc != null) {
                 this.isLoading = true
-                this.product = product_id;
+                this.product = productID;
                 //document.getElementById("paramter_value").value = 80
                 let img_preview = null
                 let url_preview = null
@@ -640,13 +595,11 @@ export default {
         },
 
         async changeToMarketplaceProduct(product) {
-            console.log(product)
             if (this.imgShowSrc != null) {
                 this.isLoading = true
                 let img_preview = null
                 let url_preview = null
                 this.product = product
-
 
                 url_preview = 'preview_adv'
                 img_preview = {
@@ -673,13 +626,17 @@ export default {
             }
         },
 
-        isInMarketProduct(product_name) {
+        isInMarketProduct(product) {
+            let result = false
             this.marketplaceProduct.forEach((item) => {
-                if (item['product_id'] == product_name) {
-                    return true
+                //console.log('item :'+item['product_id'])
+                //console.log('product :'+product['product_id'])
+                if (item['product_id'] == product['product_id']) {
+                    result = true
                 }
             })
-            return false
+
+            return result
         },
 
 
@@ -693,6 +650,16 @@ export default {
         //VueSlideBar
     },
     async created() {
+        this.$store.commit('clearProduct');
+        axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
+        axios.get(URL_GET_OPEN_PRODUCT)
+            .then(res => {
+                let openProducts = res.data;
+                openProducts.forEach(product => {
+                    this.$store.commit('addProduct', product);
+                });
+            })
+
         this.marketplaceProduct = this.$store.state.productUse
         axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
         await axios.get(URL_IMG_FOLDER)
@@ -705,31 +672,6 @@ export default {
                 console.log(err)
                 alert(err.data)
             })
-
-
-        if (this.$route.params.product_id != "0") {
-            this.marketplaceProduct.forEach((item) => {
-                if (item['product_id'] == this.$route.params.product_id) {
-                    this.addMarketProduct = true
-                }
-            })
-
-            console.log(this.addMarketProduct)
-            if (this.addMarketProduct == false) {
-                await axios.get(URL_GET_PRODUCT + this.$route.params.product_id)
-                    .then(res => {
-                        this.$store.commit('addProduct', res.data);
-                        this.marketplaceProduct = this.$store.state.productUse
-                    }).catch(err => {
-                        console.log(err)
-                        alert("Product loading fail, try again")
-                    })
-            }
-
-        }
-
-
-
 
     }
 };

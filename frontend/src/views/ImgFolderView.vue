@@ -37,25 +37,31 @@
 
                 <!-- loading -->
                 <div v-if="this.isUploading">
-                        <div class="uploading">
-                            <radial-progress-bar :diameter="300" :completed-steps="completedSteps" :total-steps="totalSteps"
-                                :startColor="this.barColor" :stopColor="this.barColor">
-                            </radial-progress-bar>
-                        </div>
+                    <div class="uploading">
+                        <radial-progress-bar :diameter="300" :completed-steps="completedSteps" :total-steps="totalSteps"
+                            :startColor="this.barColor" :stopColor="this.barColor">
+                        </radial-progress-bar>
                     </div>
-                    <!-- loading -->
+                </div>
+                <!-- loading -->
 
 
 
                 <h1>Image Folder page</h1>
+
                 <h2 v-if="this.folder.length == 0">Folder name : Untitle</h2>
                 <h2 v-if="this.folder.length != 0">Folder name : {{ this.folder.folder_name }}</h2>
 
                 <!-- upload image here  -->
-                <form style="padding:5px;">
-                    <input type="file" accept="image/*" @change="uploadImage($event)" id="file-input" multiple="multiple">
-                    <button type="button" @click="onUploadFile" style="padding-right:0.5%;padding-left:0.5%;background-color:#5294e2;"><span class="las la-cloud-upload-alt"></span> Upload</button>
-                </form>
+                <div style="display:flex;flex-direction: column;">
+                    <form style="padding:5px;">
+                        <input type="file" accept="image/*" @change="uploadImage($event)" id="file-input"
+                            multiple="multiple">
+                        <button type="button" @click="onUploadFile"
+                            style="padding-right:0.5%;padding-left:0.5%;background-color:#5294e2;"><span
+                                class="las la-cloud-upload-alt"></span> Upload</button>
+                    </form>
+                </div>
 
                 <hr>
 
@@ -63,7 +69,14 @@
                 <div class="cards">
                     <div class="card-single" v-for="image in this.images" v-bind:key="image.img_id" style="background-color:#4b5162;
                                                 border-radius: 15px;">
+
+                        <div>
+                            <button style="background-color: #5294e2;padding:2px;border: none;"
+                                @click="downloadFile(image)">
+                                <span style="font-size: 1.5rem;" class="las la-download"></span></button>
+                        </div>
                         <div style="display: block; justify-content: center; padding: 2.5%; ">
+
                             <img :src="`data:image/jpeg;base64,${image.img_data}`" alt="{{ image.img_id }}"
                                 @click="fullImageView(image.img_id)" style="
                                         display: block;
@@ -163,8 +176,8 @@ export default {
             folder: null,
             upload_progress: 0,
             isUploading: false,
-            completedSteps :0,
-            totalSteps:0,
+            completedSteps: 0,
+            totalSteps: 0,
             barColor: "#5294e2",
 
 
@@ -237,7 +250,7 @@ export default {
             await axios.get(URL_IMG + "/once/" + img_id)
                 .then(res => {
                     this.fullImage = res.data[0]
-                    console.log(this.fullImage)
+                    //console.log(this.fullImage)
                 })
         },
 
@@ -260,7 +273,7 @@ export default {
         },
 
         goToPage() {
-            console.log(document.getElementById("pageSel").value)
+            //console.log(document.getElementById("pageSel").value)
             let path = "/img_folder/" + this.$route.params.folder_id + "/" + document.getElementById("pageSel").value
             window.location.href = path
 
@@ -277,7 +290,21 @@ export default {
                     this.images = res.data
                 })
 
-        }
+        },
+
+        async downloadFile(img) {
+            let url = 'download_img/'+img['img_id']
+            const response = await axios.get(url, {
+                responseType: 'blob',
+            });
+
+            const fileUrl = window.URL.createObjectURL(new Blob([response.data]));
+            const fileLink = document.createElement('a');
+            fileLink.href = fileUrl;
+            fileLink.setAttribute('download', this.showImgName(img.path));
+            document.body.appendChild(fileLink);
+            fileLink.click();
+        },
 
 
 

@@ -50,7 +50,7 @@
 					<!-- end of show each product info here -->
 				</div>
 				<div style="display: flex; justify-content: center; padding-top: 2.5%;">
-					<router-link to="/market/newest"><button @click="this.goEditProduct" style="	outline:  none;
+					<router-link to="/market/All/All/newest"><button @click="this.goEditProduct" style="	outline:  none;
 																			background: transparent;
 																			border:  2px solid #ccc;
 																			padding: .6rem 1rem;
@@ -100,11 +100,11 @@ export default {
 		SlideBar
 	},
 	async created() {
-		console.log(this.$route.params.keyword)
+		//console.log(this.$route.params.keyword)
 		axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
 		await axios.get('feed')
 			.then(res => {
-				console.log(res.data)
+				//console.log(res.data)
 				this.productList = res.data
 				this.isLoading = false;
 			})

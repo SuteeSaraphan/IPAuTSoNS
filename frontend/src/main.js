@@ -7,5 +7,6 @@ import Axios from 'axios';
 //Axios.defaults.baseURL = 'http://127.0.0.1:8000/api/';
 Axios.defaults.baseURL = 'http://192.168.1.46:8000/api/';
 
+
 createApp(App).use(store).use(router).mount('#app')
 

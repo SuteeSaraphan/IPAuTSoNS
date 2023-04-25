@@ -177,7 +177,7 @@ export default {
         //VueSlideBar
     },
     async created() {
-        console.log(this.$route.params.type);
+        //console.log(this.$route.params.type);
         axios.defaults.headers.get['jwt']= this.$store.state.jwt;
         await axios.get(URL_PRODUCT_HISTORY+"/"+this.$route.params.product_id+"/"+this.$route.params.type)
             .then(res => {

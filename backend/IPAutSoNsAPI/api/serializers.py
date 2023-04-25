@@ -108,3 +108,14 @@ class PaymentSerializer(serializers.ModelSerializer):
 
         )
         model = Payment
+
+
+class OpenProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = (
+            'open_product_id',
+            'user_id',
+            'product_id',
+
+        )
+        model = Open_product

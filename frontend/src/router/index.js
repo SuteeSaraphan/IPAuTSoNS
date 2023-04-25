@@ -41,7 +41,7 @@ const routes = [
   },
 
   {
-    path: "/img_app/:product_id",
+    path: "/img_app",
     name: "img_app",
     component: ImgAppView,
   },

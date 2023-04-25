@@ -19,8 +19,8 @@
             <main>
                 <div class="page-header">
                     <div>
-                        <h1>{{product.product_name}}</h1>
-                        <small>By {{product.ownner}} || {{product.last_update}}</small>
+                        <h1>{{ product.product_name }}</h1>
+                        <small>By {{ product.ownner }} || {{ product.last_update }}</small>
                     </div>
 
                     <div class="header-actions" v-if="this.product['is_ownner']">
@@ -42,13 +42,14 @@
                         <img :src="`data:image/jpeg;base64,${product.product_img}`">
                     </div>
                     <div class="product-detail">
-                        <h1>{{product.product_name}}</h1>
-                        <small>By {{product.ownner}} || Last update : {{product.last_update}}</small>
+                        <h1>{{ product.product_name }}</h1>
+                        <small>By {{ product.ownner }} || Last update : {{ product.last_update }}</small>
 
-                        <small>Model : {{product.model}} || Type : {{product.last_update}}</small>
-                        <p>{{product.detail}}</p>
+                        <small>Model : {{ product.model }} || Type : {{ product.last_update }}</small>
+                        <p>{{ product.detail }}</p>
 
-                        <button @click="tryThisWeight(product.product_id)" style="background-color: #5294e2;"> Try this weight </button>
+                        <button @click="tryThisWeight(product.product_id)" style="background-color: #5294e2;"> Try this
+                            weight </button>
 
                     </div>
 
@@ -124,11 +125,12 @@ import SlideBar from '@/components/SlideBar'
 import axios from 'axios';
 
 const URL_GET_PRODUCT = 'product';
+const URL_GET_OPEN_PRODUCT = 'open_product'
 
 export default {
     name: "ProductView",
     setup() {
-     
+
 
 
 
@@ -141,18 +143,32 @@ export default {
         }
     },
     methods: {
-        tryThisWeight(product_id){
+        tryThisWeight(product_id) {
             //console.log("enter folder :"+folder_id)
-            let path = "/img_app/" + product_id
-            window.location.href = path
+            let openProduct = {
+                'product_id': product_id,
+            }
+            axios.defaults.headers.post['jwt'] = this.$store.state.jwt;
+            axios.post(URL_GET_OPEN_PRODUCT, openProduct)
+                .then(res => {
+                    console.log(res)
+                    alert('Open product success')
+                    let path = "/img_app"
+                    window.location.href = path
+                })
+                .catch(err => {
+                    console.log(err)
+                    alert(err.response.data['status'] + ' because ' + err.response.data['cause'])
+                })
+
         },
-        goEditProduct(){
+        goEditProduct() {
             let path = "/edit_product/" + this.$route.params.product_id
             window.location.href = path
         },
 
-        goProductHistory(){
-            let path = "/product_history/"+this.$route.params.product_id+"/newest"
+        goProductHistory() {
+            let path = "/product_history/" + this.$route.params.product_id + "/newest"
             window.location.href = path
         }
     }
@@ -168,7 +184,7 @@ export default {
         await axios.get(URL_GET_PRODUCT + '/once/' + this.$route.params.product_id)
             .then(res => {
                 //console.log('image : ' + res.data)
-                console.log(res.data);
+                //console.log(res.data);
                 this.product = res.data;
             }).catch(err => {
                 console.log(err)

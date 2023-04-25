@@ -25,8 +25,8 @@
             
 
             <div class="box">
-              <h3>2</h3>
-              <span>Product ownner</span>
+              <h3>{{ productOpen }}</h3>
+              <span>Product open</span>
             </div>
 
             
@@ -75,7 +75,7 @@
           <li>
             <a href="">
               <span class="ri-camera-lens-fill"></span>
-              <router-link to="/img_app/0">ImageProcessing App</router-link>
+              <router-link to="/img_app">ImageProcessing App</router-link>
             </a>
           </li>
           <!-- Demo -->
@@ -129,6 +129,7 @@ export default {
       lname:null,
       storageSize:null,
       creditTotal:null,
+      productOpen:0
     }
   },
 
@@ -141,6 +142,14 @@ export default {
       this.lname = this.$store.state.last_name
       this.storageSize = this.$store.state.storageSize
       this.creditTotal = this.$store.state.creditTotal
+
+      this.$store.state.productUse.forEach(product => {
+        console.log(product)
+        this.productOpen+=1
+      });
+        
+      
+      
     }
     
 

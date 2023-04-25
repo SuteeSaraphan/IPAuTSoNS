@@ -37,6 +37,7 @@
 import { useState } from '../composables/state';
 import router from '@/router';
 const axios = require('axios').default;
+const URL_GET_OPEN_PRODUCT = 'open_product'
 export default {
     name: "LoginView",
     setup() {
@@ -45,13 +46,13 @@ export default {
         const [user, setUser] = useState({
             email: "",
             password: "",
-            
+
         });
-        
+
         return {
             user,
             setUser,
-            isLoading:false
+            isLoading: false
         }
     },
     methods: {
@@ -65,15 +66,24 @@ export default {
                 alert('Password is empty')
             } else {
                 await axios
-                .post('login',
-                    {
-                        'email': this.user.email,
-                        'password': this.user.password
-                    }
-                )
+                    .post('login',
+                        {
+                            'email': this.user.email,
+                            'password': this.user.password
+                        }
+                    )
                     .then(response => {
-                        this.$store.commit('setToken',response.data.jwt);
-                        this.$store.commit('setUserData',[response.data.fname,response.data.lname,response.data.storage,response.data.credit]);
+                        this.$store.commit('setToken', response.data.jwt);
+                        this.$store.commit('setUserData', [response.data.fname, response.data.lname, response.data.storage, response.data.credit]);
+                        axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
+                        axios.get(URL_GET_OPEN_PRODUCT)
+                            .then(res => {
+                                let openProducts = res.data;
+                                openProducts.forEach(product => {
+                                    this.$store.commit('addProduct', product);
+                                });
+
+                            })
                         router.push('/home');
                         this.isLoading = false
                     }).catch(error => {

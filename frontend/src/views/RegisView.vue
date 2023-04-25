@@ -90,6 +90,8 @@ export default {
                 alert("Fisrtname is empty")
             } else if (document.getElementById("last_name").value.length == 0) {
                 alert("Lastname is empty")
+            } else if (this.strCheck()) {
+                alert("Fisrtname or Lastname have Special character")
             } else {
                 if (this.user.password == document.getElementById("password_confirm").value) {
                     await axios.post('register',
@@ -125,7 +127,17 @@ export default {
             document.getElementById("first_name").value = ""
             document.getElementById("last_name").value = ""
 
-        }
-    },
+        },
+
+        strCheck(){
+            let character = /[ `!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?~]/
+            if (character.test(document.getElementById("first_name").value)||character.test(document.getElementById("last_name").value)) {
+                return true
+            }else{
+                return false
+            }
+
+        },
+    }
 };
 </script>

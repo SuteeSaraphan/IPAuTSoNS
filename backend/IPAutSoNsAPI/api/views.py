@@ -28,7 +28,10 @@ from preview_adv_api import PreviewADVAPI
 import logging
 import requests
 import json
+from django.http import HttpResponse, Http404
 
+
+PROCESS_TAX = 0.9
 logger = logging.getLogger(__name__)
 
 
@@ -38,6 +41,40 @@ class VersionCheck(APIView):
 
 # for Authentication user with JWT
 
+
+def download_file(request, img_id):
+
+    img_download = Image_file.objects.get(img_id=img_id)
+
+    # Path to the file on the server
+    file_path = os.path.join("ipautsons",img_download.path.path)
+
+    # Check if the file exists
+    if not os.path.exists(file_path):
+        raise Http404
+
+    # Open the file as a binary object
+    with open(file_path, 'rb') as f:
+        response = HttpResponse(f.read(), content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="{img_id}"'
+        return response
+
+def download_folder(request, img_id):
+
+    img_download = Image_file.objects.get(img_id=img_id)
+
+    # Path to the file on the server
+    file_path = os.path.join("ipautsons",img_download.path.path)
+
+    # Check if the file exists
+    if not os.path.exists(file_path):
+        raise Http404
+
+    # Open the file as a binary object
+    with open(file_path, 'rb') as f:
+        response = HttpResponse(f.read(), content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="{img_id}"'
+        return response
 
 def Authentication(token):
     if not token:
@@ -676,7 +713,6 @@ class ProductView(APIView):#----------------สินค้า------------------
             serializer.is_valid(raise_exception=True)
             serializer.save()
             try:
-                res['msg'] = "OK"
                 product = Product.objects.get(product_id=product_id)
                 with open(str(Path(product.product_img.path)), 'rb') as image_file:
                     weight_checker_api_url = 'http://192.168.1.46:'
@@ -686,24 +722,36 @@ class ProductView(APIView):#----------------สินค้า------------------
                         files = {'file': image_file}
                         weight_checker_api_url =  weight_checker_api_url+str(product.path.path)
 
-                        response = requests.post(weight_checker_api_url, headers=headers)
+                        response = requests.post(weight_checker_api_url, headers=headers ,files=files)
                         logger.error('response.text : '+str(response.text))
                         res = json.loads(response.text)
-                    elif(product.model=='GANs'):
-                        weight_checker_api_url = weight_checker_api_url+'4070/weight-checker?modelse='
-                        res['msg'] = "OK"
-                        pass
-                    
-                    try:
                         if(res['msg']=="OK"):
-
                             return Response(data={"status": "Add new product success is made!"})
                         else:
                             logger.error('product add error because : '+str(res['msg']))
                             product.delete()
                             return Response(data={'status': 'ERROR695 Export job fail !!!','cause':"server issue"}, status=503)
-                    except Exception as err:
-                        return Response(data={'status': 'ERROR7010 Export job fail !!!','cause':str(err)}, status=503)
+                        
+                    elif(product.model=='GANs'):
+                        weight_checker_api_url = weight_checker_api_url+'4070/gan?modelse='
+                        headers = {'accept': 'application/json'}
+                        files = {'file': image_file}
+                        weight_checker_api_url =  weight_checker_api_url+str(product.path.path)
+                        
+                        response = requests.post(weight_checker_api_url, headers=headers ,files=files)
+                        try:
+                            logger.error(response.content)
+                            logger.error(type(response.content))
+                            image_data = Image.open(BytesIO(response.content))
+                            
+                        except Exception as error:
+                            logger.error('product add error because : '+str(error))
+                            product.delete()
+                            return Response(data={'status': 'ERROR695 Export job fail !!!','cause':"server issue"}, status=503)
+                        else:
+                            return Response(data={"status": "Add new product success is made!"})
+                    
+
             except Exception as error:
                 product.delete()
                 print(str(error))
@@ -794,6 +842,49 @@ class MarketView(APIView):
 
         return Response(temp_respond)
 
+#--------------------------------open product-------------------------------------
+
+class OpenProductView(APIView):
+    def post(seld, request):
+        token = request.META['HTTP_JWT']
+        payload = Authentication(token)
+        user = User.objects.get(user_id=payload['id'])
+        product = Product.objects.get(product_id=request.data['product_id'])
+
+        open_product = OpenProductSerializer(Open_product.objects.get(product_id=request.data['product_id'],user_id=payload['id']))
+        copy_check = 0
+        for i in open_product:
+            copy_check += 1
+        
+        if(copy_check>0):
+            return Response({"status": "Open product fail",'cause':'product is already turn on'},status=503)
+        open_product_data ={
+            'open_product_id': ''.join(random.choices(string.ascii_lowercase + string.digits, k=6)),
+            'user_id' : user.user_id,
+            'product_id' : product.product_id
+        }
+
+        serializer = OpenProductSerializer(data=open_product_data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response({"status": "Open product success"})
+
+    def get(self, request):
+        token = request.META['HTTP_JWT']
+        payload = Authentication(token)
+        openProducts = OpenProductSerializer(Open_product.objects.all().filter(user_id=payload['id']), many=True)
+        temp_respond = []
+        for i in openProducts.data:
+            product_temp = Product.objects.get(product_id=i['product_id'])
+            openProduct_temp ={
+                'product_id': product_temp.product_id,
+                'product_name': product_temp.product_name,
+                'model': product_temp.model
+            }
+            temp_respond.append(openProduct_temp)
+        return Response(temp_respond)
+
 #---------------------------------PREVIEW-----------------------------------------
 class PreviewNormalView(APIView):
     def post(seld, request):
@@ -805,7 +896,6 @@ class PreviewNormalView(APIView):
         file_type = (img_serializer.data['img_type'].split('/'))[1]
         try:
             # deploy
-            logger.error(str(Path(img_serializer.data['path'])))
             with open(str(Path(img_serializer.data['path'])), 'rb') as image_file:
                 preview = PreviewAPI(
                     image_file, file_type, request.data['product_id'], request.data['product_value'])
@@ -829,9 +919,9 @@ class PreviewNormalView(APIView):
             print(error)
             return Response(data={'status': str(error)}, status=503)
 
-
+#---------------------------------PREVIEW-ADV-----------------------------------------
 class PreviewAdvanceView(APIView):
-    def post(seld, request):
+    def post(self, request):
         token = request.META['HTTP_JWT']
         payload = Authentication(token)
         # preview = PreviewAPI(request.data['img_id'],request.data['product_id'],request.data['product_value'])
@@ -851,10 +941,7 @@ class PreviewAdvanceView(APIView):
                 print('call do_preview')
                 img_preview = preview.do_preview()
 
-                #problem here
                 image_data = Image.open(BytesIO(img_preview))
-
-
                 buffer = BytesIO()
                 image_data.save(buffer, format=file_type)
                 image_data = base64.b64encode(buffer.getvalue())
@@ -1076,7 +1163,7 @@ class YoloExport(APIView):
         try:
             sub_result = sub_credit(
             buyyer_payment_id,user, total_credit_use, product_on_job.product_id)
-            add_result = add_credit(seller_payment_id,product_on_job.user_id, total_credit_use, product_on_job.product_id)
+            add_result = add_credit(seller_payment_id,product_on_job.user_id, (total_credit_use)*0.9, product_on_job.product_id)
         except Exception as err:
             buyyer_payment_del_sta = True
             seller_payment_del_sta = True
@@ -1547,7 +1634,7 @@ class MakeDockerFile(APIView):
         path_temp = '"'+path+'"'
         result_path_temp = '"/'+result_path+'"'
         user_id_temp = '"'+str(payload['id'])+'"'
-
+        name_job = name_job.lower()
         logger.error('1309')
 #---------------------------------------------------mosaic---------------------------------------------#  
     #masaic = job_id ,user_id ,choose_folder ,image_selected ,result_folder
