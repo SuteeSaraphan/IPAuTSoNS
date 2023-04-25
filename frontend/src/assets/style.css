@@ -781,19 +781,33 @@ input[type=submit], select {
 .uploading {
   position: fixed;
   z-index: 999;
+  padding-top: 15%;
+  padding-left: 40%;
+  overflow: show;
+  margin: auto;
   top: 0;
   left: 0;
   bottom: 0;
   right: 0;
-  padding-left: 15px;
-  padding-right: 20px;
-  padding-top: 15px;
-  display: flex;
-  flex-direction: row;
-  justify-content:center;
-  align-items: center;
-  align-content:center;
 }
+
+
+@media only screen and (max-width: 1124px) {
+  .uploading {
+    position: fixed;
+    z-index: 999;
+    padding-top: 50%;
+    padding-left: 10%;
+    overflow: show;
+    margin: auto;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+  }
+
+}
+
 
 .uploading:before {
   content: '';

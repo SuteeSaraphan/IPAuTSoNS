@@ -48,7 +48,7 @@
                         <small>Model : {{product.model}} || Type : {{product.last_update}}</small>
                         <p>{{product.detail}}</p>
 
-                        <button @click="tryThisWeight(product.product_id)"> Try this weight </button>
+                        <button @click="tryThisWeight(product.product_id)" style="background-color: #5294e2;"> Try this weight </button>
 
                     </div>
 

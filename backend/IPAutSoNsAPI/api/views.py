@@ -306,6 +306,10 @@ class ImageView(APIView):
             img_serializer = ImageSerializer(
                 Image_file.objects.get(img_id=folder_id))
             file_type = (img_serializer.data['img_type'].split('/'))[1]
+            if (file_type.lower() == 'jpg' or file_type.lower() == 'jpeg'):
+                file_type = 'jpeg'
+            else:
+                file_type = 'png'
             try:
                 # deploy
                 with Image.open(str(Path(img_serializer.data['path']))) as image_file_temp:
@@ -557,7 +561,7 @@ class FeedView(APIView):
         return Response(temp_respond)
 
 
-class ProductView(APIView):
+class ProductView(APIView):#----------------สินค้า--------------------
     def get(self, request, type, key):
         token = request.META['HTTP_JWT']
         payload = Authentication(token)
@@ -653,10 +657,9 @@ class ProductView(APIView):
         try:
             weight_file = request.FILES.get('weight_file')
             product_img = request.FILES.get('product_img')
-            print(weight_file)
-            print(product_img)
+            product_id = ''.join(random.choices(string.ascii_lowercase + string.digits, k=6))
             product_data = {
-                'product_id': ''.join(random.choices(string.ascii_lowercase + string.digits, k=6)),
+                'product_id': product_id,
                 'user_id': payload['id'],
                 'product_name': request.data['name'],
                 'product_type': request.data['type'],
@@ -672,12 +675,46 @@ class ProductView(APIView):
             serializer = ProductSerializer(data=product_data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
+            try:
+                res['msg'] = "OK"
+                product = Product.objects.get(product_id=product_id)
+                with open(str(Path(product.product_img.path)), 'rb') as image_file:
+                    weight_checker_api_url = 'http://192.168.1.46:'
+                    if(product.model=='YOLOv5'):
+                        weight_checker_api_url = weight_checker_api_url+'4050/weight-checker?modelse='
+                        headers = {'accept': 'application/json'}
+                        files = {'file': image_file}
+                        weight_checker_api_url =  weight_checker_api_url+str(product.path.path)
 
+                        response = requests.post(weight_checker_api_url, headers=headers)
+                        logger.error('response.text : '+str(response.text))
+                        res = json.loads(response.text)
+                    elif(product.model=='GANs'):
+                        weight_checker_api_url = weight_checker_api_url+'4070/weight-checker?modelse='
+                        res['msg'] = "OK"
+                        pass
+                    
+                    try:
+                        if(res['msg']=="OK"):
+
+                            return Response(data={"status": "Add new product success is made!"})
+                        else:
+                            logger.error('product add error because : '+str(res['msg']))
+                            product.delete()
+                            return Response(data={'status': 'ERROR695 Export job fail !!!','cause':"server issue"}, status=503)
+                    except Exception as err:
+                        return Response(data={'status': 'ERROR7010 Export job fail !!!','cause':str(err)}, status=503)
+            except Exception as error:
+                product.delete()
+                print(str(error))
+                logger.error(str(error))
+                return Response(data={"status": "Fail to add product try again.","cause":"701"+str(error)}, status=503)
+            
         except (Exception) as error:
             print(str(error))
-            return Response(data={"status": "Fail to add product try again.","cause":str(error)}, status=503)
-        else:
-            return Response({"status": "Add product successful"})
+            logger.error(str(error))
+            return Response(data={"status": "Fail to add product try again.","cause":"706"+str(error)}, status=503)
+        
 
 
 class MarketView(APIView):
@@ -768,6 +805,7 @@ class PreviewNormalView(APIView):
         file_type = (img_serializer.data['img_type'].split('/'))[1]
         try:
             # deploy
+            logger.error(str(Path(img_serializer.data['path'])))
             with open(str(Path(img_serializer.data['path'])), 'rb') as image_file:
                 preview = PreviewAPI(
                     image_file, file_type, request.data['product_id'], request.data['product_value'])
@@ -789,29 +827,34 @@ class PreviewNormalView(APIView):
 
         except Exception as error:
             print(error)
-            return Response(data={'status': 'something is wrong'}, status=503)
+            return Response(data={'status': str(error)}, status=503)
 
 
 class PreviewAdvanceView(APIView):
     def post(seld, request):
         token = request.META['HTTP_JWT']
         payload = Authentication(token)
-        print('preview advance')
-
         # preview = PreviewAPI(request.data['img_id'],request.data['product_id'],request.data['product_value'])
         product_on_job = Product.objects.get(product_id=request.data['product_id'])
         product_on_job_path = product_on_job.path.path
-        print(product_on_job_path)
-        img_serializer = ImageSerializer(
-            Image_file.objects.get(img_id=request.data['img_id']))
+        img_serializer = ImageSerializer(Image_file.objects.get(img_id=request.data['img_id']))
         file_type = (img_serializer.data['img_type'].split('/'))[1]
+        logger.error('start preview ADV')
+        logger.error(str(Path(img_serializer.data['path'])))
         try:
             # deploy
-           with open(str(Path(img_serializer.data['path'])), 'rb') as image_file:
+            logger.error('1')
+            with open(str(Path(img_serializer.data['path'])), 'rb') as image_file:
+                logger.error('2')
                 preview = PreviewADVAPI(
                     image_file, file_type, product_on_job.model, product_on_job_path)
+                print('call do_preview')
                 img_preview = preview.do_preview()
+
+                #problem here
                 image_data = Image.open(BytesIO(img_preview))
+
+
                 buffer = BytesIO()
                 image_data.save(buffer, format=file_type)
                 image_data = base64.b64encode(buffer.getvalue())
@@ -827,9 +870,9 @@ class PreviewAdvanceView(APIView):
                 return Response(temp_img_data)
 
         except Exception as error:
-            print('error840 : '+str(error))
-            return Response(data={'status': 'something is wrong'}, status=503)
-
+            logger.error("error 867"+str(error))
+            return Response(data={'status': str(error)}, status=503)
+        
 
 class UserHistoryView(APIView):
     def get(self, request, type):
@@ -972,6 +1015,10 @@ class PriceCheckView(APIView):
         token = request.META['HTTP_JWT']
         payload = Authentication(token)
         try:
+            user = User.objects.get(user_id=payload['id'])
+        except Exception:
+            return Response({'status': 'no record found'}, status=503)
+        try:
             product = Product.objects.get(product_id = product_id)
             product_price = product.price
         except Exception as error :
@@ -981,8 +1028,11 @@ class PriceCheckView(APIView):
         discount = discount_calculate(num_img_in_folder)
         total_price = product_price*num_img_in_folder*discount
 
-        return Response({'total_price':total_price})
-
+        if (credit_check(user)<total_price):
+            return Response({'status': "Don't have enough credit"}, status=503) 
+        else:
+            return Response({'total_price':total_price})
+#--------------------------------------------------------------YOLO------------------------------------------------
 class YoloExport(APIView):
     def post(self,request):
         logger.error('Running Yolo api export at '+str(datetime.datetime.now()))
@@ -1026,8 +1076,7 @@ class YoloExport(APIView):
         try:
             sub_result = sub_credit(
             buyyer_payment_id,user, total_credit_use, product_on_job.product_id)
-            add_result = add_credit(
-                seller_payment_id,product_on_job.user_id, total_credit_use, product_on_job.product_id)
+            add_result = add_credit(seller_payment_id,product_on_job.user_id, total_credit_use, product_on_job.product_id)
         except Exception as err:
             buyyer_payment_del_sta = True
             seller_payment_del_sta = True
@@ -1089,12 +1138,10 @@ class YoloExport(APIView):
                         pass
                 return Response(data={'status': 'ERROR1101 Create folder fail !!!','cause':str(error)}, status=503)
         
-        name_job = '"'+payload['id']+'-'+img_path[2]+'-'+docker_image_name+'-'+str(time_now)+'"'
 #job_id=p5mltrbi9ar-test-test-1619&useridparam=p5mltrbi9ar&folders=%2Fipautsons%2Fp5mltrbi9ar%2Froot%2Ftest&modelse=yolov5n.pt&newfolder=%2Fipautsons%2Fp5mltrbi9ar%2Froot%2Ftest-testyolo'
-        yolo_api_url = yolo_api_url+"job_id="+name_job+"&useridparam="+payload['id']+"&folders="+path+"&modelse="+product_on_job.path.path+"&newfolder=/"+result_path
+        yolo_api_url = yolo_api_url+"job_id="+job_id+"&useridparam="+payload['id']+"&folders="+path+"&modelse="+product_on_job.path.path+"&newfolder=/"+result_path
         headers = {'accept': 'application/json'}
         try:
-            response = requests.post(yolo_api_url, headers=headers)
             job_data = {
                     'job_id': job_id,
                     'user_id': user.user_id,
@@ -1108,6 +1155,8 @@ class YoloExport(APIView):
             serializer = JobSerializer(data=job_data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
+
+            response = requests.post(yolo_api_url, headers=headers)
         except Exception as error:
             logger.error('error : '+str(error))
             buyyer_payment_del_sta = True
@@ -1135,7 +1184,216 @@ class YoloExport(APIView):
                 except :
                     pass
             return Response(data={'status': 'ERROR1089 Export job fail !!!','cause':"server issue"}, status=503)
+#----------------------------------------------GAN-----------------------------------------------
+class GanExport(APIView):
+    def post(self, request):
+        logger.error('Running GAN export file at '+str(datetime.datetime.now()))
+        print("product_id : " + str(request.data['product_id']))
+        token = request.META['HTTP_JWT']
+        payload = Authentication(token)
+        user = User.objects.get(user_id=payload['id'])
+        buyyer_payment_id = ''.join(random.choices(
+            string.ascii_lowercase + string.digits, k=25))
+        seller_payment_id = ''.join(random.choices(
+            string.ascii_lowercase + string.digits, k=25))
 
+        job_id = ''.join(random.choices(
+            string.ascii_lowercase + string.digits, k=15))
+        img_sel = Image_file.objects.get(img_id=request.data['img_id'])
+        img_selected = img_sel.img_id
+        img_path = str(img_sel.path)
+        img_path = img_path.split('/')
+
+        num_img = Image_file.objects.all().filter(
+            user_id=payload['id']).filter(img_folder=img_path[2]).count()
+        add_result = None
+        sub_result = None
+        product_on_job = None
+        logger.error('1187')
+
+        try:
+            product_on_job = Product.objects.get(product_id=request.data['product_id'])
+        except Exception as error:
+            return Response(data={"status": "ERROR1012 Export job fail", "cause": "Product loading fail"}, status=503)
+        discount = discount_calculate(num_img)
+        total_credit_use = (int(num_img)*product_on_job.price)*float(discount)
+        user_credit = credit_check(user)
+        
+        if (user_credit < total_credit_use):
+            return Response(data={"status": "ERROR1032 Export job fail", "cause": "Do not have enough credit point"}, status=503)
+        
+        try:
+            sub_result = sub_credit(
+                buyyer_payment_id,user, total_credit_use, product_on_job.product_id)
+            add_result = add_credit(
+                seller_payment_id,product_on_job.user_id, total_credit_use, product_on_job.product_id)
+        except Exception as err:
+            buyyer_payment_del_sta = True
+            seller_payment_del_sta = True
+            while(buyyer_payment_del_sta or seller_payment_del_sta ):
+                try:
+                    buyyer_payment_del_sta = del_payment(buyyer_payment_id)
+                    seller_payment_del_sta = del_payment(seller_payment_id)
+                except :
+                        pass
+            return Response(data={"status": "ERROR1074 Export job fail", "cause": str(err)}, status=503)
+        
+        logger.error('1223')
+        logger.error('sub_result : ' +str(sub_result))
+        logger.error('add_result : ' +str(add_result))
+        if (sub_result != 1  or add_result != 1):
+                buyyer_payment_del_sta = True
+                seller_payment_del_sta = True
+                while(buyyer_payment_del_sta or seller_payment_del_sta):
+                    try:
+                        buyyer_payment_del_sta = del_payment(buyyer_payment_id)
+                        seller_payment_del_sta = del_payment(seller_payment_id)
+                    except :
+                        pass
+                return Response(data={"status": "ERROR1059 Export job fail", "cause": str(add_result)+" and "+str(sub_result)}, status=503)
+        logger.error('1235')
+
+        path = "/ipautsons/"+img_path[0]+"/"+img_path[1]+"/"+img_path[2]
+        now = datetime.datetime.now()
+        time_now = now.strftime("%H")+now.strftime("%M")+now.strftime("%S")
+        
+        result_folder_name = img_path[2]+'-'+product_on_job.product_name.replace(" ","-")+'-'+time_now
+        result_path = "ipautsons/"+img_path[0]+"/"+img_path[1]+"/"+result_folder_name.replace(" ","-")
+        docker_image_name = "gangen"
+        in_command_file_name = '"'+"main.py"+'"'
+
+        logger.error('1245')
+        try:
+            os.makedirs("/"+result_path)
+        except Exception as error:
+            print(error)
+            return Response(data={'status': 'ERROR1250 Create folder fail !!!','cause':str(error)}, status=503)
+        
+        logger.error('1251')
+        try:
+            folder_data = {
+                'folder_id': ''.join(random.choices(string.ascii_lowercase + string.digits, k=6)),
+                'user_id': payload['id'],
+                'folder_name': result_folder_name,
+                'path': result_path,
+                'is_hidden': False
+            }
+
+            serializer = FolderImageSerializer(data=folder_data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+        except Exception as error:
+            print(error)
+            buyyer_payment_del_sta = True
+            seller_payment_del_sta = True
+            while(buyyer_payment_del_sta or seller_payment_del_sta ):
+                try:
+                    buyyer_payment_del_sta = del_payment(buyyer_payment_id)
+                    seller_payment_del_sta = del_payment(seller_payment_id)
+                except :
+                        pass
+            return Response(data={'status': 'ERROR1266 Create folder fail !!!','cause':str(error)}, status=503)
+        
+        logger.error('1277')
+        name_job = '"'+user.first_name+'-'+img_path[2]+'-'+product_on_job.product_name.replace(" ","-")+'-'+str(time_now)+'"'
+        path_temp = '"'+path+'"'
+        result_path_temp = '"/'+result_path+'"'
+        user_id_temp = '"'+str(payload['id'])+'"'
+        weight_path_temp = '"'+product_on_job.path.path+'"'
+        logger.error('1282')
+        name_job = name_job.lower()
+
+        template = """apiVersion: batch/v1
+
+kind: Job
+
+metadata:
+
+  name: """+str(name_job)+"""
+
+spec:
+
+  template:
+
+    spec:
+
+      containers:
+
+      - name: """+str(name_job)+"""
+
+        image: suteesaraphan27/"""+str(docker_image_name)+"""
+        volumeMounts:
+            - name: nfs-share
+              mountPath: /ipautsons
+
+        command: ["python","""+str(in_command_file_name)+""","""+str(job_id)+""","""+str(user_id_temp)+""","""+str(path_temp)+""","""+str(result_path_temp)+""","""+str(weight_path_temp)+"""]
+
+      restartPolicy: Never
+      volumes:
+      - name: nfs-share
+        persistentVolumeClaim: 
+          claimName: example"""
+        
+        job_data = {
+                'job_id': job_id,
+                'user_id': user.user_id,
+                'path': path,
+                'num_img': num_img,
+                'img_selected': img_selected,
+                'job_status': "0",
+                'product_id': product_on_job.product_id,
+                'payment_id': buyyer_payment_id
+            }
+        logger.error('1325')
+        try:
+            serializer = JobSerializer(data=job_data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+        except Exception as error:
+            buyyer_payment_del_sta = True
+            seller_payment_del_sta = True
+            while(buyyer_payment_del_sta or seller_payment_del_sta ):
+                try:
+                    buyyer_payment_del_sta = del_payment(buyyer_payment_id)
+                    seller_payment_del_sta = del_payment(seller_payment_id)
+                except :
+                    pass
+            return Response(data={"status": "ERROR1175 Export job fail", "cause": str(error)}, status=503)
+    
+        logger.error('1341')
+        try:
+
+            with open('yaml_file/'+job_id+'.yaml', 'w') as yfile:
+                yfile.write(template)
+                yfile.close()
+                yaml_run = YamlRunner(job_id)
+                x = yaml_run.run_yaml()
+            if (x == 1):
+                credit_check(user.user_id)
+                return Response(data={"status": "File is made!","credit_left":credit_check(user.user_id)})
+            else:
+                buyyer_payment_del_sta = True
+                seller_payment_del_sta = True
+                while(buyyer_payment_del_sta or seller_payment_del_sta ):
+                    try:
+                        buyyer_payment_del_sta = del_payment(buyyer_payment_id)
+                        seller_payment_del_sta = del_payment(seller_payment_id)
+                    except :
+                        pass
+                return Response(data={"status": "ERROR1377 Export job fail", "cause": str(x)}, status=503)
+        except Exception as error:
+            print(error)
+            buyyer_payment_del_sta = True
+            seller_payment_del_sta = True
+            while(buyyer_payment_del_sta or seller_payment_del_sta ):
+                try:
+                    buyyer_payment_del_sta = del_payment(buyyer_payment_id)
+                    seller_payment_del_sta = del_payment(seller_payment_id)
+                except :
+                    pass
+            return Response(data={"status": "ERROR1206 Export job fail", "cause": str(error)}, status=503)
+
+#---------------------------------------------BASIC----------------------------------------------
 class MakeDockerFile(APIView):
     def post(self, request):
         logger.error('Running YAMLRunner at '+str(datetime.datetime.now()))
@@ -1160,6 +1418,7 @@ class MakeDockerFile(APIView):
         add_result = None
         sub_result = None
         product_on_job = None
+        logger.error('1187')
         try:
             product_on_job = Product.objects.get(
                 product_id=request.data['product_id'])
@@ -1172,7 +1431,7 @@ class MakeDockerFile(APIView):
                 return Response(data={"status": "ERROR1012 Export job fail", "cause": "Do not have enough credit point"}, status=503)
             try:
                 sub_result = sub_credit(buyyer_payment_id,user, total_credit_use, 0)
-                add_result = add_credit(seller_payment_id,0, total_credit_use, 0)
+                add_result = add_credit(seller_payment_id,"ipautsons", total_credit_use, 0)
             except Exception as err:
                 buyyer_payment_del_sta = True
                 seller_payment_del_sta = True
@@ -1206,18 +1465,20 @@ class MakeDockerFile(APIView):
                         pass
                 return Response(data={"status": "ERROR1074 Export job fail", "cause": str(err)}, status=503)
         
-
+        logger.error('1236')
+        logger.error('sub_result : ' +str(sub_result))
+        logger.error('add_result : ' +str(add_result))
         if (sub_result != 1  or add_result != 1):
-            buyyer_payment_del_sta = True
-            seller_payment_del_sta = True
-            while(buyyer_payment_del_sta or seller_payment_del_sta ):
-                try:
-                    buyyer_payment_del_sta = del_payment(buyyer_payment_id)
-                    seller_payment_del_sta = del_payment(seller_payment_id)
-                except :
-                    pass
-            return Response(data={"status": "ERROR1059 Export job fail", "cause": str(add_result)+" and "+str(sub_result)}, status=503)
-
+                buyyer_payment_del_sta = True
+                seller_payment_del_sta = True
+                while(buyyer_payment_del_sta or seller_payment_del_sta):
+                    try:
+                        buyyer_payment_del_sta = del_payment(buyyer_payment_id)
+                        seller_payment_del_sta = del_payment(seller_payment_id)
+                    except :
+                        pass
+                return Response(data={"status": "ERROR1059 Export job fail", "cause": str(add_result)+" and "+str(sub_result)}, status=503)
+        logger.error('1247')
         path = "/ipautsons/"+img_path[0]+"/"+img_path[1]+"/"+img_path[2]
 
         docker_image_name = None
@@ -1251,7 +1512,7 @@ class MakeDockerFile(APIView):
                     return Response(data={'status': 'ERROR1077 Create folder fail !!!','cause':str("can not find product")}, status=503)
 
 
-        
+        logger.error('1281')
         try:
             os.makedirs("/"+result_path)
         except Exception as error:
@@ -1272,14 +1533,22 @@ class MakeDockerFile(APIView):
                 serializer.save()
             except Exception as error:
                 print(error)
+                buyyer_payment_del_sta = True
+                seller_payment_del_sta = True
+                while(buyyer_payment_del_sta or seller_payment_del_sta ):
+                    try:
+                        buyyer_payment_del_sta = del_payment(buyyer_payment_id)
+                        seller_payment_del_sta = del_payment(seller_payment_id)
+                    except :
+                            pass
                 return Response(data={'status': 'ERROR1101 Create folder fail !!!','cause':str(error)}, status=503)
         
-        name_job = '"'+payload['id']+'-'+img_path[2]+'-'+docker_image_name+'-'+str(time_now)+'"'
+        name_job = '"'+user.first_name+'-'+img_path[2]+'-'+docker_image_name+'-'+str(time_now)+'"'
         path_temp = '"'+path+'"'
         result_path_temp = '"/'+result_path+'"'
         user_id_temp = '"'+str(payload['id'])+'"'
 
-        
+        logger.error('1309')
 #---------------------------------------------------mosaic---------------------------------------------#  
     #masaic = job_id ,user_id ,choose_folder ,image_selected ,result_folder
         if (request.data['product_id'] == 'Mosaic'):
@@ -1307,7 +1576,7 @@ spec:
             - name: nfs-share
               mountPath: /ipautsons
 
-        command: ["python","""+str(in_command_file_name)+""","""+str(name_job)+""","""+str(user_id_temp)+""","""+str(path_temp)+""","""+str(img_path_temp)+""","""+str(result_path_temp)+"""]
+        command: ["python","""+str(in_command_file_name)+""","""+str(job_id)+""","""+str(user_id_temp)+""","""+str(path_temp)+""","""+str(img_path_temp)+""","""+str(result_path_temp)+"""]
 
       restartPolicy: Never
       volumes:
@@ -1343,7 +1612,7 @@ spec:
             - name: nfs-share
               mountPath: /ipautsons
 
-        command: ["python","""+str(in_command_file_name)+""","""+str(name_job)+""","""+str(user_id_temp)+""","""+str(path_temp)+""","""+str(result_path_temp)+""","""+str(pixel_per_bit)+"""]
+        command: ["python","""+str(in_command_file_name)+""","""+str(job_id)+""","""+str(user_id_temp)+""","""+str(path_temp)+""","""+str(result_path_temp)+""","""+str(pixel_per_bit)+"""]
 
       restartPolicy: Never
       volumes:
@@ -1375,7 +1644,7 @@ spec:
             - name: nfs-share
               mountPath: /ipautsons
 
-        command: ["python","""+str(in_command_file_name)+""","""+str(name_job)+""","""+str(user_id_temp)+""","""+str(path_temp)+""","""+str(result_path_temp)+"""]
+        command: ["python","""+str(in_command_file_name)+""","""+str(job_id)+""","""+str(user_id_temp)+""","""+str(path_temp)+""","""+str(result_path_temp)+"""]
 
       restartPolicy: Never
       volumes:
@@ -1407,7 +1676,7 @@ spec:
                 'job_status': "0",
                 'payment_id': buyyer_payment_id
             }
-
+        logger.error('1437')
         try:
             serializer = JobSerializer(data=job_data)
             serializer.is_valid(raise_exception=True)
@@ -1422,6 +1691,8 @@ spec:
                 except :
                     pass
             return Response(data={"status": "ERROR1175 Export job fail", "cause": str(error)}, status=503)
+    
+        logger.error('1453')
         try:
 
             with open('yaml_file/'+job_id+'.yaml', 'w') as yfile:
