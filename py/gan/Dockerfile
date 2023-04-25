@@ -12,6 +12,8 @@ RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt && \
     pip install --no-cache-dir --no-build-isolation opencv-python-headless
 
+RUN pip install --no-cache-dir boto3
+
 COPY . .
 
 

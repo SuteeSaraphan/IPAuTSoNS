@@ -1,4 +1,3 @@
-opencv-python==4.5.5.62
 mediapipe
 stow
 numpy
@@ -8,3 +7,4 @@ tf2onnx
 tensorflow
 pymongo[srv]
 glob2
+pillow
