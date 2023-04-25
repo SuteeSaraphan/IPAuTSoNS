@@ -851,24 +851,24 @@ class OpenProductView(APIView):
         user = User.objects.get(user_id=payload['id'])
         product = Product.objects.get(product_id=request.data['product_id'])
 
-        open_product = OpenProductSerializer(Open_product.objects.get(product_id=request.data['product_id'],user_id=payload['id']))
-        copy_check = 0
-        for i in open_product:
-            copy_check += 1
-        
-        if(copy_check>0):
-            return Response({"status": "Open product fail",'cause':'product is already turn on'},status=503)
-        open_product_data ={
+        try:
+            Open_product.objects.get(product_id=request.data['product_id'],user_id=payload['id'])
+        except:
+            open_product_data ={
             'open_product_id': ''.join(random.choices(string.ascii_lowercase + string.digits, k=6)),
             'user_id' : user.user_id,
             'product_id' : product.product_id
-        }
+            }
 
-        serializer = OpenProductSerializer(data=open_product_data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
+            serializer = OpenProductSerializer(data=open_product_data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
 
-        return Response({"status": "Open product success"})
+            return Response({"status": "Open product success"})
+        else:
+            return Response({"status": "Open product fail",'cause':'product is already turn on'},status=503)
+            
+        
 
     def get(self, request):
         token = request.META['HTTP_JWT']

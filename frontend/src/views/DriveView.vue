@@ -159,6 +159,7 @@ export default {
             fileLink.setAttribute('download', folder.folder_name);
             document.body.appendChild(fileLink);
             fileLink.click();
+            this.isLoading = false
 
             
         },
