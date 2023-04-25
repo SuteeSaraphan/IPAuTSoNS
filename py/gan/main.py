@@ -29,11 +29,14 @@ if __name__ == '__main__':
         job = None
 
     try:
+        print("start")
         for x in range(len(All_files)):
+            print(x)
             animegan = AnimeGAN(ganmodel)
             filename, extension = os.path.splitext(os.path.basename(All_files[x]))
             All_files[x].save(newfolder+"/"+filename+extension)
-            engine = Engine(image_path=(newfolder+"/"+filename+extension), show=False,  custom_objects=[animegan])
+            newpath = newfolder+"/"+filename+extension
+            engine = Engine(image_path=newpath, show=False,  custom_objects=[animegan])
             engine.run()
         print("done")
         if job != None and type(job) == dict:
@@ -74,8 +77,8 @@ if __name__ == '__main__':
                 print(result)
             except Exception as error:
                 print(error)
-    except:
-        print("An exception occurred")
+    except Exception as error:
+        print(error)
         if job != None and type(job) == dict:
             job = db.api_job.find_one_and_update({'job_id' : job_id},
                                                             {"$set":
