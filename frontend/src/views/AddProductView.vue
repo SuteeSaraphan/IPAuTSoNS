@@ -17,6 +17,7 @@
             </header>
 
             <main>
+                <div class="loading" v-if="this.isLoading">Loading&#8230;</div>
                 <div class="page-header">
                     <div>
                         <h1>Add new product</h1>
@@ -116,6 +117,7 @@ export default {
 
             selectedImg: null,
             selectedWeight: null,
+            isLoading : false
 
 
         }
@@ -131,10 +133,10 @@ export default {
             //console.log('event :'+event.target.files[0].name)
             this.selectedImg = event.target.files[0]
             if (this.selectedImg.size >= 15000000) {
-                console.log('selectedImg :' + this.selectedImg.size)
+                //console.log('selectedImg :' + this.selectedImg.size)
                 alert("This file is too big")
             } else {
-                console.log('selectedImg :' + this.selectedImg.size)
+                //console.log('selectedImg :' + this.selectedImg.size)
             }
 
         },
@@ -143,13 +145,12 @@ export default {
         uploadWeight(event) {
             //console.log('event :'+event.target.files[0].name)
             this.selectedWeight = event.target.files[0]
-            console.log('selectedWeight :' + this.selectedWeight.size)
+            //console.log('selectedWeight :' + this.selectedWeight.size)
 
         },
 
         //add product to database
         async addProduct() {
-            console.log("type : "+document.getElementById("ptype").value)
             if (this.selectedImg != null & this.selectedWeight != null) {
                 this.isLoading = true
                 let data = new FormData();
@@ -161,7 +162,7 @@ export default {
                 data.append('detail', document.getElementById("pdetail").value);
                 data.append('price', document.getElementById("price").value);
                 
-                console.log("data of product : "+data)
+                //console.log("data of product : "+data)
 
                 //console.log(data)
 
@@ -177,11 +178,13 @@ export default {
                     config
                 ).then(
                     async (response) => {
+                        this.isLoading = false
                         alert('product upload response >' + response.data['status'])
                         let path = "/market/All/All/newest"
                         window.location.href = path
                     }
                 ).catch(err => {
+                    this.isLoading = false
                     alert(err.response.data['status'] + ' because ' + err.response.data['cause'])
                 })
             } else {
@@ -198,7 +201,7 @@ export default {
         //VueSlideBar
     },
     created() {
-        console.log(this.$route.params.product_id)
+        //console.log(this.$route.params.product_id)
 
     }
 };

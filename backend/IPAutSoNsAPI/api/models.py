@@ -116,3 +116,8 @@ class Login_log(models.Model):
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     login_time = models.DateTimeField(
         editable=False, auto_now_add=True, null=False)
+
+class Open_product(models.Model):
+    open_product_id = models.CharField(primary_key=True, unique=True, max_length=100)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    product_id = models.ForeignKey(Product, on_delete=models.CASCADE)

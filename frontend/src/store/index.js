@@ -32,8 +32,17 @@ export default createStore({
       state.creditTotal = data;
     },
 
+    setDriveSize(state,data){
+      state.storageSize = data
+    },
+
+
     addProduct(state, product){
       state.productUse.push(product)
+    },
+
+    clearProduct(state){
+      state.productUse = []
     },
 
     logout(state) {

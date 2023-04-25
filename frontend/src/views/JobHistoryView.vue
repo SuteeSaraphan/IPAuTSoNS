@@ -196,7 +196,7 @@ export default {
                 .then(res => {
                     this.jobs = res.data;
                     this.isLoading = false; 
-                    console.log(this.jobs[0])
+                    //console.log(this.jobs[0])
                 })
                 .catch(err => {
                     this.isLoading = false

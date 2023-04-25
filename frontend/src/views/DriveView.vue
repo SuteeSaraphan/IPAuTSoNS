@@ -60,7 +60,7 @@
                                     <button class="dropbtn">Option</button>
                                     <div class="dropup-content">
                                         <a @click="deleteFolder(file.folder_id)">Delete</a>
-                                        <a href="#">Edit name</a>
+                                        <a @click="downloadFolder(file)">Download</a>
                                     </div>
                                 </div>
 
@@ -140,7 +140,28 @@ export default {
                         alert("delete folder fail");
                     })
             }
-        }
+        },
+
+        async downloadFolder(folder) {
+            this.isLoading = true
+            let url = 'http://192.168.1.46:4090/downloadzip?path=/'+folder.path
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/pdf'
+                }
+            });
+
+            const fileBlob = await response.blob();
+            const fileUrl = window.URL.createObjectURL(fileBlob);
+            const fileLink = document.createElement('a');
+            fileLink.href = fileUrl;
+            fileLink.setAttribute('download', folder.folder_name);
+            document.body.appendChild(fileLink);
+            fileLink.click();
+
+            
+        },
 
 
 
@@ -161,6 +182,8 @@ export default {
                 this.isLoading = false
                 alert(err.data)
             })
+
+        
 
 
     }

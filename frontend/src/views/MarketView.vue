@@ -228,7 +228,7 @@ export default {
         axios.defaults.headers.get['jwt'] = this.$store.state.jwt;
         await axios.get('market/'+ this.$route.params.type+'_'+this.$route.params.model+'_'+this.$route.params.sort)
             .then(res => {
-                console.log(res.data)
+                //console.log(res.data)
                 this.isLoading = false;
                 this.productList = res.data
             })
