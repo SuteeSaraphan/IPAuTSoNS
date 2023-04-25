@@ -32,9 +32,9 @@ if __name__ == '__main__':
 
     try:
         print("start")
+        animegan = AnimeGAN(ganmodel)
         for x in range(len(All_files)):
             print(x)
-            animegan = AnimeGAN(ganmodel)
             filename, extension = os.path.splitext(os.path.basename(All_files[x]))
             image = Image.open(All_files[x])
             newpath = newfolder+"/"+filename+extension

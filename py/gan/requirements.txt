@@ -4,7 +4,7 @@ numpy
 tqdm
 onnxruntime
 tf2onnx
-tensorflow
+tensorflow-cpu
 pymongo[srv]
 glob2
 pillow
