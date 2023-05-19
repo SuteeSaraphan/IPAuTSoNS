@@ -18,7 +18,7 @@ spec:
         app: backend
     spec:
       containers:
-      - image: chinglew27/ipautsons-backend:v1.8
+      - image: chinglew27/ipautsons-backend
         name: ipautsons
         ports:
             - containerPort: 8000
