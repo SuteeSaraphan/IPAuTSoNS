@@ -1,0 +1,5 @@
+numpy==1.22.3
+opencv_python==4.5.4.60
+psutil==5.9.1
+rembg==2.0.21
+

@@ -38,29 +38,4 @@ job = None
 folder = sys.argv[2]
 folder = folder+"/*"
 All_files = glob(folder)
-
-
-client = pymongo.MongoClient("mongodb+srv://ipautsons:J0iZfrxW49cFOr4U@cluster0.lbe3op6.mongodb.net/?retryWrites=true&w=majority")
-db = client.ipautsons
-try:
-    job = db.api_job.find_one({'job_id' : job_id})
-except NameError as error:
-    job = None
-
-try:
-  BlackWhite()
-  print("done")
-  if job != None and type(job) == dict:
-    job = db.api_job.find_one_and_update({'job_id' : job_id},
-                                                    {"$set":
-                                                        {'job_status' : 99
-                                                        }
-                                                    },upsert=True)
-except:
-  print("An exception occurred")
-  if job != None and type(job) == dict:
-    job = db.api_job.find_one_and_update({'job_id' : job_id},
-                                                    {"$set":
-                                                        {'job_status' : 2
-                                                        }
-                                                    },upsert=True)
+BlackWhite()
