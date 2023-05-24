@@ -12,16 +12,11 @@ import ProductView from "@/views/ProductView";
 import AddProductView from "@/views/AddProductView";
 import ProductHistoryView from "@/views/ProductHistoryView";
 import HistoryView from "@/views/HistoryView";
-import AdminView from "@/views/AdminView";
 import EditProductView from "@/views/EditProductView";
 import JobHistoryView from "@/views/JobHistoryView";
 
 const routes = [
-  {
-    path: "/admin",
-    name: "admin",
-    component: AdminView,
-  },
+
   {
     path: "/home",
     name: "home",
