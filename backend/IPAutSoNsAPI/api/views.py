@@ -1,6 +1,5 @@
 from ctypes import sizeof
-from io import BytesIO, StringIO
-from lib2to3.pgen2 import token
+from io import BytesIO
 from operator import length_hint
 import random
 import shutil
@@ -8,7 +7,6 @@ import string
 from time import sleep
 from django.shortcuts import render
 from requests import delete
-from rest_framework import generics
 from .models import Folder_img, Job, User, Image_file, Product, Login_log, Payment
 from .serializers import *
 from rest_framework.views import APIView
@@ -16,8 +14,6 @@ from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
 import jwt
 import datetime
-from django.core.files.storage import default_storage
-from django.core.files.base import ContentFile
 import os
 import base64
 from pathlib import Path

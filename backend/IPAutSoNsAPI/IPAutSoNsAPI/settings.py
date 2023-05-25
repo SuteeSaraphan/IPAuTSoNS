@@ -55,23 +55,11 @@ MIDDLEWARE = [
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
-        # 'rest_framework_simplejwt.authentication.JWTAuthentication',
     ]
 }
 
 CORS_ORIGIN_ALLOW_ALL = True
-
-# CORS_ORIGIN_WHITELIST = [
-#     'http://localhost:8080',
-#     'http://localhost:8000',
-#     'http://127.0.0.1:8000',
-#     'http://161.246.5.53:8000',
-# ]
-
-
 CORS_ALLOW_CREDENTIALS = True
-
-
 CORS_ALLOW_METHODS = [
     'DELETE',
     'GET',
@@ -118,14 +106,6 @@ WSGI_APPLICATION = 'IPAutSoNsAPI.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
-'''
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-'''
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
